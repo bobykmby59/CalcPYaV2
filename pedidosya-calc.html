@@ -8,6 +8,11 @@
 <meta name="apple-mobile-web-app-title" content="Rider Calc">
 <meta name="theme-color" content="#0d0d0d">
 <title>Rider Calc · PedidosYa GT</title>
+<link rel="manifest" href="manifest.json">
+<meta name="application-name" content="Rider Calc">
+<meta name="description" content="Calculadora de ganancias para riders de PedidosYa Guatemala">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛵</text></svg>">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap');
 :root{
@@ -1793,6 +1798,13 @@ function updateSemanaComparativa(){
 }
 
 init();
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
 </script>
 </body>
 </html>
