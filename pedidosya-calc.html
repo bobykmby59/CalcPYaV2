@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Rider Calc">
+<meta name="theme-color" content="#0d0d0d">
+<title>Rider Calc · PedidosYa GT</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#0d0d0d;--card:#181818;--card2:#1f1f1f;
+  --accent:#ff2d55;--accent2:#ff6b35;--green:#00e676;
+  --blue:#4da6ff;--yellow:#ffb347;--purple:#bf5fff;
+  --text:#f5f5f5;--muted:#777;--border:#2a2a2a;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:120px;overscroll-behavior:none}
+
+/* HEADER */
+header{background:linear-gradient(160deg,#1c0a0a 0%,#0d0d0d 60%);padding:16px 16px 10px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.date-badge{font-size:11px;color:var(--muted);background:var(--card2);padding:4px 10px;border-radius:20px;border:1px solid var(--border)}
+.total-row{display:flex;justify-content:space-between;align-items:flex-end}
+.total-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.total-amount{font-family:'Bebas Neue',sans-serif;font-size:42px;line-height:1;color:var(--green);letter-spacing:1px}
+.meta-mini{font-size:11px;color:var(--yellow);text-align:right}
+.stats-row{display:flex;gap:5px;margin-top:8px}
+.stat-chip{flex:1;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:6px 3px;text-align:center}
+.stat-chip .val{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--accent)}
+.stat-chip .lbl{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:0.3px}
+
+/* META BAR EN HEADER */
+.meta-header-bar{height:3px;background:var(--border);border-radius:2px;margin-top:8px;overflow:hidden}
+.meta-header-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));transition:width 0.6s ease;border-radius:2px}
+
+/* TABS */
+.tabs{display:flex;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:122px;z-index:99;overflow-x:auto}
+.tab{flex:1;min-width:55px;padding:11px 2px;text-align:center;font-size:10px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;white-space:nowrap}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-content{display:none;padding:14px}
+.tab-content.active{display:block}
+.section-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;margin-top:4px}
+
+/* MULTIPLICADOR */
+.mult-display{background:linear-gradient(135deg,#1a0808,#1f1212);border:1px solid #3a1515;border-radius:16px;padding:14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.mult-info{flex:1}
+.mult-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.mult-hint{font-size:9px;color:#555;margin-bottom:2px}
+.mult-value{font-family:'Bebas Neue',sans-serif;font-size:50px;color:var(--accent);line-height:1;background:none;border:none;outline:none;width:170px;cursor:text;-moz-appearance:textfield}
+.mult-value::-webkit-outer-spin-button,.mult-value::-webkit-inner-spin-button{-webkit-appearance:none}
+.mult-value:focus{border-bottom:2px solid var(--accent)}
+.mult-effective{font-size:11px;color:var(--accent2);margin-top:2px}
+.auto-mult-badge{font-size:10px;background:#001a08;color:var(--green);border:1px solid #004d1a;border-radius:6px;padding:2px 8px;display:inline-block;margin-top:3px}
+.mult-controls{display:flex;flex-direction:column;gap:6px}
+.mult-btn{width:44px;height:44px;border-radius:12px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;transition:all 0.15s}
+.mult-btn:active{transform:scale(0.9);background:var(--accent)}
+.mult-presets{display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap}
+.preset-btn{padding:6px 11px;border-radius:20px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;transition:all 0.15s}
+.preset-btn.active{background:var(--accent);border-color:var(--accent);color:white}
+
+/* LLUVIA */
+.rain-toggle{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:11px 14px;margin-bottom:10px;cursor:pointer}
+.rt-icon{font-size:20px}.rt-info{flex:1}
+.rt-label{font-size:13px;font-weight:600}.rt-sub{font-size:10px;color:var(--muted)}
+.toggle-switch{width:42px;height:23px;background:var(--border);border-radius:12px;position:relative;transition:background 0.2s;flex-shrink:0}
+.toggle-switch.on{background:#0066cc}
+.toggle-knob{width:19px;height:19px;background:white;border-radius:50%;position:absolute;top:2px;left:2px;transition:left 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.4)}
+.toggle-switch.on .toggle-knob{left:21px}
+.rain-extra-input{display:none;background:var(--card);border:1px solid #0066cc;border-radius:14px;padding:12px 14px;margin-bottom:10px;align-items:center;gap:10px}
+.rain-extra-input.visible{display:flex}
+.rain-extra-input label{font-size:11px;color:var(--blue);flex:1;text-transform:uppercase;letter-spacing:1px}
+.rain-extra-input input{background:none;border:none;outline:none;color:var(--blue);font-size:26px;font-family:'Bebas Neue',sans-serif;width:90px;text-align:right}
+
+/* RESTAURANTE */
+.restaurant-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:10px;position:relative}
+.restaurant-box:focus-within{border-color:var(--purple)}
+.restaurant-box label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px}
+.restaurant-box input{background:none;border:none;outline:none;color:var(--text);font-size:17px;font-family:'DM Sans',sans-serif;width:100%;font-weight:600}
+.restaurant-box input::placeholder{color:var(--border)}
+.autocomplete-list{position:absolute;left:0;right:0;top:100%;background:var(--card2);border:1px solid var(--border);border-radius:0 0 12px 12px;z-index:50;max-height:150px;overflow-y:auto}
+.autocomplete-item{padding:10px 14px;font-size:14px;cursor:pointer;border-bottom:1px solid var(--border)}
+.autocomplete-item:last-child{border-bottom:none}
+.autocomplete-item:active{background:var(--accent);color:white}
+
+/* RETIRO */
+.retiro-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.retiro-box:focus-within{border-color:var(--accent2)}
+.retiro-icon{font-size:20px}.retiro-info{flex:1}
+.retiro-info label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px}
+.retiro-info input{background:none;border:none;outline:none;color:var(--text);font-size:26px;font-family:'Bebas Neue',sans-serif;width:100%;letter-spacing:1px}
+.retiro-info input::placeholder{color:var(--border)}
+
+/* ENTREGAS */
+.entregas-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.add-entrega-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:700}
+.add-entrega-btn:disabled{opacity:0.3;cursor:not-allowed}
+.entrega-row{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 13px;margin-bottom:8px;display:flex;align-items:center;gap:10px;animation:slideIn 0.25s ease}
+.entrega-row:focus-within{border-color:var(--green)}
+@keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.entrega-num{width:26px;height:26px;border-radius:7px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:15px;flex-shrink:0}
+.entrega-input-wrap{flex:1}
+.entrega-input-wrap label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:3px}
+.entrega-input-wrap input{background:none;border:none;outline:none;color:var(--text);font-size:24px;font-family:'Bebas Neue',sans-serif;width:100%;letter-spacing:1px}
+.entrega-input-wrap input::placeholder{color:var(--border)}
+.remove-entrega{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.remove-entrega:active{background:var(--accent);color:white}
+
+/* PROPINA */
+.propina-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.propina-box label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;flex:1}
+.propina-box input{background:none;border:none;outline:none;color:var(--green);font-size:26px;font-family:'Bebas Neue',sans-serif;width:110px;text-align:right}
+
+/* TIEMPO */
+.time-section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:12px}
+.time-btns{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.time-btn{padding:9px 4px;border-radius:10px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-size:10px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;text-align:center;transition:all 0.15s}
+.time-btn.set{border-color:var(--accent);color:var(--accent);background:#1a0808}
+.time-btn .tb-icon{font-size:14px;display:block;margin-bottom:2px}
+.time-btn .tb-time{font-size:12px;font-family:'Bebas Neue',sans-serif;color:var(--text)}
+
+/* RESULTADO */
+.result-card{background:linear-gradient(135deg,#001a08,#002210);border:1px solid #004d1a;border-radius:16px;padding:16px;margin-bottom:12px;text-align:center}
+.result-label{font-size:10px;color:#00a844;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px}
+.result-amount{font-family:'Bebas Neue',sans-serif;font-size:58px;color:var(--green);line-height:1;letter-spacing:2px}
+.result-breakdown{font-size:11px;color:#00a844;margin-top:6px;display:flex;flex-direction:column;gap:3px;align-items:center}
+.result-neta{font-size:12px;color:var(--yellow);margin-top:4px}
+.add-btn{width:100%;padding:16px;border:none;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;font-size:16px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:0.5px;margin-bottom:6px;transition:all 0.2s}
+.add-btn:active{transform:scale(0.98);opacity:0.9}
+
+/* HISTORIAL */
+.history-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.history-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px}
+.clear-btn{font-size:12px;color:var(--accent);background:none;border:1px solid var(--accent);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:'DM Sans',sans-serif}
+.order-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 13px;margin-bottom:8px;animation:slideIn 0.25s ease}
+.order-main{display:flex;align-items:center;gap:10px}
+.order-num{width:32px;height:32px;border-radius:9px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:16px;flex-shrink:0}
+.order-details{flex:1;min-width:0}
+.order-restaurant{font-size:13px;font-weight:600;color:var(--purple);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.order-km{font-size:11px;color:var(--muted);margin-bottom:2px}
+.order-meta{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.order-mult{font-size:11px;background:#1a0808;color:var(--accent);padding:2px 6px;border-radius:6px;border:1px solid #3a1515;font-weight:600}
+.order-type{font-size:10px;background:#0a1a0a;color:var(--green);padding:2px 6px;border-radius:6px;border:1px solid #004d1a}
+.order-time{font-size:11px;color:var(--muted)}
+.order-timing{font-size:10px;color:var(--muted);margin-top:4px;display:flex;flex-wrap:wrap;gap:5px}
+.order-timing span{color:var(--yellow)}
+.order-right{text-align:right;flex-shrink:0}
+.order-amount{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--green);letter-spacing:1px}
+.order-propina{font-size:10px;color:var(--green);opacity:0.7}
+.order-actions{display:flex;gap:6px;margin-top:8px;border-top:1px solid var(--border);padding-top:8px}
+.action-btn{flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;text-align:center}
+.action-btn.edit{border-color:var(--blue);color:var(--blue)}
+.action-btn.del{border-color:var(--accent);color:var(--accent)}
+.last-delivery-btn{width:100%;padding:15px;border:2px solid var(--yellow);border-radius:16px;background:linear-gradient(135deg,#1a1000,#201500);color:var(--yellow);font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:0.5px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px}
+.last-delivery-btn:active{transform:scale(0.98)}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.stats-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px}
+.stats-card .sc-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.stats-card .sc-val{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--text);letter-spacing:1px}
+.stats-card .sc-val.green{color:var(--green)}.stats-card .sc-val.accent{color:var(--accent)}.stats-card .sc-val.yellow{color:var(--yellow)}
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px;margin-bottom:10px}
+.info-card .ic-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.ic-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)}
+.ic-row:last-child{border-bottom:none}
+.ic-badge{font-size:11px;padding:3px 10px;border-radius:6px;font-weight:600}
+.ic-badge.best{background:#001a08;color:var(--green);border:1px solid #004d1a}
+.ic-badge.worst{background:#1a0808;color:var(--accent);border:1px solid #3a1515}
+
+/* META DIARIA */
+.meta-bar-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px}
+.meta-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.meta-bar-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.meta-bar-msg{font-size:13px;font-weight:700}
+.meta-bar-msg.done{color:var(--green)}.meta-bar-msg.going{color:var(--yellow)}
+.meta-bar-track{height:10px;background:var(--border);border-radius:5px;overflow:hidden}
+.meta-bar-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--accent),var(--green));transition:width 0.5s ease}
+.meta-bar-nums{display:flex;justify-content:space-between;margin-top:6px;font-size:11px;color:var(--muted)}
+
+/* NETA CARD */
+.neta-card{background:linear-gradient(135deg,#0a1a0a,#001500);border:1px solid #004d1a;border-radius:14px;padding:14px;margin-bottom:10px}
+.neta-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #004d1a}
+.neta-row:last-child{border-bottom:none}
+.neta-row .nl{font-size:12px;color:var(--muted)}
+.neta-row .nv{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px}
+.neta-row .nv.green{color:var(--green)}.neta-row .nv.red{color:var(--accent)}.neta-row .nv.yellow{color:var(--yellow)}
+
+/* FRANJA HORARIA */
+.hora-bar{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)}
+.hora-bar:last-child{border-bottom:none}
+.hora-label{font-size:11px;color:var(--muted);width:46px;flex-shrink:0}
+.hora-track{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.hora-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.hora-val{font-size:11px;color:var(--yellow);width:42px;text-align:right;flex-shrink:0;font-weight:600}
+
+/* CHART */
+.chart-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px;margin-bottom:10px;overflow-x:auto}
+.chart-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+canvas{max-width:100%}
+
+/* FAB */
+.fab{position:fixed;bottom:24px;right:20px;z-index:999;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 20px rgba(255,45,85,0.5);transition:all 0.2s}
+.fab:active{transform:scale(0.9)}
+.fab.hidden{display:none}
+
+/* MODALS */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.85);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);border-radius:24px 24px 0 0;padding:18px 16px 34px;width:100%;max-width:500px;border-top:1px solid var(--border);animation:slideUp 0.25s ease;position:relative;max-height:92vh;overflow-y:auto}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:14px}
+.modal-close{position:absolute;top:14px;right:14px;background:var(--card2);border:1px solid var(--border);color:var(--muted);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center}
+
+/* QUICK */
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.quick-box{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px}
+.quick-box:focus-within{border-color:var(--accent)}
+.quick-box label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px}
+.quick-box input{background:none;border:none;outline:none;color:var(--text);font-size:22px;font-family:'Bebas Neue',sans-serif;width:100%}
+.quick-box input::placeholder{color:var(--border)}
+.quick-mult-row{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.qm-btn{padding:7px 11px;border-radius:16px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600}
+.qm-btn.active{background:var(--accent);border-color:var(--accent);color:white}
+.quick-result{text-align:center;padding:12px;background:linear-gradient(135deg,#001a08,#002210);border:1px solid #004d1a;border-radius:12px;margin-bottom:12px}
+.qr-label{font-size:10px;color:#00a844;text-transform:uppercase;letter-spacing:1px}
+.qr-amount{font-family:'Bebas Neue',sans-serif;font-size:46px;color:var(--green);line-height:1.1}
+.quick-add-btn{width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* EDIT */
+.edit-field{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:8px}
+.edit-field label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px}
+.edit-field input{background:none;border:none;outline:none;color:var(--text);font-size:22px;font-family:'Bebas Neue',sans-serif;width:100%}
+.edit-field input[type=text]{font-family:'DM Sans',sans-serif;font-size:16px}
+.edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.save-edit-btn{width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--blue),#0044aa);color:white;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* ODO */
+.odo-card{background:linear-gradient(135deg,#0a0a1a,#101020);border:1px solid #2a2a4a;border-radius:16px;padding:16px;margin-bottom:12px;text-align:center}
+.odo-label{font-size:11px;color:#8888cc;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.odo-val{font-family:'Bebas Neue',sans-serif;font-size:46px;color:var(--blue);line-height:1}
+.odo-diff{font-size:13px;color:var(--green);margin-top:4px;font-weight:600}
+.odo-input-box{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.odo-input-box label{font-size:11px;color:var(--muted);flex:1;text-transform:uppercase;letter-spacing:1px}
+.odo-input-box input{background:none;border:none;outline:none;color:var(--blue);font-size:26px;font-family:'Bebas Neue',sans-serif;width:120px;text-align:right}
+.odo-save-btn{width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--blue),#0044aa);color:white;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:8px}
+
+/* REPORTE */
+.report-section{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:13px;margin-bottom:10px}
+.report-section h3{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;margin-bottom:10px;color:var(--yellow)}
+.report-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:13px}
+.report-row:last-child{border-bottom:none}
+.report-row .rv{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px}
+.report-row .rv.green{color:var(--green)}.report-row .rv.yellow{color:var(--yellow)}.report-row .rv.blue{color:var(--blue)}
+.close-report-btn{width:100%;padding:14px;border:none;border-radius:14px;background:var(--card2);color:var(--muted);font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;border:1px solid var(--border)}
+.share-report-btn{width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,#1a0a2a,#2a0a3a);color:var(--purple);font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;border:1px solid #3a1a5a;margin-bottom:8px}
+
+/* CONFIG (meta, costos, horarios) */
+.config-section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px}
+.config-section h3{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;margin-bottom:12px;color:var(--yellow)}
+.config-field{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.config-field:last-of-type{border-bottom:none}
+.config-field label{font-size:12px;color:var(--muted);flex:1}
+.config-field input{background:var(--card2);border:1px solid var(--border);outline:none;color:var(--text);font-size:18px;font-family:'Bebas Neue',sans-serif;width:100px;text-align:right;border-radius:8px;padding:4px 8px}
+.config-field .unit{font-size:11px;color:var(--muted);width:20px}
+.save-config-btn{width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--yellow),#cc8800);color:#000;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:10px}
+
+/* HORARIOS AUTO */
+.schedule-item{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:8px;animation:slideIn 0.2s ease}
+.schedule-item input[type=time]{background:none;border:none;outline:none;color:var(--blue);font-size:18px;font-family:'Bebas Neue',sans-serif;width:88px}
+.schedule-item .sch-arrow{font-size:12px;color:var(--muted)}
+.schedule-item input[type=number]{background:none;border:none;outline:none;color:var(--accent);font-size:22px;font-family:'Bebas Neue',sans-serif;width:60px}
+.schedule-item .sch-x-label{font-size:11px;color:var(--muted)}
+.schedule-item .del-sch{width:26px;height:26px;border-radius:7px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:auto}
+.add-sch-btn{width:100%;padding:10px;border:1px dashed var(--border);border-radius:12px;background:transparent;color:var(--muted);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;margin-bottom:10px}
+.auto-toggle-row{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px 14px;margin-bottom:10px;cursor:pointer}
+.auto-toggle-row.active-auto{border-color:var(--green);background:#001a08}
+
+/* EXPORT */
+.export-btn{width:100%;padding:13px;border-radius:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.15s}
+.export-btn:active{transform:scale(0.98)}
+.export-btn.csv{background:linear-gradient(135deg,#003a1a,#005a28);color:var(--green);border:1px solid #004d1a}
+.export-btn.txt{background:linear-gradient(135deg,#0a1a2a,#001535);color:var(--blue);border:1px solid #002a5a}
+.export-btn.share{background:linear-gradient(135deg,#1a0a2a,#2a0a3a);color:var(--purple);border:1px solid #3a1a5a}
+.day-selector{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:4px}
+.day-btn{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;white-space:nowrap;flex-shrink:0}
+.day-btn.active{background:var(--accent);border-color:var(--accent);color:white}
+.empty-state{text-align:center;padding:36px 20px;color:var(--muted)}
+.empty-state .es-icon{font-size:40px;margin-bottom:10px}
+.empty-state .es-text{font-size:13px;line-height:1.6}
+
+/* WIDGET RESUMEN */
+.widget-card{background:linear-gradient(135deg,#1a0a00,#1f1200);border:1px solid #3a2200;border-radius:16px;padding:14px;margin-bottom:10px}
+.widget-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.widget-row:last-child{margin-bottom:0}
+.widget-label{font-size:11px;color:var(--muted)}
+.widget-val{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--yellow);letter-spacing:1px}
+.proyeccion-card{background:linear-gradient(135deg,#0a001a,#10001f);border:1px solid #2a0a4a;border-radius:16px;padding:14px;margin-bottom:10px;text-align:center}
+.proyeccion-label{font-size:10px;color:#8866aa;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.proyeccion-val{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--purple);line-height:1}
+.proyeccion-sub{font-size:11px;color:#8866aa;margin-top:4px}
+.record-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#1a1000,#2a1800);border:1px solid #4a2800;border-radius:12px;padding:8px 14px;margin-bottom:10px;width:100%}
+.record-badge .rb-icon{font-size:20px}
+.record-badge .rb-info{flex:1}
+.record-badge .rb-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.record-badge .rb-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--yellow);letter-spacing:1px}
+.record-badge .rb-date{font-size:10px;color:var(--muted)}
+
+/* HISTORIAL POR FECHA */
+.date-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 14px}
+.date-nav-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.date-nav-btn:active{background:var(--accent)}
+.date-nav-label{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--text)}
+.date-nav-today{font-size:10px;color:var(--accent);cursor:pointer;font-weight:600}
+
+/* SEMANA COMPARATIVA */
+.semana-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px;margin-bottom:10px}
+.semana-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)}
+.semana-row:last-child{border-bottom:none}
+.semana-dia{font-size:11px;color:var(--muted);width:36px;flex-shrink:0}
+.semana-bar-wrap{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.semana-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.semana-val{font-size:11px;color:var(--yellow);width:50px;text-align:right;font-weight:600}
+.semana-vs{font-size:10px;width:40px;text-align:right}
+.semana-vs.up{color:var(--green)}.semana-vs.down{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="logo">🛵 RIDER CALC</div>
+    <div class="date-badge" id="dateBadge"></div>
+  </div>
+  <div class="total-row">
+    <div>
+      <div class="total-label">Total del día</div>
+      <div class="total-amount" id="totalDay">Q 0.00</div>
+    </div>
+    <div class="meta-mini" id="metaMini" style="display:none"></div>
+  </div>
+  <div class="meta-header-bar"><div class="meta-header-fill" id="metaHeaderFill" style="width:0%"></div></div>
+  <div class="stats-row">
+    <div class="stat-chip"><div class="val" id="statPedidos">0</div><div class="lbl">Pedidos</div></div>
+    <div class="stat-chip"><div class="val" id="statEntregas">0</div><div class="lbl">Entregas</div></div>
+    <div class="stat-chip"><div class="val" id="statKm">0.0</div><div class="lbl">Km</div></div>
+    <div class="stat-chip"><div class="val" id="statPromedio">Q0</div><div class="lbl">Prom.</div></div>
+    <div class="stat-chip"><div class="val" id="statNeta" style="color:var(--yellow)">Q0</div><div class="lbl">Neta</div></div>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('calc')">🧮 Calc</div>
+  <div class="tab" onclick="switchTab('historial')">📋 Historial</div>
+  <div class="tab" onclick="switchTab('stats')">📊 Stats</div>
+  <div class="tab" onclick="switchTab('grafica')">📈 Gráfica</div>
+  <div class="tab" onclick="switchTab('config')">⚙️ Config</div>
+</div>
+
+<!-- CALCULAR -->
+<div class="tab-content active" id="tab-calc">
+
+  <div class="mult-display">
+    <div class="mult-info">
+      <div class="mult-label">Multiplicador</div>
+      <div class="mult-hint">Tocá para escribir cualquier valor</div>
+      <input type="number" class="mult-value" id="multDisplay" value="1.30" step="0.05" min="1.00" max="9.99" oninput="onMultInput()" onblur="onMultBlur()">
+      <div class="mult-effective" id="multEffective"></div>
+      <div class="auto-mult-badge" id="autoMultBadge" style="display:none">🤖 AUTO-HORARIO ACTIVO</div>
+    </div>
+    <div class="mult-controls">
+      <button class="mult-btn" onclick="changeMult(0.05)">+</button>
+      <button class="mult-btn" onclick="changeMult(-0.05)">−</button>
+    </div>
+  </div>
+  <div class="mult-presets">
+    <button class="preset-btn" onclick="setMult(1.00)">1.00</button>
+    <button class="preset-btn" onclick="setMult(1.10)">1.10</button>
+    <button class="preset-btn" onclick="setMult(1.20)">1.20</button>
+    <button class="preset-btn" onclick="setMult(1.25)">1.25</button>
+    <button class="preset-btn active" onclick="setMult(1.30)">1.30</button>
+    <button class="preset-btn" onclick="setMult(1.50)">1.50</button>
+    <button class="preset-btn" onclick="setMult(2.00)">2.00</button>
+  </div>
+
+  <div class="rain-toggle" onclick="toggleRain()">
+    <div class="rt-icon">🌧️</div>
+    <div class="rt-info"><div class="rt-label">Multiplicador lluvia</div><div class="rt-sub">Se suma al base (ej: 1.30 + 0.25 = 1.55x)</div></div>
+    <div class="toggle-switch" id="rainSwitch"><div class="toggle-knob"></div></div>
+  </div>
+  <div class="rain-extra-input" id="rainInput">
+    <label>🌧️ Extra lluvia</label>
+    <input type="number" id="rainExtra" placeholder="0.25" step="0.05" value="0.25" oninput="updateResult()">
+  </div>
+
+  <div class="section-label">🏪 Restaurante</div>
+  <div class="restaurant-box" id="restaurantBox">
+    <label>Nombre del restaurante</label>
+    <input type="text" id="restaurantInput" placeholder="Ej: McDonald's Metrosur" autocomplete="off" oninput="handleRestaurantInput()" onfocus="handleRestaurantInput()">
+    <div class="autocomplete-list" id="autocompleteList"></div>
+  </div>
+
+  <div class="section-label">📍 Punto de retiro</div>
+  <div class="retiro-box">
+    <div class="retiro-icon">🏪</div>
+    <div class="retiro-info">
+      <label>KM al punto de retiro</label>
+      <input type="number" id="kmRetiro" placeholder="0.000" step="0.001" oninput="updateResult()">
+    </div>
+  </div>
+
+  <div class="entregas-header">
+    <div class="section-label" style="margin:0">🏠 Puntos de entrega</div>
+    <button class="add-entrega-btn" id="addEntregaBtn" onclick="addEntrega()">+ Agregar</button>
+  </div>
+  <div id="entregasContainer"></div>
+
+  <div class="propina-box">
+    <label>💚 Propina (opcional)</label>
+    <input type="number" id="propina" placeholder="0.00" step="0.50" oninput="updateResult()">
+  </div>
+
+  <div class="time-section">
+    <div class="section-label" style="margin-bottom:10px">⏱️ Registro de tiempo</div>
+    <div class="time-btns">
+      <button class="time-btn" id="btnAceptar" onclick="setTime('aceptar')"><span class="tb-icon">✅</span>Acepté<div class="tb-time" id="timeAceptar">--:--</div></button>
+      <button class="time-btn" id="btnLlegue" onclick="setTime('llegue')"><span class="tb-icon">🏍️</span>Llegué<div class="tb-time" id="timeLlegue">--:--</div></button>
+      <button class="time-btn" id="btnRecogi" onclick="setTime('recogi')"><span class="tb-icon">📦</span>Recogí<div class="tb-time" id="timeRecogi">--:--</div></button>
+      <button class="time-btn" id="btnEntregu" onclick="setTime('entregu')"><span class="tb-icon">🏠</span>Entregué<div class="tb-time" id="timeEntregu">--:--</div></button>
+    </div>
+  </div>
+
+  <div class="result-card">
+    <div class="result-label">Ganancia este pedido</div>
+    <div class="result-amount" id="resultAmount">Q 0.00</div>
+    <div class="result-breakdown" id="resultBreakdown"></div>
+    <div class="result-neta" id="resultNeta"></div>
+  </div>
+  <button class="add-btn" onclick="addOrder()">✓ AGREGAR AL HISTORIAL</button>
+</div>
+
+<!-- HISTORIAL -->
+<div class="tab-content" id="tab-historial">
+  <div class="date-nav">
+    <button class="date-nav-btn" onclick="changeHistDate(-1)">‹</button>
+    <div style="text-align:center">
+      <div class="date-nav-label" id="histDateLabel">HOY</div>
+      <div class="date-nav-today" onclick="goToToday()">← Volver a hoy</div>
+    </div>
+    <button class="date-nav-btn" onclick="changeHistDate(1)">›</button>
+  </div>
+  <div id="histDaySummary"></div>
+  <button class="last-delivery-btn" id="lastDeliveryBtn" onclick="openOdometer()">🏁 Última entrega del día</button>
+  <div id="historyList"><div class="empty-state"><div class="es-icon">📋</div><div class="es-text">Aún no hay pedidos.<br>¡Agregá tu primer pedido!</div></div></div>
+</div>
+
+<!-- STATS -->
+<div class="tab-content" id="tab-stats">
+  <div class="widget-card" id="widgetResumen"></div>
+  <div class="proyeccion-card" id="proyeccionCard" style="display:none"></div>
+  <div id="recordBadge"></div>
+  <div id="metaBarSection" style="display:none">
+    <div class="meta-bar-wrap" id="metaBarCard"></div>
+  </div>
+  <div class="stats-grid">
+    <div class="stats-card"><div class="sc-label">Total bruto</div><div class="sc-val green" id="sTotal">Q 0</div></div>
+    <div class="stats-card"><div class="sc-label">Ganancia neta</div><div class="sc-val yellow" id="sNeta">Q 0</div></div>
+    <div class="stats-card"><div class="sc-label">Pedidos</div><div class="sc-val" id="sPedidos">0</div></div>
+    <div class="stats-card"><div class="sc-label">Entregas reales</div><div class="sc-val accent" id="sEntregas">0</div></div>
+    <div class="stats-card"><div class="sc-label">Km recorridos</div><div class="sc-val accent" id="sKm">0.0</div></div>
+    <div class="stats-card"><div class="sc-label">Costo km</div><div class="sc-val" id="sCostoKm">Q0</div></div>
+    <div class="stats-card"><div class="sc-label">Q por km</div><div class="sc-val" id="sQkm">0.00</div></div>
+    <div class="stats-card"><div class="sc-label">Total propinas</div><div class="sc-val green" id="sPropinas">Q 0</div></div>
+  </div>
+  <div class="neta-card" id="netaCard" style="display:none"></div>
+  <div class="info-card" id="horaStats">
+    <div class="ic-title">🕐 Ganancias por franja horaria</div>
+    <div style="text-align:center;color:var(--muted);padding:14px;font-size:13px">Sin datos aún</div>
+  </div>
+  <div class="info-card" id="timeBreakdown">
+    <div class="ic-title">⏱️ Desglose de tiempo</div>
+    <div style="text-align:center;color:var(--muted);padding:14px;font-size:13px">Sin datos de tiempo aún</div>
+  </div>
+  <div class="info-card" id="deadTimeCard">
+    <div class="ic-title">💤 Tiempos muertos</div>
+    <div style="text-align:center;color:var(--muted);padding:14px;font-size:13px">Sin datos aún</div>
+  </div>
+  <div class="info-card" id="restaurantStats">
+    <div class="ic-title">🏪 Restaurantes más tardados</div>
+    <div style="text-align:center;color:var(--muted);padding:14px;font-size:13px">Sin datos aún</div>
+  </div>
+  <div class="info-card" id="bestWorst">
+    <div class="ic-title">🏆 Mejor vs Peor pedido</div>
+    <div style="text-align:center;color:var(--muted);padding:14px;font-size:13px">Sin datos aún</div>
+  </div>
+  <div class="info-card" id="odoStats" style="display:none">
+    <div class="ic-title">🏍️ KM App vs Odómetro</div>
+    <div id="odoStatsContent"></div>
+  </div>
+  <div class="semana-card" id="semanaCard">
+    <div class="ic-title">📅 Esta semana vs semana anterior</div>
+    <div id="semanaContent" style="text-align:center;color:var(--muted);padding:14px;font-size:13px">Sin datos aún</div>
+  </div>
+</div>
+
+<!-- GRÁFICA -->
+<div class="tab-content" id="tab-grafica">
+  <div class="chart-wrap">
+    <div class="chart-title">💰 Ganancias por día (14 días)</div>
+    <canvas id="chartGanancias" height="180"></canvas>
+  </div>
+  <div class="chart-wrap">
+    <div class="chart-title">📦 Pedidos y entregas por día</div>
+    <canvas id="chartPedidos" height="150"></canvas>
+  </div>
+  <div class="chart-wrap">
+    <div class="chart-title">⏱️ Tiempo promedio por pedido</div>
+    <canvas id="chartTiempo" height="150"></canvas>
+  </div>
+  <div class="chart-wrap">
+    <div class="chart-title">💰 Ganancia neta vs bruta</div>
+    <canvas id="chartNeta" height="150"></canvas>
+  </div>
+</div>
+
+<!-- CONFIG -->
+<div class="tab-content" id="tab-config">
+
+  <!-- META DIARIA -->
+  <div class="config-section">
+    <h3>🎯 Meta diaria</h3>
+    <div class="config-field">
+      <label>Meta de ganancias</label>
+      <input type="number" id="cfgMeta" placeholder="500" step="50">
+      <span class="unit">Q</span>
+    </div>
+    <div class="config-field">
+      <label>💰 Base inicial del día (lo que ya ganaste antes de abrir la app)</label>
+      <input type="number" id="cfgBase" placeholder="0.00" step="0.01">
+      <span class="unit">Q</span>
+    </div>
+    <button class="save-config-btn" onclick="saveConfig()">💾 Guardar</button>
+  </div>
+
+  <!-- COSTOS -->
+  <div class="config-section">
+    <h3>⛽ Costos del día</h3>
+    <div class="config-field"><label>Precio gasolina / galón</label><input type="number" id="cfgGasPrice" placeholder="32" step="1"><span class="unit">Q</span></div>
+    <div class="config-field"><label>Km por galón (tu moto)</label><input type="number" id="cfgKmGalon" placeholder="40" step="1"><span class="unit">km</span></div>
+    <div class="config-field"><label>Costo mantenimiento diario</label><input type="number" id="cfgMant" placeholder="15" step="5"><span class="unit">Q</span></div>
+    <div class="config-field"><label>Otros gastos del día</label><input type="number" id="cfgOtros" placeholder="0" step="5"><span class="unit">Q</span></div>
+    <button class="save-config-btn" onclick="saveConfig()">💾 Guardar</button>
+  </div>
+
+  <!-- HORARIOS AUTO -->
+  <div class="config-section">
+    <h3>🤖 Multiplicador automático</h3>
+    <div class="auto-toggle-row" id="autoToggleRow" onclick="toggleAutoMult()">
+      <span style="font-size:18px">🤖</span>
+      <div style="flex:1"><div style="font-size:13px;font-weight:600">Cambio automático por hora</div><div style="font-size:10px;color:var(--muted)">La app ajusta el multiplicador según tu horario</div></div>
+      <div class="toggle-switch" id="autoMultSwitch"><div class="toggle-knob"></div></div>
+    </div>
+    <div id="scheduleList"></div>
+    <button class="add-sch-btn" onclick="addScheduleItem()">+ Agregar franja horaria</button>
+    <button class="save-config-btn" onclick="saveConfig()">💾 Guardar horarios</button>
+  </div>
+
+  <!-- EXPORTAR -->
+  <div class="config-section">
+    <h3>📤 Exportar datos</h3>
+    <button class="export-btn csv" onclick="exportCSV()">📊 Exportar CSV (Excel)</button>
+    <button class="export-btn txt" onclick="exportTXT()">📄 Exportar resumen TXT</button>
+    <button class="export-btn share" onclick="shareWhatsApp()">💬 Compartir por WhatsApp</button>
+  </div>
+
+</div>
+
+<!-- FAB -->
+<button class="fab hidden" id="fab" onclick="openQuick()">⚡</button>
+
+<!-- QUICK MODAL -->
+<div class="modal-overlay" id="quickModal" onclick="closeModalOutside(event,'quickModal')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeModal('quickModal')">✕</button>
+    <div class="modal-title">⚡ Pedido Rápido</div>
+    <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Multiplicador</div>
+    <div class="quick-mult-row" id="quickPresets"></div>
+    <div class="quick-grid">
+      <div class="quick-box"><label>📍 KM Retiro</label><input type="number" id="qKmR" placeholder="0.000" step="0.001" oninput="updateQuick()"></div>
+      <div class="quick-box"><label>🏠 KM Entrega</label><input type="number" id="qKmE" placeholder="0.000" step="0.001" oninput="updateQuick()"></div>
+      <div class="quick-box"><label>💚 Propina</label><input type="number" id="qProp" placeholder="0.00" step="0.50" oninput="updateQuick()"></div>
+      <div class="quick-box"><label>🌧️ Extra lluvia</label><input type="number" id="qRain" placeholder="0.00" step="0.05" oninput="updateQuick()"></div>
+    </div>
+    <div class="quick-result"><div class="qr-label">Este pedido</div><div class="qr-amount" id="qResult">Q 0.00</div></div>
+    <button class="quick-add-btn" onclick="quickAdd()">✓ AGREGAR</button>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="editModal" onclick="closeModalOutside(event,'editModal')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeModal('editModal')">✕</button>
+    <div class="modal-title">✏️ Editar Pedido</div>
+    <input type="hidden" id="editOrderId">
+    <div class="edit-field"><label>🏪 Restaurante</label><input type="text" id="editRestaurant" placeholder="Nombre del restaurante"></div>
+    <div class="edit-grid">
+      <div class="edit-field"><label>📍 KM Retiro</label><input type="number" id="editKmR" step="0.001"></div>
+      <div class="edit-field"><label>🏠 KM Entrega</label><input type="number" id="editKmE" step="0.001"></div>
+      <div class="edit-field"><label>🔢 Multiplicador</label><input type="number" id="editMult" step="0.05"></div>
+      <div class="edit-field"><label>💚 Propina</label><input type="number" id="editProp" step="0.50"></div>
+    </div>
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">⏱️ Tiempos</div>
+    <div class="edit-grid">
+      <div class="edit-field"><label>✅ Acepté</label><input type="time" id="editTAceptar"></div>
+      <div class="edit-field"><label>🏍️ Llegué</label><input type="time" id="editTLlegue"></div>
+      <div class="edit-field"><label>📦 Recogí</label><input type="time" id="editTRecogi"></div>
+      <div class="edit-field"><label>🏠 Entregué</label><input type="time" id="editTEntregu"></div>
+    </div>
+    <button class="save-edit-btn" onclick="saveEdit()">💾 GUARDAR CAMBIOS</button>
+  </div>
+</div>
+
+<!-- ODO MODAL -->
+<div class="modal-overlay" id="odoModal" onclick="closeModalOutside(event,'odoModal')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeModal('odoModal')">✕</button>
+    <div class="modal-title">🏁 Cierre del día</div>
+    <div class="odo-card">
+      <div class="odo-label">KM registrados por la app</div>
+      <div class="odo-val" id="odoAppKm">0.0</div>
+    </div>
+    <div class="odo-input-box">
+      <label>🏍️ KM en tu odómetro hoy</label>
+      <input type="number" id="odoInput" placeholder="0.0" step="0.1" oninput="updateOdoDiff()">
+    </div>
+    <div class="odo-card" id="odoDiffCard" style="display:none">
+      <div class="odo-label">KM ganados 🎉</div>
+      <div class="odo-val" id="odoDiffKm" style="color:var(--green)">0.0</div>
+      <div class="odo-diff" id="odoDiffQ"></div>
+    </div>
+    <button class="odo-save-btn" onclick="saveOdoAndReport()">📊 VER REPORTE DEL DÍA</button>
+  </div>
+</div>
+
+<!-- REPORTE MODAL -->
+<div class="modal-overlay" id="reportModal" onclick="closeModalOutside(event,'reportModal')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeModal('reportModal')">✕</button>
+    <div class="modal-title">📊 Reporte del día</div>
+    <div id="reportContent"></div>
+    <button class="share-report-btn" onclick="shareReport()">💬 Compartir por WhatsApp</button>
+    <button class="close-report-btn" onclick="closeModal('reportModal')">Cerrar</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// RIDER CALC v3 — PedidosYa Guatemala
+// ============================================================
+const FIXED = 1.00; // Bono fijo descubierto empíricamente
+
+let histViewDate = new Date();
+let multiplier = 1.30, rainOn = false, entregaCount = 1;
+let orders = [], allOrders = [], currentTab = 'calc', quickMult = 1.30;
+let times = {aceptar:null,llegue:null,recogi:null,entregu:null};
+let restaurants = [];
+let autoMultOn = false, schedules = [];
+let autoMultInterval = null;
+let cfg = {meta:0, base:0, gasPrice:32, kmGalon:40, mant:15, otros:0};
+let reportText = '';
+
+// ============================================================
+// RESTORE TIMES UI
+function restoreTimesUI(){
+  const saved = loadTimes();
+  ['aceptar','llegue','recogi','entregu'].forEach(type => {
+    if(saved[type]){
+      const cap = type.charAt(0).toUpperCase() + type.slice(1);
+      document.getElementById('time'+cap).textContent = saved[type];
+      document.getElementById('btn'+cap).classList.add('set');
+      // Reconstruct Date from saved time
+      const [h,m] = saved[type].split(':').map(Number);
+      const d = new Date(); d.setHours(h,m,0,0);
+      times[type] = d;
+    }
+  });
+}
+// ============================================================
+// INIT
+// ============================================================
+function init(){
+  const now = new Date();
+  document.getElementById('dateBadge').textContent =
+    now.toLocaleDateString('es-GT',{weekday:'short',day:'numeric',month:'short'});
+  try{
+    const a = localStorage.getItem('riderAllOrders');
+    if(a) allOrders = JSON.parse(a);
+    const r = localStorage.getItem('riderRestaurants');
+    if(r) restaurants = JSON.parse(r);
+    const c = localStorage.getItem('riderConfig');
+    if(c) cfg = {...cfg,...JSON.parse(c)};
+    const s = localStorage.getItem('riderSchedules');
+    if(s) schedules = JSON.parse(s);
+    const au = localStorage.getItem('riderAutoMult');
+    if(au) autoMultOn = JSON.parse(au);
+  }catch(e){}
+  const today = new Date().toDateString();
+  orders = allOrders.filter(o => new Date(o.ts).toDateString() === today);
+  addEntrega(true);
+  restoreTimesUI();
+  setMult(1.30);
+  buildQuickPresets();
+  updateHeader();
+  renderHistory();
+  if(autoMultOn) startAutoMult();
+  loadConfigUI();
+}
+
+// ============================================================
+// MULTIPLICADOR
+// ============================================================
+function changeMult(d){
+  multiplier = Math.max(1.00, parseFloat((multiplier + d).toFixed(2)));
+  document.getElementById('multDisplay').value = multiplier.toFixed(2);
+  updateMultDisplay(); updateResult();
+}
+function setMult(v){
+  multiplier = v;
+  document.getElementById('multDisplay').value = v.toFixed(2);
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.toggle('active', parseFloat(b.textContent) === v));
+  updateMultDisplay(); updateResult();
+}
+function onMultInput(){
+  const v = parseFloat(document.getElementById('multDisplay').value);
+  if(!isNaN(v) && v >= 1.00){
+    multiplier = parseFloat(v.toFixed(2));
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.toggle('active', parseFloat(b.textContent) === multiplier));
+    updateMultDisplay(); updateResult();
+  }
+}
+function onMultBlur(){
+  if(!document.getElementById('multDisplay').value || parseFloat(document.getElementById('multDisplay').value) < 1)
+    document.getElementById('multDisplay').value = multiplier.toFixed(2);
+}
+function updateMultDisplay(){
+  const rain = rainOn ? (parseFloat(document.getElementById('rainExtra').value)||0) : 0;
+  document.getElementById('multEffective').textContent = rain > 0 ? `🌧️ Total: ${parseFloat((multiplier+rain).toFixed(2))}x` : '';
+}
+function getEffMult(){
+  const rain = rainOn ? (parseFloat(document.getElementById('rainExtra').value)||0) : 0;
+  return parseFloat((multiplier + rain).toFixed(2));
+}
+function toggleRain(){
+  rainOn = !rainOn;
+  document.getElementById('rainSwitch').classList.toggle('on', rainOn);
+  document.getElementById('rainInput').classList.toggle('visible', rainOn);
+  updateMultDisplay(); updateResult();
+}
+
+// ============================================================
+// AUTO MULTIPLICADOR POR HORARIO
+// ============================================================
+function toggleAutoMult(){
+  autoMultOn = !autoMultOn;
+  document.getElementById('autoMultSwitch').classList.toggle('on', autoMultOn);
+  document.getElementById('autoToggleRow').classList.toggle('active-auto', autoMultOn);
+  try{localStorage.setItem('riderAutoMult', JSON.stringify(autoMultOn));}catch(e){}
+  if(autoMultOn){ startAutoMult(); }
+  else{ clearInterval(autoMultInterval); document.getElementById('autoMultBadge').style.display='none'; }
+}
+function startAutoMult(){
+  applyAutoMult();
+  autoMultInterval = setInterval(applyAutoMult, 60000);
+}
+function applyAutoMult(){
+  if(!autoMultOn || schedules.length === 0) return;
+  const now = new Date();
+  const nowMins = now.getHours()*60 + now.getMinutes();
+  const sorted = [...schedules].sort((a,b) => timeToMins(a.time) - timeToMins(b.time));
+  let active = null;
+  for(let s of sorted){
+    if(timeToMins(s.time) <= nowMins) active = s;
+  }
+  if(active){
+    const v = parseFloat(active.mult);
+    if(v >= 1.00){ setMult(v); document.getElementById('autoMultBadge').style.display='inline-block'; }
+  }
+}
+function addScheduleItem(time='', mult='1.30'){
+  const div = document.createElement('div');
+  div.className = 'schedule-item';
+  const id = Date.now();
+  div.id = 'sch_'+id;
+  div.innerHTML = `
+    <input type="time" value="${time}" onchange="saveConfig()">
+    <span class="sch-arrow">→</span>
+    <input type="number" value="${mult}" step="0.05" min="1" max="9.99" onchange="saveConfig()">
+    <span class="sch-x-label">x</span>
+    <button class="del-sch" onclick="document.getElementById('sch_${id}').remove();saveConfig()">✕</button>`;
+  document.getElementById('scheduleList').appendChild(div);
+}
+function getSchedules(){
+  const items = document.querySelectorAll('.schedule-item');
+  return Array.from(items).map(item => {
+    const inputs = item.querySelectorAll('input');
+    return {time: inputs[0].value, mult: inputs[1].value};
+  }).filter(s => s.time && s.mult);
+}
+
+// ============================================================
+// RESTAURANTE AUTOCOMPLETE
+// ============================================================
+function handleRestaurantInput(){
+  const val = document.getElementById('restaurantInput').value.toLowerCase().trim();
+  const list = document.getElementById('autocompleteList');
+  if(!val){list.innerHTML='';return;}
+  const matches = restaurants.filter(r => r.toLowerCase().includes(val));
+  if(matches.length === 0){list.innerHTML='';return;}
+  list.innerHTML = matches.map(r => `<div class="autocomplete-item" onclick="selectRestaurant('${r.replace(/'/g,"\\'")}'">${r}</div>`).join('');
+}
+function selectRestaurant(name){
+  document.getElementById('restaurantInput').value = name;
+  document.getElementById('autocompleteList').innerHTML = '';
+}
+function saveRestaurant(name){
+  if(name && !restaurants.includes(name)){
+    restaurants.push(name);
+    try{localStorage.setItem('riderRestaurants', JSON.stringify(restaurants));}catch(e){}
+  }
+}
+document.addEventListener('click', e => {
+  if(!document.getElementById('restaurantBox').contains(e.target))
+    document.getElementById('autocompleteList').innerHTML = '';
+});
+
+// ============================================================
+// ENTREGAS
+// ============================================================
+function addEntrega(isInit=false){
+  if(entregaCount >= 5) return;
+  const idx = entregaCount;
+  const div = document.createElement('div');
+  div.className = 'entrega-row'; div.id = `entrega_${idx}`;
+  div.innerHTML = `<div class="entrega-num">${idx}</div>
+    <div class="entrega-input-wrap">
+      <label>KM Entrega ${idx}</label>
+      <input type="number" id="kmE_${idx}" placeholder="0.000" step="0.001" oninput="updateResult()">
+    </div>
+    ${idx>1?`<button class="remove-entrega" onclick="removeEntrega(${idx})">×</button>`:'<div style="width:30px"></div>'}`;
+  document.getElementById('entregasContainer').appendChild(div);
+  entregaCount++;
+  document.getElementById('addEntregaBtn').disabled = entregaCount >= 5;
+  if(!isInit) setTimeout(() => document.getElementById(`kmE_${idx}`).focus(), 100);
+}
+function removeEntrega(idx){
+  document.getElementById(`entrega_${idx}`).remove();
+  entregaCount--;
+  document.getElementById('addEntregaBtn').disabled = false;
+  updateResult();
+}
+function getKmEntregas(){
+  let total = 0, count = 0;
+  for(let i=1;i<6;i++){
+    const el = document.getElementById(`kmE_${i}`);
+    if(el){ total += parseFloat(el.value)||0; count++; }
+  }
+  return {total, count};
+}
+
+// ============================================================
+// CÁLCULO (con soporte decimales exactos)
+// ============================================================
+function calcPedido(kmR, kmETotal, nEnt, prop, mult){
+  // Usar precisión completa, redondear solo al final
+  const base = (FIXED + 1.00 + (2.50 * nEnt) + (kmR + kmETotal) * 1.50 + 0.50) * mult;
+  return parseFloat((base + prop).toFixed(2));
+}
+function calcCostoPedido(kmR, kmETotal){
+  const kmTotal = kmR + kmETotal;
+  const costoGas = (cfg.gasPrice / cfg.kmGalon) * kmTotal;
+  return parseFloat(costoGas.toFixed(2));
+}
+function calcCostoDia(){
+  const km = orders.reduce((s,o) => s+o.kmR+o.kmETotal, 0);
+  const costoGas = (cfg.gasPrice / cfg.kmGalon) * km;
+  return parseFloat((costoGas + cfg.mant + cfg.otros).toFixed(2));
+}
+
+function updateResult(){
+  const kmR = parseFloat(document.getElementById('kmRetiro').value) || 0;
+  const {total: kmETotal, count: nEnt} = getKmEntregas();
+  const prop = parseFloat(document.getElementById('propina').value) || 0;
+  const mult = getEffMult();
+  const total = calcPedido(kmR, kmETotal, nEnt, prop, mult);
+  const costo = calcCostoPedido(kmR, kmETotal);
+  const neta = parseFloat((total - costo).toFixed(2));
+
+  document.getElementById('resultAmount').textContent = 'Q ' + total.toFixed(2);
+  if(kmR > 0 || kmETotal > 0){
+    const base = total - prop;
+    const lines = [`Base × ${mult}x = Q${base.toFixed(2)}`];
+    if(nEnt > 1) lines.push(`${nEnt} puntos de entrega`);
+    if(prop > 0) lines.push(`+ Q${prop.toFixed(2)} propina`);
+    document.getElementById('resultBreakdown').innerHTML = lines.map(l=>`<span>${l}</span>`).join('');
+    if(cfg.gasPrice > 0)
+      document.getElementById('resultNeta').textContent = `⛽ Costo: Q${costo.toFixed(2)} · Neto: Q${neta.toFixed(2)}`;
+    else document.getElementById('resultNeta').textContent = '';
+  } else {
+    document.getElementById('resultBreakdown').innerHTML = '';
+    document.getElementById('resultNeta').textContent = '';
+  }
+}
+
+// ============================================================
+// TIEMPO
+// ============================================================
+function setTime(type){
+  const now = new Date(); times[type] = now;
+  const hm = now.toTimeString().slice(0,5);
+  const cap = type.charAt(0).toUpperCase() + type.slice(1);
+  document.getElementById('time'+cap).textContent = hm;
+  document.getElementById('btn'+cap).classList.add('set');
+  // Persist times to localStorage
+  const saved = loadTimes();
+  saved[type] = hm;
+  saveTimes(saved);
+}
+function timeToMins(t){ if(!t) return null; const[h,m]=t.split(':').map(Number); return h*60+m; }
+function calcTimings(o){
+  const ta=timeToMins(o.tAceptar), tl=timeToMins(o.tLlegue), tr=timeToMins(o.tRecogi), te=timeToMins(o.tEntregu);
+  return{
+    irRestaurante: (ta!==null&&tl!==null) ? tl-ta : null,
+    esperaRest: (tl!==null&&tr!==null) ? tr-tl : null,
+    rutaEntrega: (tr!==null&&te!==null) ? te-tr : null,
+    totalPedido: (ta!==null&&te!==null) ? te-ta : null
+  };
+}
+
+// ============================================================
+// AGREGAR PEDIDO
+// ============================================================
+function addOrder(){
+  const kmR = parseFloat(document.getElementById('kmRetiro').value) || 0;
+  const {total: kmETotal, count: nEnt} = getKmEntregas();
+  const prop = parseFloat(document.getElementById('propina').value) || 0;
+  const restaurant = document.getElementById('restaurantInput').value.trim();
+  if(kmR === 0 && kmETotal === 0){ alert('Ingresá al menos un km'); return; }
+  const mult = getEffMult();
+  const total = calcPedido(kmR, kmETotal, nEnt, prop, mult);
+  const order = {
+    id: Date.now(), kmR, kmETotal, nEnt, prop, mult, total, restaurant,
+    ts: new Date().toISOString(),
+    tAceptar: times.aceptar ? times.aceptar.toTimeString().slice(0,5) : null,
+    tLlegue: times.llegue ? times.llegue.toTimeString().slice(0,5) : null,
+    tRecogi: times.recogi ? times.recogi.toTimeString().slice(0,5) : null,
+    tEntregu: times.entregu ? times.entregu.toTimeString().slice(0,5) : null,
+  };
+  if(restaurant) saveRestaurant(restaurant);
+  allOrders.unshift(order);
+  orders = allOrders.filter(o => new Date(o.ts).toDateString() === new Date().toDateString());
+  saveOrders(); updateHeader(); renderHistory(); resetForm(); if(currentTab==='stats'){updateWidgets();updateSemanaComparativa();}
+}
+function saveTimes(t){ try{localStorage.setItem("riderTimes_"+new Date().toDateString(),JSON.stringify(t));}catch(e){} }
+function loadTimes(){ try{const t=localStorage.getItem("riderTimes_"+new Date().toDateString());return t?JSON.parse(t):{};}catch(e){return {};} }
+function resetForm(){
+  document.getElementById('kmRetiro').value = '';
+  document.getElementById('propina').value = '';
+  document.getElementById('restaurantInput').value = '';
+  for(let i=1;i<6;i++){ const el=document.getElementById(`kmE_${i}`); if(el) el.value=''; }
+  for(let i=2;i<6;i++){ const el=document.getElementById(`entrega_${i}`); if(el) el.remove(); }
+  entregaCount = 2;
+  document.getElementById('addEntregaBtn').disabled = false;
+  document.getElementById('resultAmount').textContent = 'Q 0.00';
+  document.getElementById('resultBreakdown').innerHTML = '';
+  document.getElementById('resultNeta').textContent = '';
+  times = {aceptar:null,llegue:null,recogi:null,entregu:null};
+  try{localStorage.removeItem('riderTimes_'+new Date().toDateString());}catch(e){}
+  ['Aceptar','Llegue','Recogi','Entregu'].forEach(t => {
+    document.getElementById('time'+t).textContent = '--:--';
+    document.getElementById('btn'+t).classList.remove('set');
+  });
+}
+
+// ============================================================
+// HEADER
+// ============================================================
+function updateHeader(){
+  const earned = orders.reduce((s,o) => s+o.total, 0);
+  const km = orders.reduce((s,o) => s+o.kmR+o.kmETotal, 0);
+  const nEnt = orders.reduce((s,o) => s+o.nEnt, 0);
+  const avg = orders.length > 0 ? earned/orders.length : 0;
+  const costoDia = calcCostoDia();
+  const neta = earned - costoDia;
+
+  document.getElementById('totalDay').textContent = 'Q ' + (earned + (cfg.base||0)).toFixed(2);
+  document.getElementById('statPedidos').textContent = orders.length;
+  document.getElementById('statEntregas').textContent = nEnt;
+  document.getElementById('statKm').textContent = km.toFixed(1);
+  document.getElementById('statPromedio').textContent = 'Q'+avg.toFixed(0);
+  document.getElementById('statNeta').textContent = 'Q'+neta.toFixed(0);
+
+  // Meta
+  if(cfg.meta > 0){
+    const pct = Math.min(100, (earned/cfg.meta)*100);
+    document.getElementById('metaHeaderFill').style.width = pct+'%';
+    const falta = cfg.meta - earned;
+    const metaMini = document.getElementById('metaMini');
+    metaMini.style.display = 'block';
+    if(falta <= 0){
+      metaMini.textContent = '🔥 META COMPLETADA';
+      metaMini.style.color = 'var(--green)';
+    } else {
+      metaMini.textContent = `Faltan Q${falta.toFixed(0)}`;
+      metaMini.style.color = 'var(--yellow)';
+    }
+  }
+}
+
+// ============================================================
+// HISTORIAL
+// ============================================================
+function renderHistory(){
+  if(typeof histViewDate === 'undefined') histViewDate = new Date();
+  renderHistForDate(histViewDate);
+}
+
+function renderDeadTimes(){
+  if(!orders || orders.length === 0){ window._deadTimes = []; return; }
+  const sorted = [...orders].sort((a,b) => new Date(a.ts)-new Date(b.ts));
+  const dt = [];
+  for(let i=1;i<sorted.length;i++){
+    const prev=sorted[i-1], curr=sorted[i];
+    if(prev.tEntregu && curr.tAceptar){
+      const pe=timeToMins(prev.tEntregu), ca=timeToMins(curr.tAceptar);
+      if(pe!==null && ca!==null && ca>pe) dt.push({from:prev.tEntregu,to:curr.tAceptar,mins:ca-pe});
+    }
+  }
+  window._deadTimes = dt;
+}
+
+// ============================================================
+// EDITAR
+// ============================================================
+function openEdit(id){
+  const o = orders.find(x => x.id===id); if(!o) return;
+  document.getElementById('editOrderId').value = id;
+  document.getElementById('editRestaurant').value = o.restaurant||'';
+  document.getElementById('editKmR').value = o.kmR;
+  document.getElementById('editKmE').value = o.kmETotal;
+  document.getElementById('editMult').value = o.mult;
+  document.getElementById('editProp').value = o.prop;
+  document.getElementById('editTAceptar').value = o.tAceptar||'';
+  document.getElementById('editTLlegue').value = o.tLlegue||'';
+  document.getElementById('editTRecogi').value = o.tRecogi||'';
+  document.getElementById('editTEntregu').value = o.tEntregu||'';
+  openModal('editModal');
+}
+function saveEdit(){
+  const id = parseInt(document.getElementById('editOrderId').value);
+  const idx = allOrders.findIndex(x => x.id===id); if(idx===-1) return;
+  const kmR = parseFloat(document.getElementById('editKmR').value)||0;
+  const kmETotal = parseFloat(document.getElementById('editKmE').value)||0;
+  const mult = parseFloat(document.getElementById('editMult').value)||1.30;
+  const prop = parseFloat(document.getElementById('editProp').value)||0;
+  const restaurant = document.getElementById('editRestaurant').value.trim();
+  const total = calcPedido(kmR, kmETotal, allOrders[idx].nEnt, prop, mult);
+  allOrders[idx] = {...allOrders[idx], kmR, kmETotal, mult, prop, restaurant, total,
+    tAceptar: document.getElementById('editTAceptar').value||null,
+    tLlegue: document.getElementById('editTLlegue').value||null,
+    tRecogi: document.getElementById('editTRecogi').value||null,
+    tEntregu: document.getElementById('editTEntregu').value||null,
+  };
+  if(restaurant) saveRestaurant(restaurant);
+  orders = allOrders.filter(o => new Date(o.ts).toDateString() === new Date().toDateString());
+  saveOrders(); updateHeader(); renderHistory(); closeModal('editModal');
+}
+function deleteOrder(id){
+  if(!confirm('¿Eliminar este pedido?')) return;
+  allOrders = allOrders.filter(o => o.id!==id);
+  orders = allOrders.filter(o => new Date(o.ts).toDateString() === new Date().toDateString());
+  saveOrders(); updateHeader(); renderHistory(); if(currentTab==='stats'){updateWidgets();updateSemanaComparativa();}
+}
+
+// ============================================================
+// STATS
+// ============================================================
+function updateStats(){
+  if(orders.length === 0) return;
+  const earned = orders.reduce((s,o) => s+o.total, 0);
+  const km = orders.reduce((s,o) => s+o.kmR+o.kmETotal, 0);
+  const pt = orders.reduce((s,o) => s+o.prop, 0);
+  const nEnt = orders.reduce((s,o) => s+o.nEnt, 0);
+  const costoDia = calcCostoDia();
+  const neta = earned - costoDia;
+  const costoKm = km > 0 ? costoDia/km : 0;
+  const totals = orders.map(o=>o.total);
+  const best=Math.max(...totals), worst=Math.min(...totals);
+  const bO=orders.find(o=>o.total===best), wO=orders.find(o=>o.total===worst);
+
+  document.getElementById('sTotal').textContent = 'Q '+earned.toFixed(2);
+  document.getElementById('sNeta').textContent = 'Q '+neta.toFixed(2);
+  document.getElementById('sPedidos').textContent = orders.length;
+  document.getElementById('sEntregas').textContent = nEnt;
+  document.getElementById('sKm').textContent = km.toFixed(1);
+  document.getElementById('sCostoKm').textContent = 'Q'+costoKm.toFixed(2);
+  document.getElementById('sQkm').textContent = km>0?(earned/km).toFixed(2):'0.00';
+  document.getElementById('sPropinas').textContent = 'Q '+pt.toFixed(2);
+
+  // Meta
+  if(cfg.meta > 0){
+    const pct = Math.min(100,(earned/cfg.meta)*100);
+    const falta = cfg.meta - earned;
+    document.getElementById('metaBarSection').style.display = 'block';
+    document.getElementById('metaBarCard').innerHTML = `
+      <div class="meta-bar-top">
+        <div class="meta-bar-label">🎯 Meta diaria: Q${cfg.meta}</div>
+        <div class="meta-bar-msg ${falta<=0?'done':'going'}">${falta<=0?'🔥 META COMPLETADA':'Faltan Q'+falta.toFixed(0)}</div>
+      </div>
+      <div class="meta-bar-track"><div class="meta-bar-fill" style="width:${pct}%"></div></div>
+      <div class="meta-bar-nums"><span>Q0</span><span>${pct.toFixed(0)}%</span><span>Q${cfg.meta}</span></div>`;
+  }
+
+  // Neta card
+  if(cfg.gasPrice > 0){
+    document.getElementById('netaCard').style.display = 'block';
+    document.getElementById('netaCard').innerHTML = `
+      <div class="neta-row"><span class="nl">💰 Ganancia bruta</span><span class="nv green">Q ${earned.toFixed(2)}</span></div>
+      <div class="neta-row"><span class="nl">⛽ Costo gasolina</span><span class="nv red">-Q ${((cfg.gasPrice/cfg.kmGalon)*km).toFixed(2)}</span></div>
+      <div class="neta-row"><span class="nl">🔧 Mantenimiento</span><span class="nv red">-Q ${cfg.mant.toFixed(2)}</span></div>
+      <div class="neta-row"><span class="nl">📦 Otros gastos</span><span class="nv red">-Q ${cfg.otros.toFixed(2)}</span></div>
+      <div class="neta-row"><span class="nl" style="font-weight:700;color:var(--text)">✅ GANANCIA NETA</span><span class="nv ${neta>=0?'green':'red'}">Q ${neta.toFixed(2)}</span></div>`;
+  }
+
+  // Franja horaria
+  const franjas = {};
+  orders.forEach(o => {
+    const h = new Date(o.ts).getHours();
+    const key = `${h.toString().padStart(2,'0')}:00`;
+    if(!franjas[key]) franjas[key] = {total:0,count:0};
+    franjas[key].total += o.total;
+    franjas[key].count++;
+  });
+  const sortedFranjas = Object.entries(franjas).sort((a,b)=>a[0].localeCompare(b[0]));
+  const maxFranja = Math.max(...sortedFranjas.map(([,v])=>v.total),1);
+  if(sortedFranjas.length > 0){
+    document.getElementById('horaStats').innerHTML = `
+      <div class="ic-title">🕐 Ganancias por franja horaria</div>
+      ${sortedFranjas.map(([hora,v])=>`
+        <div class="hora-bar">
+          <div class="hora-label">${hora}</div>
+          <div class="hora-track"><div class="hora-fill" style="width:${(v.total/maxFranja*100).toFixed(0)}%"></div></div>
+          <div class="hora-val">Q${v.total.toFixed(0)}</div>
+        </div>`).join('')}
+    `;
+  }
+
+  // Time breakdown
+  const timed = orders.filter(o => o.tAceptar && o.tEntregu);
+  if(timed.length > 0){
+    const timings = timed.map(o => calcTimings(o));
+    const avg = arr => arr.length>0 ? (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(0) : '--';
+    const irArr = timings.filter(t=>t.irRestaurante!==null).map(t=>t.irRestaurante);
+    const espArr = timings.filter(t=>t.esperaRest!==null).map(t=>t.esperaRest);
+    const rutArr = timings.filter(t=>t.rutaEntrega!==null).map(t=>t.rutaEntrega);
+    const totArr = timings.filter(t=>t.totalPedido!==null).map(t=>t.totalPedido);
+    document.getElementById('timeBreakdown').innerHTML = `
+      <div class="ic-title">⏱️ Tiempos promedio del día</div>
+      ${irArr.length>0?`<div class="ic-row"><span style="font-size:12px;color:var(--muted)">🏍️ Yendo al restaurante</span><span style="color:var(--yellow);font-family:'Bebas Neue';font-size:20px">${avg(irArr)} min</span></div>`:''}
+      ${espArr.length>0?`<div class="ic-row"><span style="font-size:12px;color:var(--muted)">⏳ Esperando en restaurante</span><span style="color:var(--yellow);font-family:'Bebas Neue';font-size:20px">${avg(espArr)} min</span></div>`:''}
+      ${rutArr.length>0?`<div class="ic-row"><span style="font-size:12px;color:var(--muted)">🛵 Entregando al cliente</span><span style="color:var(--yellow);font-family:'Bebas Neue';font-size:20px">${avg(rutArr)} min</span></div>`:''}
+      ${totArr.length>0?`<div class="ic-row"><span style="font-size:12px;color:var(--muted)">📍 Total por pedido</span><span style="color:var(--yellow);font-family:'Bebas Neue';font-size:20px">${avg(totArr)} min</span></div>`:''}
+      <div class="ic-row"><span style="font-size:12px;color:var(--muted)">💰 Q por hora trabajada</span><span style="color:var(--green);font-family:'Bebas Neue';font-size:20px">Q${totArr.length>0?(earned/(totArr.reduce((a,b)=>a+b,0)/60)).toFixed(0):'--'}</span></div>
+    `;
+  }
+
+  // Tiempos muertos
+  const dt = window._deadTimes || [];
+  if(dt.length > 0){
+    const avgDead = dt.reduce((s,d)=>s+d.mins,0)/dt.length;
+    const maxDead = Math.max(...dt.map(d=>d.mins));
+    const totalDead = dt.reduce((s,d)=>s+d.mins,0);
+    document.getElementById('deadTimeCard').innerHTML = `
+      <div class="ic-title">💤 Tiempos muertos (${dt.length} pausas)</div>
+      <div class="ic-row"><span style="font-size:12px;color:var(--muted)">Total tiempo muerto</span><span style="color:var(--accent);font-family:'Bebas Neue';font-size:20px">${totalDead} min</span></div>
+      <div class="ic-row"><span style="font-size:12px;color:var(--muted)">Promedio por pausa</span><span style="color:var(--yellow);font-family:'Bebas Neue';font-size:20px">${avgDead.toFixed(0)} min</span></div>
+      <div class="ic-row"><span style="font-size:12px;color:var(--muted)">Pausa más larga</span><span style="color:var(--accent);font-family:'Bebas Neue';font-size:20px">${maxDead} min</span></div>
+    `;
+  }
+
+  // Restaurantes
+  const restOrders = orders.filter(o => o.restaurant && o.tLlegue && o.tRecogi);
+  if(restOrders.length > 0){
+    const restMap = {};
+    restOrders.forEach(o => {
+      const esp = timeToMins(o.tRecogi) - timeToMins(o.tLlegue);
+      if(esp >= 0){
+        if(!restMap[o.restaurant]) restMap[o.restaurant] = {total:0,count:0};
+        restMap[o.restaurant].total += esp; restMap[o.restaurant].count++;
+      }
+    });
+    const sorted = Object.entries(restMap).sort((a,b) => b[1].total/b[1].count - a[1].total/a[1].count);
+    document.getElementById('restaurantStats').innerHTML = `
+      <div class="ic-title">🏪 Restaurantes por tiempo de espera</div>
+      ${sorted.map(([name,d],i)=>`
+        <div class="ic-row">
+          <span style="font-size:12px;color:var(--muted)">${i===0?'🔴':i===sorted.length-1?'🟢':'🟡'} ${name}</span>
+          <div style="text-align:right"><span style="color:var(--yellow);font-family:'Bebas Neue';font-size:18px">${(d.total/d.count).toFixed(0)}min</span><div style="font-size:10px;color:var(--muted)">${d.count} visita${d.count>1?'s':''}</div></div>
+        </div>`).join('')}`;
+  }
+
+  // Mejor vs Peor
+  document.getElementById('bestWorst').innerHTML = `
+    <div class="ic-title">🏆 Mejor vs Peor pedido</div>
+    <div class="ic-row"><span class="ic-badge best">MEJOR</span><span style="font-size:11px;color:var(--muted)">${bO.kmR}+${bO.kmETotal}km · ${bO.mult}x · ${bO.nEnt}ent.</span><span style="color:var(--green);font-family:'Bebas Neue';font-size:20px">Q${best.toFixed(2)}</span></div>
+    <div class="ic-row"><span class="ic-badge worst">PEOR</span><span style="font-size:11px;color:var(--muted)">${wO.kmR}+${wO.kmETotal}km · ${wO.mult}x · ${wO.nEnt}ent.</span><span style="color:var(--accent);font-family:'Bebas Neue';font-size:20px">Q${worst.toFixed(2)}</span></div>`;
+
+  // Odo stats
+  const today = new Date().toDateString();
+  try{
+    const todayOdo = JSON.parse(localStorage.getItem('riderOdo_'+today)||'null');
+    if(todayOdo){
+      const appKm = km;
+      const diff = appKm - todayOdo;
+      const qGanado = diff * 1.50 * multiplier;
+      document.getElementById('odoStats').style.display = 'block';
+      document.getElementById('odoStatsContent').innerHTML = `
+        <div class="ic-row"><span style="font-size:12px;color:var(--muted)">KM app</span><span style="color:var(--blue);font-family:'Bebas Neue';font-size:20px">${appKm.toFixed(1)} km</span></div>
+        <div class="ic-row"><span style="font-size:12px;color:var(--muted)">KM odómetro real</span><span style="color:var(--muted);font-family:'Bebas Neue';font-size:20px">${todayOdo.toFixed(1)} km</span></div>
+        <div class="ic-row"><span style="font-size:12px;color:var(--muted)">KM ganados (atajos)</span><span style="color:var(--green);font-family:'Bebas Neue';font-size:20px">${diff.toFixed(1)} km</span></div>
+        <div class="ic-row"><span style="font-size:12px;color:var(--muted)">Q extra generados</span><span style="color:var(--green);font-family:'Bebas Neue';font-size:20px">Q${qGanado.toFixed(2)}</span></div>`;
+    }
+  }catch(e){}
+}
+
+// ============================================================
+// GRÁFICA
+// ============================================================
+function renderCharts(){
+  const days = getLast14Days();
+  const labels = days.map(d => {
+    const dt = new Date(d);
+    return dt.toLocaleDateString('es-GT',{weekday:'short'});
+  });
+  const ganancias = days.map(d => allOrders.filter(o=>new Date(o.ts).toDateString()===d).reduce((s,o)=>s+o.total,0));
+  const pedidos = days.map(d => allOrders.filter(o=>new Date(o.ts).toDateString()===d).length);
+  const entregas = days.map(d => allOrders.filter(o=>new Date(o.ts).toDateString()===d).reduce((s,o)=>s+o.nEnt,0));
+  const tiempos = days.map(d => {
+    const dayO = allOrders.filter(o=>new Date(o.ts).toDateString()===d&&o.tAceptar&&o.tEntregu);
+    if(dayO.length===0) return 0;
+    const tots = dayO.map(o=>calcTimings(o).totalPedido).filter(t=>t!==null);
+    return tots.length>0 ? tots.reduce((a,b)=>a+b,0)/tots.length : 0;
+  });
+  const brutas = ganancias;
+  const netas = days.map(d => {
+    const dayO = allOrders.filter(o=>new Date(o.ts).toDateString()===d);
+    const dayKm = dayO.reduce((s,o)=>s+o.kmR+o.kmETotal,0);
+    const costo = (cfg.gasPrice/cfg.kmGalon)*dayKm + cfg.mant + cfg.otros;
+    return Math.max(0, dayO.reduce((s,o)=>s+o.total,0) - costo);
+  });
+
+  drawBarChart('chartGanancias', labels, ganancias, '#00e676', 'Q');
+  drawDualBarChart('chartPedidos', labels, pedidos, entregas, '#ff2d55', '#4da6ff', 'Pedidos', 'Entregas');
+  drawBarChart('chartTiempo', labels, tiempos, '#ffb347', 'min');
+  drawDualBarChart('chartNeta', labels, brutas, netas, '#ff6b35', '#00e676', 'Bruta', 'Neta');
+}
+function getLast14Days(){
+  const days = [];
+  for(let i=13;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); days.push(d.toDateString()); }
+  return days;
+}
+function drawBarChart(canvasId, labels, data, color, unit){
+  const canvas = document.getElementById(canvasId);
+  const ctx = canvas.getContext('2d');
+  const w = canvas.offsetWidth || 320; canvas.width = w;
+  const h = parseInt(canvas.getAttribute('height'));
+  const pad = {top:22,right:8,bottom:36,left:36};
+  const cw = w-pad.left-pad.right, ch = h-pad.top-pad.bottom;
+  const max = Math.max(...data, 1);
+  ctx.clearRect(0,0,w,h); ctx.fillStyle='#181818'; ctx.fillRect(0,0,w,h);
+  for(let i=0;i<=4;i++){
+    const y=pad.top+ch*(1-i/4);
+    ctx.strokeStyle='#2a2a2a'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(pad.left+cw,y); ctx.stroke();
+    ctx.fillStyle='#666'; ctx.font='9px DM Sans'; ctx.textAlign='right';
+    const val = max*i/4;
+    ctx.fillText((unit==='Q'?'Q':'')+val.toFixed(unit===''?0:0)+(unit==='min'?'m':''), pad.left-3, y+3);
+  }
+  labels.forEach((l,i) => {
+    const x = pad.left + cw*i/labels.length + cw/labels.length/2;
+    const bw = Math.max(cw/labels.length*0.6, 4);
+    const bh = data[i]/max*ch;
+    const isToday = i === labels.length-1;
+    ctx.fillStyle = isToday ? color : color+'66';
+    ctx.beginPath();
+    if(ctx.roundRect) ctx.roundRect(x-bw/2, pad.top+ch-bh, bw, bh, 3);
+    else ctx.rect(x-bw/2, pad.top+ch-bh, bw, bh);
+    ctx.fill();
+    ctx.fillStyle='#666'; ctx.font='8px DM Sans'; ctx.textAlign='center';
+    ctx.fillText(l, x, h-pad.bottom+12);
+    if(data[i]>0){ ctx.fillStyle=color; ctx.font='bold 8px DM Sans'; ctx.fillText((unit==='Q'?'Q':'')+data[i].toFixed(0)+(unit==='min'?'m':''), x, pad.top+ch-bh-4); }
+  });
+}
+function drawDualBarChart(canvasId, labels, data1, data2, color1, color2, lbl1, lbl2){
+  const canvas = document.getElementById(canvasId);
+  const ctx = canvas.getContext('2d');
+  const w = canvas.offsetWidth || 320; canvas.width = w;
+  const h = parseInt(canvas.getAttribute('height'));
+  const pad = {top:22,right:8,bottom:36,left:36};
+  const cw = w-pad.left-pad.right, ch = h-pad.top-pad.bottom;
+  const max = Math.max(...data1,...data2, 1);
+  ctx.clearRect(0,0,w,h); ctx.fillStyle='#181818'; ctx.fillRect(0,0,w,h);
+  for(let i=0;i<=4;i++){
+    const y=pad.top+ch*(1-i/4);
+    ctx.strokeStyle='#2a2a2a'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(pad.left+cw,y); ctx.stroke();
+    ctx.fillStyle='#666'; ctx.font='9px DM Sans'; ctx.textAlign='right';
+    ctx.fillText((max*i/4).toFixed(0), pad.left-3, y+3);
+  }
+  const bw = Math.max(cw/labels.length*0.28, 2);
+  labels.forEach((l,i) => {
+    const cx = pad.left + cw*i/labels.length + cw/labels.length/2;
+    [data1[i],data2[i]].forEach((val,j) => {
+      const x = cx + (j===0?-bw/2-1:bw/2+1) - bw/2;
+      const bh = val/max*ch;
+      const col = j===0?color1:color2;
+      ctx.fillStyle = col+'99';
+      ctx.fillRect(x, pad.top+ch-bh, bw, bh);
+    });
+    ctx.fillStyle='#666'; ctx.font='8px DM Sans'; ctx.textAlign='center';
+    ctx.fillText(l, cx, h-pad.bottom+12);
+  });
+  // Legend
+  ctx.fillStyle=color1; ctx.fillRect(pad.left, 4, 10, 7);
+  ctx.fillStyle='#999'; ctx.font='9px DM Sans'; ctx.textAlign='left';
+  ctx.fillText(lbl1, pad.left+13, 11);
+  ctx.fillStyle=color2; ctx.fillRect(pad.left+60, 4, 10, 7);
+  ctx.fillText(lbl2, pad.left+73, 11);
+}
+
+// ============================================================
+// ODO & REPORTE
+// ============================================================
+function openOdometer(){
+  const appKm = orders.reduce((s,o)=>s+o.kmR+o.kmETotal,0);
+  document.getElementById('odoAppKm').textContent = appKm.toFixed(2);
+  document.getElementById('odoDiffCard').style.display = 'none';
+  document.getElementById('odoInput').value = '';
+  openModal('odoModal');
+}
+function updateOdoDiff(){
+  const appKm = orders.reduce((s,o)=>s+o.kmR+o.kmETotal,0);
+  const odoKm = parseFloat(document.getElementById('odoInput').value)||0;
+  if(odoKm > 0){
+    const diff = appKm - odoKm;
+    const qGanado = diff * 1.50 * multiplier;
+    document.getElementById('odoDiffCard').style.display = 'block';
+    document.getElementById('odoDiffKm').textContent = diff.toFixed(2)+' km';
+    document.getElementById('odoDiffQ').textContent = diff > 0 ? `💰 Q${qGanado.toFixed(2)} extra generados` : 'Sin diferencia';
+  }
+}
+function saveOdoAndReport(){
+  const odoKm = parseFloat(document.getElementById('odoInput').value)||0;
+  try{localStorage.setItem('riderOdo_'+new Date().toDateString(), JSON.stringify(odoKm));}catch(e){}
+  closeModal('odoModal');
+  showReport(odoKm);
+}
+function showReport(odoKm){
+  const earned = orders.reduce((s,o)=>s+o.total,0);
+  const km = orders.reduce((s,o)=>s+o.kmR+o.kmETotal,0);
+  const pt = orders.reduce((s,o)=>s+o.prop,0);
+  const nEnt = orders.reduce((s,o)=>s+o.nEnt,0);
+  const costoDia = calcCostoDia();
+  const neta = earned - costoDia;
+  const dt = window._deadTimes || [];
+  const totalDead = dt.reduce((s,d)=>s+d.mins,0);
+  const timed = orders.filter(o=>o.tAceptar&&o.tEntregu);
+  const timings = timed.map(o=>calcTimings(o));
+  const avg = arr => arr.length>0?(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(0):'--';
+  const irArr = timings.filter(t=>t.irRestaurante!==null).map(t=>t.irRestaurante);
+  const espArr = timings.filter(t=>t.esperaRest!==null).map(t=>t.esperaRest);
+  const rutArr = timings.filter(t=>t.rutaEntrega!==null).map(t=>t.rutaEntrega);
+  const diff = odoKm>0 ? km-odoKm : null;
+  const qGanado = diff!==null ? diff*1.50*multiplier : null;
+  const date = new Date().toLocaleDateString('es-GT',{weekday:'long',day:'numeric',month:'long'});
+
+  reportText = `🛵 RIDER CALC - ${date}\n\n💰 GANANCIAS\nTotal bruto: Q${earned.toFixed(2)}\nGanancia neta: Q${neta.toFixed(2)}\nPedidos: ${orders.length} | Entregas: ${nEnt}\nPromedio/pedido: Q${orders.length>0?(earned/orders.length).toFixed(2):'0'}\nPropinas: Q${pt.toFixed(2)}\n\n⛽ COSTOS\nCosto del día: Q${costoDia.toFixed(2)}\nKM recorridos: ${km.toFixed(1)}\n${diff!==null?`KM ganados atajos: ${diff.toFixed(1)} km\nQ extra: Q${qGanado.toFixed(2)}\n`:''}\n⏱️ TIEMPOS${irArr.length>0?`\nIr restaurante: ${avg(irArr)}min`:''}${espArr.length>0?`\nEspera: ${avg(espArr)}min`:''}${rutArr.length>0?`\nEntrega: ${avg(rutArr)}min`:''}${totalDead>0?`\nTiempo muerto: ${totalDead}min`:''}`;
+
+  document.getElementById('reportContent').innerHTML = `
+    <div class="report-section">
+      <h3>💰 Ganancias</h3>
+      <div class="report-row"><span>Total bruto</span><span class="rv green">Q ${earned.toFixed(2)}</span></div>
+      <div class="report-row"><span>Ganancia neta</span><span class="rv yellow">Q ${neta.toFixed(2)}</span></div>
+      <div class="report-row"><span>Pedidos / Entregas</span><span class="rv">${orders.length} / ${nEnt}</span></div>
+      <div class="report-row"><span>Promedio/pedido</span><span class="rv green">Q ${orders.length>0?(earned/orders.length).toFixed(2):'0'}</span></div>
+      <div class="report-row"><span>Propinas</span><span class="rv green">Q ${pt.toFixed(2)}</span></div>
+    </div>
+    <div class="report-section">
+      <h3>⛽ Costos</h3>
+      <div class="report-row"><span>Costo total del día</span><span class="rv" style="color:var(--accent)">Q ${costoDia.toFixed(2)}</span></div>
+      <div class="report-row"><span>KM recorridos</span><span class="rv blue">${km.toFixed(2)} km</span></div>
+      ${diff!==null?`<div class="report-row"><span>KM ganados (atajos)</span><span class="rv green">${diff.toFixed(2)} km</span></div>
+      <div class="report-row"><span>Q extra por atajos</span><span class="rv green">Q ${qGanado.toFixed(2)}</span></div>`:''}
+    </div>
+    ${timed.length>0?`<div class="report-section">
+      <h3>⏱️ Tiempos</h3>
+      ${irArr.length>0?`<div class="report-row"><span>🏍️ Ir restaurante</span><span class="rv yellow">${avg(irArr)} min</span></div>`:''}
+      ${espArr.length>0?`<div class="report-row"><span>⏳ Espera</span><span class="rv yellow">${avg(espArr)} min</span></div>`:''}
+      ${rutArr.length>0?`<div class="report-row"><span>🛵 Entrega</span><span class="rv yellow">${avg(rutArr)} min</span></div>`:''}
+      ${totalDead>0?`<div class="report-row"><span>💤 Tiempo muerto</span><span class="rv" style="color:var(--accent)">${totalDead} min</span></div>`:''}
+    </div>`:''}
+  `;
+  openModal('reportModal');
+}
+function shareReport(){
+  const text = encodeURIComponent(reportText);
+  window.open(`https://wa.me/?text=${text}`,'_blank');
+}
+
+// ============================================================
+// QUICK MODAL
+// ============================================================
+function buildQuickPresets(){
+  [1.00,1.10,1.20,1.25,1.30,1.50,2.00].forEach(p => {
+    const b = document.createElement('button');
+    b.className = 'qm-btn'+(p===quickMult?' active':'');
+    b.textContent = p.toFixed(2)+'x'; b.onclick = ()=>setQuickMult(p);
+    document.getElementById('quickPresets').appendChild(b);
+  });
+}
+function setQuickMult(v){
+  quickMult = v;
+  document.querySelectorAll('.qm-btn').forEach(b=>b.classList.toggle('active',parseFloat(b.textContent)===v));
+  updateQuick();
+}
+function updateQuick(){
+  const kmR = parseFloat(document.getElementById('qKmR').value)||0;
+  const kmE = parseFloat(document.getElementById('qKmE').value)||0;
+  const prop = parseFloat(document.getElementById('qProp').value)||0;
+  const rain = parseFloat(document.getElementById('qRain').value)||0;
+  const mult = parseFloat((quickMult+rain).toFixed(2));
+  document.getElementById('qResult').textContent = 'Q '+calcPedido(kmR,kmE,1,prop,mult).toFixed(2);
+}
+function openQuick(){ openModal('quickModal'); setTimeout(()=>document.getElementById('qKmR').focus(),300); }
+function quickAdd(){
+  const kmR = parseFloat(document.getElementById('qKmR').value)||0;
+  const kmE = parseFloat(document.getElementById('qKmE').value)||0;
+  const prop = parseFloat(document.getElementById('qProp').value)||0;
+  const rain = parseFloat(document.getElementById('qRain').value)||0;
+  if(kmR===0&&kmE===0){alert('Ingresá los km');return;}
+  const mult = parseFloat((quickMult+rain).toFixed(2));
+  const total = calcPedido(kmR,kmE,1,prop,mult);
+  const o = {id:Date.now(),kmR,kmETotal:kmE,nEnt:1,prop,mult,total,restaurant:'',
+    ts:new Date().toISOString(),tAceptar:null,tLlegue:null,tRecogi:null,tEntregu:null};
+  allOrders.unshift(o);
+  orders = allOrders.filter(o=>new Date(o.ts).toDateString()===new Date().toDateString());
+  saveOrders(); updateHeader(); renderHistory();
+  ['qKmR','qKmE','qProp','qRain'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('qResult').textContent = 'Q 0.00';
+  closeModal('quickModal');
+}
+
+// ============================================================
+// CONFIG
+// ============================================================
+function loadConfigUI(){
+  document.getElementById('cfgMeta').value = cfg.meta||'';
+  document.getElementById('cfgBase').value = cfg.base||'';
+  document.getElementById('cfgGasPrice').value = cfg.gasPrice||'';
+  document.getElementById('cfgKmGalon').value = cfg.kmGalon||'';
+  document.getElementById('cfgMant').value = cfg.mant||'';
+  document.getElementById('cfgOtros').value = cfg.otros||'';
+  document.getElementById('autoMultSwitch').classList.toggle('on', autoMultOn);
+  document.getElementById('autoToggleRow').classList.toggle('active-auto', autoMultOn);
+  document.getElementById('autoMultBadge').style.display = autoMultOn?'inline-block':'none';
+  // Schedules
+  document.getElementById('scheduleList').innerHTML = '';
+  schedules.forEach(s => addScheduleItem(s.time, s.mult));
+}
+function saveConfig(){
+  cfg.meta = parseFloat(document.getElementById('cfgMeta').value)||0;
+  cfg.base = parseFloat(document.getElementById('cfgBase').value)||0;
+  cfg.gasPrice = parseFloat(document.getElementById('cfgGasPrice').value)||32;
+  cfg.kmGalon = parseFloat(document.getElementById('cfgKmGalon').value)||40;
+  cfg.mant = parseFloat(document.getElementById('cfgMant').value)||0;
+  cfg.otros = parseFloat(document.getElementById('cfgOtros').value)||0;
+  schedules = getSchedules();
+  try{
+    localStorage.setItem('riderConfig', JSON.stringify(cfg));
+    localStorage.setItem('riderSchedules', JSON.stringify(schedules));
+  }catch(e){}
+  updateHeader();
+  // Visual feedback
+  const btn = document.querySelector('.save-config-btn');
+  if(btn){ const orig=btn.textContent; btn.textContent='✅ Guardado'; setTimeout(()=>btn.textContent=orig,1500); }
+}
+
+// ============================================================
+// EXPORTAR
+// ============================================================
+function exportCSV(){
+  const today = new Date().toDateString();
+  const todayOrders = allOrders.filter(o=>new Date(o.ts).toDateString()===today);
+  const header = 'Pedido,Restaurante,KM Retiro,KM Entrega,Entregas,Multiplicador,Propina,Total,Hora,T.Acepté,T.Llegué,T.Recogí,T.Entregué\n';
+  const rows = todayOrders.map((o,i)=>
+    `${todayOrders.length-i},"${o.restaurant||''}",${o.kmR},${o.kmETotal},${o.nEnt},${o.mult},${o.prop},${o.total},${new Date(o.ts).toTimeString().slice(0,5)},${o.tAceptar||''},${o.tLlegue||''},${o.tRecogi||''},${o.tEntregu||''}`
+  ).join('\n');
+  const csv = header + rows;
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `rider_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+}
+function exportTXT(){
+  const today = new Date().toDateString();
+  const todayOrders = allOrders.filter(o=>new Date(o.ts).toDateString()===today);
+  const earned = todayOrders.reduce((s,o)=>s+o.total,0);
+  const km = todayOrders.reduce((s,o)=>s+o.kmR+o.kmETotal,0);
+  const pt = todayOrders.reduce((s,o)=>s+o.prop,0);
+  const costoDia = calcCostoDia();
+  const txt = `RIDER CALC - ${new Date().toLocaleDateString('es-GT')}\n${'='.repeat(30)}\nPedidos: ${todayOrders.length}\nKM total: ${km.toFixed(2)}\nGanancias brutas: Q${earned.toFixed(2)}\nPropinas: Q${pt.toFixed(2)}\nCostos: Q${costoDia.toFixed(2)}\nGanancia neta: Q${(earned-costoDia).toFixed(2)}\n${'='.repeat(30)}\nDETALLE:\n${todayOrders.map((o,i)=>`${todayOrders.length-i}. ${o.restaurant||'Sin rest.'} | ${o.kmR}+${o.kmETotal}km | ${o.mult}x | Q${o.total.toFixed(2)}`).join('\n')}`;
+  const blob = new Blob([txt], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `rider_${new Date().toISOString().slice(0,10)}.txt`;
+  a.click(); URL.revokeObjectURL(url);
+}
+function shareWhatsApp(){
+  const today = new Date().toDateString();
+  const todayOrders = allOrders.filter(o=>new Date(o.ts).toDateString()===today);
+  const earned = todayOrders.reduce((s,o)=>s+o.total,0);
+  const km = todayOrders.reduce((s,o)=>s+o.kmR+o.kmETotal,0);
+  const pt = todayOrders.reduce((s,o)=>s+o.prop,0);
+  const costoDia = calcCostoDia();
+  const msg = `🛵 *RIDER CALC - ${new Date().toLocaleDateString('es-GT')}*\n\n💰 Bruto: *Q${earned.toFixed(2)}*\n✅ Neto: *Q${(earned-costoDia).toFixed(2)}*\n📦 Pedidos: ${todayOrders.length}\n🗺️ KM: ${km.toFixed(1)}\n💚 Propinas: Q${pt.toFixed(2)}\n⛽ Costos: Q${costoDia.toFixed(2)}`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
+// ============================================================
+// MODALS & UTILS
+// ============================================================
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){
+  document.getElementById(id).classList.remove('open');
+  if(id==='quickModal' && currentTab==='historial') document.getElementById('fab').classList.remove('hidden');
+}
+function closeModalOutside(e,id){ if(e.target===document.getElementById(id)) closeModal(id); }
+function clearToday(){
+  if(confirm('¿Limpiar pedidos de hoy?')){
+    allOrders = allOrders.filter(o=>new Date(o.ts).toDateString()!==new Date().toDateString());
+    orders=[]; saveOrders(); updateHeader(); renderHistory();
+  }
+}
+function saveOrders(){ try{localStorage.setItem('riderAllOrders',JSON.stringify(allOrders));}catch(e){} }
+
+function switchTab(tab){
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['calc','historial','stats','grafica','config'][i]===tab));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('fab').classList.toggle('hidden', tab!=='historial');
+  if(tab==='historial'){ histViewDate=new Date(); renderHistForDate(histViewDate); }
+  if(tab==='stats'){ renderDeadTimes(); updateStats(); updateWidgets(); updateSemanaComparativa(); }
+  if(tab==='grafica') renderCharts();
+  if(tab==='config') loadConfigUI();
+}
+
+
+// ============================================================
+// HISTORIAL POR FECHA
+// ============================================================
+
+function changeHistDate(delta){
+  histViewDate = new Date(histViewDate);
+  histViewDate.setDate(histViewDate.getDate() + delta);
+  renderHistForDate(histViewDate);
+}
+function goToToday(){
+  histViewDate = new Date();
+  renderHistForDate(histViewDate);
+}
+function renderHistForDate(date){
+  const isToday = date.toDateString() === new Date().toDateString();
+  const dateStr = date.toDateString();
+  const label = document.getElementById('histDateLabel');
+  const lastBtn = document.getElementById('lastDeliveryBtn');
+
+  if(isToday){
+    label.textContent = 'HOY';
+    label.style.color = 'var(--accent)';
+    if(lastBtn) lastBtn.style.display = 'flex';
+  } else {
+    label.textContent = date.toLocaleDateString('es-GT',{weekday:'short',day:'numeric',month:'short'}).toUpperCase();
+    label.style.color = 'var(--text)';
+    if(lastBtn) lastBtn.style.display = 'none';
+  }
+
+  const dayOrders = allOrders.filter(o => new Date(o.ts).toDateString() === dateStr);
+  const summary = document.getElementById('histDaySummary');
+
+  if(dayOrders.length > 0){
+    const total = dayOrders.reduce((s,o)=>s+o.total,0);
+    const km = dayOrders.reduce((s,o)=>s+o.kmR+o.kmETotal,0);
+    const prop = dayOrders.reduce((s,o)=>s+o.prop,0);
+    summary.innerHTML = `<div class="widget-card" style="margin-bottom:10px">
+      <div class="widget-row"><span class="widget-label">💰 Total del día</span><span class="widget-val" style="color:var(--green)">Q ${total.toFixed(2)}</span></div>
+      <div class="widget-row"><span class="widget-label">📦 Pedidos</span><span class="widget-val">${dayOrders.length}</span></div>
+      <div class="widget-row"><span class="widget-label">🗺️ KM</span><span class="widget-val" style="color:var(--blue)">${km.toFixed(1)}</span></div>
+      <div class="widget-row"><span class="widget-label">💚 Propinas</span><span class="widget-val" style="color:var(--green)">Q ${prop.toFixed(2)}</span></div>
+    </div>`;
+  } else {
+    summary.innerHTML = '';
+  }
+
+  const list = document.getElementById('historyList');
+  if(dayOrders.length === 0){
+    list.innerHTML = '<div class="empty-state"><div class="es-icon">📭</div><div class="es-text">Sin pedidos este día</div></div>';
+    return;
+  }
+
+  list.innerHTML = dayOrders.map((o,i) => {
+    const t = new Date(o.ts).toTimeString().slice(0,5);
+    const tipo = o.nEnt > 1 ? o.nEnt+' entregas' : '1 entrega';
+    const tim = calcTimings(o);
+    let timing = '';
+    if(tim.totalPedido !== null){
+      timing = '<div class="order-timing">';
+      if(tim.irRestaurante!==null) timing += `🏍️<span>${tim.irRestaurante}m</span> `;
+      if(tim.esperaRest!==null) timing += `⏳<span>${tim.esperaRest}m</span> `;
+      if(tim.rutaEntrega!==null) timing += `🛵<span>${tim.rutaEntrega}m</span> `;
+      timing += `📍<span>${tim.totalPedido}m</span></div>`;
+    }
+    const actions = isToday
+      ? `<div class="order-actions"><button class="action-btn edit" onclick="openEdit(${o.id})">✏️ Editar</button><button class="action-btn del" onclick="deleteOrder(${o.id})">🗑️ Eliminar</button></div>`
+      : '';
+    return `<div class="order-card">
+      <div class="order-main">
+        <div class="order-num">${dayOrders.length-i}</div>
+        <div class="order-details">
+          ${o.restaurant?`<div class="order-restaurant">🏪 ${o.restaurant}</div>`:''}
+          <div class="order-km">📍 ${o.kmR}km · 🏠 ${o.kmETotal}km</div>
+          <div class="order-meta">
+            <span class="order-mult">${o.mult}x</span>
+            <span class="order-type">${tipo}</span>
+            <span class="order-time">${t}</span>
+          </div>${timing}
+        </div>
+        <div class="order-right">
+          <div class="order-amount">Q${o.total.toFixed(2)}</div>
+          ${o.prop>0?`<div class="order-propina">+Q${o.prop.toFixed(2)}</div>`:''}
+        </div>
+      </div>${actions}
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// WIDGET RESUMEN + PROYECCIÓN + RÉCORD
+// ============================================================
+function updateWidgets(){
+  if(!document.getElementById('widgetResumen')) return;
+  const earned = orders.reduce((s,o)=>s+o.total,0) + (cfg.base||0);
+  const km = orders.reduce((s,o)=>s+o.kmR+o.kmETotal,0);
+  const nEnt = orders.reduce((s,o)=>s+o.nEnt,0);
+  const costoDia = calcCostoDia();
+  const neta = earned - costoDia;
+
+  // Widget resumen
+  const lastOrder = orders[0];
+  document.getElementById('widgetResumen').innerHTML = `
+    <div class="widget-row"><span class="widget-label">💰 Ganado hoy</span><span class="widget-val" style="color:var(--green)">Q ${earned.toFixed(2)}</span></div>
+    <div class="widget-row"><span class="widget-label">✅ Neto real</span><span class="widget-val" style="color:var(--yellow)">Q ${neta.toFixed(2)}</span></div>
+    <div class="widget-row"><span class="widget-label">📦 Pedidos / Entregas</span><span class="widget-val">${orders.length} / ${nEnt}</span></div>
+    ${lastOrder?`<div class="widget-row"><span class="widget-label">🕐 Último pedido</span><span class="widget-val" style="font-size:16px">Q${lastOrder.total.toFixed(2)} · ${new Date(lastOrder.ts).toTimeString().slice(0,5)}</span></div>`:''}
+  `;
+
+  // Proyección
+  if(orders.length >= 2){
+    const firstTs = new Date(orders[orders.length-1].ts);
+    const lastTs = new Date(orders[0].ts);
+    const minsPasados = Math.max(1, (lastTs - firstTs) / 60000);
+    const qPorMin = earned / minsPasados;
+    const now = new Date();
+    const endOfDay = new Date(); endOfDay.setHours(23,59,0,0);
+    const minsRestantes = (endOfDay - now) / 60000;
+    const proyeccion = earned + (qPorMin * minsRestantes);
+    const card = document.getElementById('proyeccionCard');
+    card.style.display = 'block';
+    card.innerHTML = `
+      <div class="proyeccion-label">📈 Proyección al final del día</div>
+      <div class="proyeccion-val">Q ${proyeccion.toFixed(0)}</div>
+      <div class="proyeccion-sub">Basado en Q${qPorMin.toFixed(2)}/min · ${orders.length} pedidos</div>
+    `;
+  }
+
+  // Récord personal
+  const recordData = getPersonalRecord();
+  const recEl = document.getElementById('recordBadge');
+  if(recordData){
+    const isRecord = earned >= recordData.amount && orders.length > 0;
+    recEl.innerHTML = `<div class="record-badge">
+      <div class="rb-icon">${isRecord?'🏆':'🎯'}</div>
+      <div class="rb-info">
+        <div class="rb-label">${isRecord?'¡NUEVO RÉCORD!':'Récord personal'}</div>
+        <div class="rb-val">Q ${recordData.amount.toFixed(2)}</div>
+        <div class="rb-date">${recordData.date}</div>
+      </div>
+      ${earned > 0 ? `<div style="font-family:'Bebas Neue';font-size:14px;color:var(--muted)">${((earned/recordData.amount)*100).toFixed(0)}%</div>` : ''}
+    </div>`;
+    // Save new record if beaten
+    if(earned > recordData.amount && orders.length > 0) savePersonalRecord(earned);
+  } else if(earned > 0) {
+    savePersonalRecord(earned);
+  }
+}
+
+function getPersonalRecord(){
+  try{
+    const r = localStorage.getItem('riderRecord');
+    return r ? JSON.parse(r) : null;
+  }catch(e){ return null; }
+}
+function savePersonalRecord(amount){
+  try{
+    localStorage.setItem('riderRecord', JSON.stringify({
+      amount,
+      date: new Date().toLocaleDateString('es-GT',{weekday:'long',day:'numeric',month:'long'})
+    }));
+  }catch(e){}
+}
+
+// ============================================================
+// SEMANA COMPARATIVA
+// ============================================================
+function updateSemanaComparativa(){
+  if(!document.getElementById('semanaContent')) return;
+  const dias = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const today = new Date();
+  const thisWeek = [];
+  const lastWeek = [];
+
+  // Get this week (Mon-Sun)
+  for(let i=0;i<7;i++){
+    const d = new Date(today);
+    const dayOfWeek = today.getDay();
+    const diff = i - (dayOfWeek === 0 ? 6 : dayOfWeek - 1);
+    d.setDate(today.getDate() + diff);
+    const dStr = d.toDateString();
+    const total = allOrders.filter(o=>new Date(o.ts).toDateString()===dStr).reduce((s,o)=>s+o.total,0);
+    thisWeek.push({day: dias[d.getDay()], date: dStr, total, isToday: dStr===today.toDateString()});
+  }
+
+  // Get last week
+  for(let i=0;i<7;i++){
+    const d = new Date(today);
+    const dayOfWeek = today.getDay();
+    const diff = i - (dayOfWeek === 0 ? 6 : dayOfWeek - 1) - 7;
+    d.setDate(today.getDate() + diff);
+    const dStr = d.toDateString();
+    const total = allOrders.filter(o=>new Date(o.ts).toDateString()===dStr).reduce((s,o)=>s+o.total,0);
+    lastWeek.push({total});
+  }
+
+  const maxVal = Math.max(...thisWeek.map(d=>d.total), ...lastWeek.map(d=>d.total), 1);
+  const thisTotal = thisWeek.reduce((s,d)=>s+d.total,0);
+  const lastTotal = lastWeek.reduce((s,d)=>s+d.total,0);
+  const diff = thisTotal - lastTotal;
+
+  document.getElementById('semanaContent').innerHTML = `
+    <div style="display:flex;justify-content:space-between;margin-bottom:12px;font-size:12px">
+      <span style="color:var(--muted)">Esta semana: <span style="color:var(--green);font-weight:700">Q${thisTotal.toFixed(0)}</span></span>
+      <span style="color:var(--muted)">Anterior: <span style="color:var(--muted)">Q${lastTotal.toFixed(0)}</span></span>
+      <span class="${diff>=0?'semana-vs up':'semana-vs down'}">${diff>=0?'▲':'▼'} Q${Math.abs(diff).toFixed(0)}</span>
+    </div>
+    ${thisWeek.map((d,i)=>`
+      <div class="semana-row" ${d.isToday?'style="background:#1a0808;border-radius:8px;padding:5px 6px"':''}>
+        <div class="semana-dia" style="${d.isToday?'color:var(--accent);font-weight:700':''}">${d.day}</div>
+        <div class="semana-bar-wrap">
+          <div class="semana-bar-fill" style="width:${d.total>0?(d.total/maxVal*100).toFixed(0):0}%"></div>
+        </div>
+        <div class="semana-val">${d.total>0?'Q'+d.total.toFixed(0):'-'}</div>
+        <div class="semana-vs ${lastWeek[i].total>0?(d.total>=lastWeek[i].total?'up':'down'):''}">${lastWeek[i].total>0?(d.total>=lastWeek[i].total?'▲':'▼'):''}</div>
+      </div>`).join('')}
+  `;
+}
+
+init();
+</script>
+</body>
+</html>
