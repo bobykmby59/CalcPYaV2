@@ -9,6 +9,8 @@
 <meta name="theme-color" content="#0d0d0d">
 <title>Rider Calc · PedidosYa GT</title>
 <link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <meta name="application-name" content="Rider Calc">
 <meta name="description" content="Calculadora de ganancias para riders de PedidosYa Guatemala">
 <meta name="mobile-web-app-capable" content="yes">
@@ -332,6 +334,65 @@ canvas{max-width:100%}
 .semana-val{font-size:11px;color:var(--yellow);width:50px;text-align:right;font-weight:600}
 .semana-vs{font-size:10px;width:40px;text-align:right}
 .semana-vs.up{color:var(--green)}.semana-vs.down{color:var(--accent)}
+
+/* IMPUESTOS SEMANA */
+.impuesto-card{background:linear-gradient(135deg,#1a0a00,#200d00);border:1px solid #4a2000;border-radius:14px;padding:14px;margin-bottom:10px}
+.impuesto-card .ic-title{font-size:11px;color:#cc6600;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.impuesto-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #3a1500}
+.impuesto-row:last-child{border-bottom:none}
+.impuesto-row .il{font-size:12px;color:var(--muted)}
+.impuesto-row .iv{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px}
+.impuesto-row .iv.red{color:var(--accent)}
+.impuesto-row .iv.green{color:var(--green)}
+.impuesto-row .iv.yellow{color:var(--yellow)}
+.alerta-lunes{background:linear-gradient(135deg,#1a1000,#251500);border:2px solid var(--yellow);border-radius:14px;padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.alerta-lunes .al-icon{font-size:24px;flex-shrink:0}
+.alerta-lunes .al-info{flex:1}
+.alerta-lunes .al-title{font-size:13px;font-weight:700;color:var(--yellow)}
+.alerta-lunes .al-sub{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* GPS & MAPA */
+.gps-status-bar{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.gps-dot{width:10px;height:10px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background 0.3s}
+.gps-dot.active{background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 1.5s infinite}
+.gps-dot.tracking{background:var(--accent);box-shadow:0 0 8px var(--accent);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.gps-info{flex:1}
+.gps-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.gps-val{font-size:13px;font-weight:600;color:var(--text)}
+.gps-km-chips{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.gps-chip{padding:4px 10px;border-radius:10px;font-size:11px;font-weight:600;font-family:'DM Sans',sans-serif}
+.gps-chip.retiro{background:#0a1a2a;color:var(--blue);border:1px solid #002a5a}
+.gps-chip.entrega{background:#0a1a0a;color:var(--green);border:1px solid #004d1a}
+
+/* MAPA */
+.map-container{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:10px}
+.map-header{padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
+.map-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.map-toggle{font-size:11px;color:var(--accent);cursor:pointer;font-weight:600}
+#mapDiv{height:280px;width:100%;display:none}
+#mapDiv.visible{display:block}
+
+/* ALERTA TIEMPO MUERTO */
+.alerta-movete{position:fixed;bottom:100px;left:16px;right:16px;z-index:998;background:linear-gradient(135deg,#1a0800,#2a1000);border:2px solid var(--accent2);border-radius:16px;padding:14px 16px;display:none;animation:slideIn 0.3s ease}
+.alerta-movete.visible{display:flex;align-items:center;gap:12px}
+.alerta-movete .am-icon{font-size:28px;flex-shrink:0}
+.alerta-movete .am-info{flex:1}
+.alerta-movete .am-title{font-size:14px;font-weight:700;color:var(--accent2)}
+.alerta-movete .am-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.alerta-movete .am-close{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* QUICK MODAL GPS BUTTONS */
+.quick-time-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.quick-time-btn{padding:12px 8px;border-radius:12px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;text-align:center;transition:all 0.15s}
+.quick-time-btn.set{border-color:var(--accent);color:var(--accent);background:#1a0808}
+.quick-time-btn .qtb-icon{font-size:18px;display:block;margin-bottom:4px}
+.quick-time-btn .qtb-time{font-size:12px;font-family:'Bebas Neue',sans-serif;color:var(--text)}
+.quick-time-btn .qtb-km{font-size:10px;color:var(--green);margin-top:2px}
+
+/* PEDIDO MAP CARD EN HISTORIAL */
+.order-map-btn{font-size:11px;color:var(--blue);cursor:pointer;font-weight:600;padding:4px 0;display:inline-block}
+.order-gps-info{font-size:10px;color:var(--green);margin-top:3px}
 </style>
 </head>
 <body>
@@ -368,6 +429,28 @@ canvas{max-width:100%}
 
 <!-- CALCULAR -->
 <div class="tab-content active" id="tab-calc">
+
+  <!-- GPS STATUS -->
+  <div class="gps-status-bar" id="gpsStatusBar">
+    <div class="gps-dot" id="gpsDot"></div>
+    <div class="gps-info">
+      <div class="gps-label">GPS <span id="gpsStatusText">Inactivo</span></div>
+      <div class="gps-val" id="gpsCurrentInfo">Presioná "Acepté" para activar</div>
+    </div>
+  </div>
+  <div class="gps-km-chips" id="gpsKmChips" style="margin-bottom:10px;display:none">
+    <span class="gps-chip retiro" id="chipRetiro">🏍️ Retiro: 0.000 km</span>
+    <span class="gps-chip entrega" id="chipEntrega" style="display:none">🛵 Entrega: 0.000 km</span>
+  </div>
+
+  <!-- MAPA -->
+  <div class="map-container" id="mapContainer" style="display:none">
+    <div class="map-header">
+      <div class="map-title">🗺️ Ruta del pedido</div>
+      <div class="map-toggle" onclick="toggleMap()">Ver mapa</div>
+    </div>
+    <div id="mapDiv"></div>
+  </div>
 
   <div class="mult-display">
     <div class="mult-info">
@@ -459,6 +542,13 @@ canvas{max-width:100%}
     <button class="date-nav-btn" onclick="changeHistDate(1)">›</button>
   </div>
   <div id="histDaySummary"></div>
+  <div class="alerta-lunes" id="alertaLunes" style="display:none">
+    <div class="al-icon">⚠️</div>
+    <div class="al-info">
+      <div class="al-title">Mañana es lunes — te cobran</div>
+      <div class="al-sub" id="alertaLunesSub"></div>
+    </div>
+  </div>
   <button class="last-delivery-btn" id="lastDeliveryBtn" onclick="openOdometer()">🏁 Última entrega del día</button>
   <div id="historyList"><div class="empty-state"><div class="es-icon">📋</div><div class="es-text">Aún no hay pedidos.<br>¡Agregá tu primer pedido!</div></div></div>
 </div>
@@ -505,6 +595,10 @@ canvas{max-width:100%}
   <div class="info-card" id="odoStats" style="display:none">
     <div class="ic-title">🏍️ KM App vs Odómetro</div>
     <div id="odoStatsContent"></div>
+  </div>
+  <div class="impuesto-card" id="impuestoCard">
+    <div class="ic-title">🧾 Impuestos y cargos semanales</div>
+    <div id="impuestoContent" style="text-align:center;color:var(--muted);padding:14px;font-size:13px">Sin datos esta semana</div>
   </div>
   <div class="semana-card" id="semanaCard">
     <div class="ic-title">📅 Esta semana vs semana anterior</div>
@@ -584,6 +678,16 @@ canvas{max-width:100%}
 
 </div>
 
+<!-- ALERTA TIEMPO MUERTO -->
+<div class="alerta-movete" id="alertaMovete">
+  <div class="am-icon">🛵</div>
+  <div class="am-info">
+    <div class="am-title" id="alertaMoveteTitle">¡Llevás mucho tiempo parado!</div>
+    <div class="am-sub" id="alertaMoveteSub">Moví a una zona con más pedidos</div>
+  </div>
+  <button class="am-close" onclick="cerrarAlertaMovete()">✕</button>
+</div>
+
 <!-- FAB -->
 <button class="fab hidden" id="fab" onclick="openQuick()">⚡</button>
 
@@ -595,6 +699,13 @@ canvas{max-width:100%}
     <div class="modal-title">⚡ Pedido Rápido</div>
     <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Multiplicador</div>
     <div class="quick-mult-row" id="quickPresets"></div>
+    <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">⏱️ Tiempos rápidos</div>
+    <div class="quick-time-btns">
+      <button class="quick-time-btn" id="qBtnAceptar" onclick="quickSetTime('aceptar')"><span class="qtb-icon">✅</span>Acepté<div class="qtb-time" id="qTimeAceptar">--:--</div><div class="qtb-km" id="qKmAceptar"></div></button>
+      <button class="quick-time-btn" id="qBtnLlegue" onclick="quickSetTime('llegue')"><span class="qtb-icon">🏍️</span>Llegué<div class="qtb-time" id="qTimeLlegue">--:--</div><div class="qtb-km" id="qKmLlegado"></div></button>
+      <button class="quick-time-btn" id="qBtnRecogi" onclick="quickSetTime('recogi')"><span class="qtb-icon">📦</span>Recogí<div class="qtb-time" id="qTimeRecogi">--:--</div></button>
+      <button class="quick-time-btn" id="qBtnEntregu" onclick="quickSetTime('entregu')"><span class="qtb-icon">🏠</span>Entregué<div class="qtb-time" id="qTimeEntregu">--:--</div><div class="qtb-km" id="qKmEntrega"></div></button>
+    </div>
     <div class="quick-grid">
       <div class="quick-box"><label>📍 KM Retiro</label><input type="number" id="qKmR" placeholder="0.000" step="0.001" oninput="updateQuick()"></div>
       <div class="quick-box"><label>🏠 KM Entrega</label><input type="number" id="qKmE" placeholder="0.000" step="0.001" oninput="updateQuick()"></div>
@@ -1398,6 +1509,7 @@ function showReport(odoKm){
 
   reportText = `🛵 RIDER CALC - ${date}\n\n💰 GANANCIAS\nTotal bruto: Q${earned.toFixed(2)}\nGanancia neta: Q${neta.toFixed(2)}\nPedidos: ${orders.length} | Entregas: ${nEnt}\nPromedio/pedido: Q${orders.length>0?(earned/orders.length).toFixed(2):'0'}\nPropinas: Q${pt.toFixed(2)}\n\n⛽ COSTOS\nCosto del día: Q${costoDia.toFixed(2)}\nKM recorridos: ${km.toFixed(1)}\n${diff!==null?`KM ganados atajos: ${diff.toFixed(1)} km\nQ extra: Q${qGanado.toFixed(2)}\n`:''}\n⏱️ TIEMPOS${irArr.length>0?`\nIr restaurante: ${avg(irArr)}min`:''}${espArr.length>0?`\nEspera: ${avg(espArr)}min`:''}${rutArr.length>0?`\nEntrega: ${avg(rutArr)}min`:''}${totalDead>0?`\nTiempo muerto: ${totalDead}min`:''}`;
 
+  const imp = calcImpuestosSemana();
   document.getElementById('reportContent').innerHTML = `
     <div class="report-section">
       <h3>💰 Ganancias</h3>
@@ -1421,7 +1533,14 @@ function showReport(odoKm){
       ${rutArr.length>0?`<div class="report-row"><span>🛵 Entrega</span><span class="rv yellow">${avg(rutArr)} min</span></div>`:''}
       ${totalDead>0?`<div class="report-row"><span>💤 Tiempo muerto</span><span class="rv" style="color:var(--accent)">${totalDead} min</span></div>`:''}
     </div>`:''}
-  `;
+    <div class="report-section">
+      <h3>🧾 Cargos del lunes</h3>
+      <div class="report-row"><span>Bruto semana</span><span class="rv yellow">Q \${imp.brutoSemana.toFixed(2)}</span></div>
+      <div class="report-row"><span>IVA 5%</span><span class="rv" style="color:var(--accent)">-Q \${imp.iva.toFixed(2)}</span></div>
+      <div class="report-row"><span>Uso de la app</span><span class="rv" style="color:var(--accent)">-Q \${imp.usoApp.toFixed(2)}</span></div>
+      <div class="report-row"><span>Te depositan</span><span class="rv green">Q \${imp.netoReal.toFixed(2)}</span></div>
+    </div>
+  \`;
   openModal('reportModal');
 }
 function shareReport(){
@@ -1572,8 +1691,8 @@ function switchTab(tab){
   document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
   document.getElementById('fab').classList.toggle('hidden', tab!=='historial');
-  if(tab==='historial'){ histViewDate=new Date(); renderHistForDate(histViewDate); }
-  if(tab==='stats'){ renderDeadTimes(); updateStats(); updateWidgets(); updateSemanaComparativa(); }
+  if(tab==='historial'){ histViewDate=new Date(); renderHistForDate(histViewDate); updateImpuestos(); }
+  if(tab==='stats'){ renderDeadTimes(); updateStats(); updateWidgets(); updateSemanaComparativa(); updateImpuestos(); }
   if(tab==='grafica') renderCharts();
   if(tab==='config') loadConfigUI();
 }
@@ -1795,6 +1914,419 @@ function updateSemanaComparativa(){
         <div class="semana-vs ${lastWeek[i].total>0?(d.total>=lastWeek[i].total?'up':'down'):''}">${lastWeek[i].total>0?(d.total>=lastWeek[i].total?'▲':'▼'):''}</div>
       </div>`).join('')}
   `;
+}
+
+
+// ============================================================
+// IMPUESTOS Y CARGOS SEMANALES
+// ============================================================
+const IVA_PCT = 0.05;       // 5% IVA
+const USO_APP = 18.50;      // Q18.50 uso de la app cada lunes
+
+function getWeekOrders(){
+  const now = new Date();
+  const dayOfWeek = now.getDay(); // 0=Dom, 1=Lun...
+  // Semana actual: lunes a domingo
+  const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + diffToMonday);
+  monday.setHours(0,0,0,0);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  sunday.setHours(23,59,59,999);
+  return allOrders.filter(o => {
+    const d = new Date(o.ts);
+    return d >= monday && d <= sunday;
+  });
+}
+
+function calcImpuestosSemana(){
+  const weekOrders = getWeekOrders();
+  const brutoSemana = weekOrders.reduce((s,o)=>s+o.total,0);
+  const iva = brutoSemana * IVA_PCT;
+  const totalCargos = iva + USO_APP;
+  const netoReal = brutoSemana - totalCargos;
+  return { brutoSemana, iva, usoApp: USO_APP, totalCargos, netoReal, pedidos: weekOrders.length };
+}
+
+function updateImpuestos(){
+  const imp = calcImpuestosSemana();
+  const el = document.getElementById('impuestoContent');
+  if(!el) return;
+
+  if(imp.pedidos === 0){
+    el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:14px;font-size:13px">Sin pedidos esta semana</div>';
+    return;
+  }
+
+  el.innerHTML = `
+    <div class="impuesto-row"><span class="il">💰 Bruto esta semana</span><span class="iv yellow">Q ${imp.brutoSemana.toFixed(2)}</span></div>
+    <div class="impuesto-row"><span class="il">🧾 IVA 5%</span><span class="iv red">-Q ${imp.iva.toFixed(2)}</span></div>
+    <div class="impuesto-row"><span class="il">📱 Uso de la app</span><span class="iv red">-Q ${imp.usoApp.toFixed(2)}</span></div>
+    <div class="impuesto-row"><span class="il">📊 Total cargos lunes</span><span class="iv red">-Q ${imp.totalCargos.toFixed(2)}</span></div>
+    <div class="impuesto-row" style="margin-top:4px"><span class="il" style="font-weight:700;color:var(--text)">✅ Lo que te depositan</span><span class="iv green">Q ${imp.netoReal.toFixed(2)}</span></div>
+  `;
+
+  // Alerta si mañana es lunes (domingo)
+  const today = new Date().getDay();
+  const alertaEl = document.getElementById('alertaLunes');
+  const alertaSubEl = document.getElementById('alertaLunesSub');
+  if(alertaEl && today === 0){ // Domingo
+    alertaEl.style.display = 'flex';
+    if(alertaSubEl) alertaSubEl.textContent = `Mañana te cobran Q${imp.totalCargos.toFixed(2)} (IVA Q${imp.iva.toFixed(2)} + uso Q${imp.usoApp.toFixed(2)})`;
+  } else if(alertaEl){
+    alertaEl.style.display = 'none';
+  }
+}
+
+// También actualizar stat chip con impuesto
+function updateImpuestoChip(){
+  const imp = calcImpuestosSemana();
+  const chip = document.getElementById('statNeta');
+  if(chip){
+    const earned = orders.reduce((s,o)=>s+o.total,0);
+    const costoDia = calcCostoDia();
+    const neta = earned - costoDia;
+    chip.textContent = 'Q'+neta.toFixed(0);
+  }
+}
+
+
+// ============================================================
+// GPS + MAPA + ALERTA TIEMPO MUERTO
+// ============================================================
+let gpsWatchId = null;
+let gpsMap = null;
+let gpsActive = false;
+let gpsPhase = null; // 'retiro' | 'entrega' | null
+let gpsRouteRetiro = [];
+let gpsRouteEntrega = [];
+let gpsPolyRetiro = null;
+let gpsPolyEntrega = null;
+let gpsMarkStart = null, gpsMarkRest = null, gpsMarkClient = null;
+let gpsKmRetiro = 0;
+let gpsKmEntrega = 0;
+let gpsLastPos = null;
+let gpsLastMovTime = null;
+let gpsAlertaTimer = null;
+let gpsAlertaShown = false;
+let mapVisible = false;
+const GPS_ALERTA_MINS = 12; // Alerta a los 12 minutos parado
+
+// ── INICIAR GPS ───────────────────────────────────────────────
+function startGPS(phase){
+  if(!navigator.geolocation){
+    alert('Tu dispositivo no soporta GPS');
+    return;
+  }
+  gpsPhase = phase;
+  gpsActive = true;
+  gpsLastMovTime = Date.now();
+  gpsAlertaShown = false;
+
+  if(phase === 'retiro'){
+    gpsRouteRetiro = [];
+    gpsKmRetiro = 0;
+    gpsRouteEntrega = [];
+    gpsKmEntrega = 0;
+    updateGpsChip('retiro', 0);
+    document.getElementById('chipEntrega').style.display = 'none';
+  } else if(phase === 'entrega'){
+    gpsRouteEntrega = [];
+    gpsKmEntrega = 0;
+    document.getElementById('chipEntrega').style.display = 'flex';
+  }
+
+  document.getElementById('gpsKmChips').style.display = 'flex';
+  document.getElementById('mapContainer').style.display = 'block';
+  updateGpsStatusUI('tracking', phase === 'retiro' ? '🏍️ Yendo al restaurante...' : '🛵 Yendo al cliente...');
+
+  // Clear previous watcher
+  if(gpsWatchId !== null) navigator.geolocation.clearWatch(gpsWatchId);
+
+  gpsWatchId = navigator.geolocation.watchPosition(
+    pos => onGpsUpdate(pos, phase),
+    err => onGpsError(err),
+    {enableHighAccuracy: true, maximumAge: 3000, timeout: 10000}
+  );
+
+  // Start alerta timer check
+  clearInterval(gpsAlertaTimer);
+  gpsAlertaTimer = setInterval(checkTiempoMuerto, 30000);
+
+  // Init map
+  initMap(phase);
+}
+
+// ── PARAR GPS ─────────────────────────────────────────────────
+function stopGPS(){
+  if(gpsWatchId !== null){
+    navigator.geolocation.clearWatch(gpsWatchId);
+    gpsWatchId = null;
+  }
+  clearInterval(gpsAlertaTimer);
+  gpsActive = false;
+  gpsPhase = null;
+  updateGpsStatusUI('done', '✅ GPS pausado');
+}
+
+// ── ON GPS UPDATE ─────────────────────────────────────────────
+function onGpsUpdate(pos, phase){
+  const {latitude: lat, longitude: lng, accuracy, speed} = pos.coords;
+  const pt = [lat, lng];
+
+  // Check movement for alerta
+  if(gpsLastPos){
+    const dist = haversine(gpsLastPos[0], gpsLastPos[1], lat, lng);
+    if(dist > 0.015){ // Moved more than 15m
+      gpsLastMovTime = Date.now();
+      gpsAlertaShown = false;
+      cerrarAlertaMovete();
+    }
+  }
+  gpsLastPos = pt;
+
+  if(phase === 'retiro'){
+    gpsRouteRetiro.push(pt);
+    if(gpsRouteRetiro.length > 1){
+      const prev = gpsRouteRetiro[gpsRouteRetiro.length - 2];
+      gpsKmRetiro += haversine(prev[0], prev[1], pt[0], pt[1]);
+      updateGpsChip('retiro', gpsKmRetiro);
+      // Auto-fill km retiro input
+      document.getElementById('kmRetiro').value = gpsKmRetiro.toFixed(3);
+      updateResult();
+    }
+    if(gpsMap && gpsPolyRetiro) gpsPolyRetiro.setLatLngs(gpsRouteRetiro);
+    if(gpsMap) gpsMap.setView(pt, 15);
+  } else if(phase === 'entrega'){
+    gpsRouteEntrega.push(pt);
+    if(gpsRouteEntrega.length > 1){
+      const prev = gpsRouteEntrega[gpsRouteEntrega.length - 2];
+      gpsKmEntrega += haversine(prev[0], prev[1], pt[0], pt[1]);
+      updateGpsChip('entrega', gpsKmEntrega);
+      // Auto-fill km entrega
+      const kmEInput = document.getElementById('kmE_1');
+      if(kmEInput){ kmEInput.value = gpsKmEntrega.toFixed(3); updateResult(); }
+    }
+    if(gpsMap && gpsPolyEntrega) gpsPolyEntrega.setLatLngs(gpsRouteEntrega);
+    if(gpsMap) gpsMap.setView(pt, 15);
+  }
+
+  // Update status
+  const speedKmh = speed ? (speed * 3.6).toFixed(0) + ' km/h' : '';
+  updateGpsStatusUI('tracking',
+    phase === 'retiro' ? `🏍️ Al restaurante · ${gpsKmRetiro.toFixed(3)}km ${speedKmh}` : `🛵 Al cliente · ${gpsKmEntrega.toFixed(3)}km ${speedKmh}`
+  );
+
+  // Quick modal km chips
+  if(phase === 'retiro') document.getElementById('qKmAceptar').textContent = gpsKmRetiro.toFixed(3)+' km GPS';
+  if(phase === 'entrega') document.getElementById('qKmEntrega').textContent = gpsKmEntrega.toFixed(3)+' km GPS';
+}
+
+function onGpsError(err){
+  updateGpsStatusUI('error', '❌ Error GPS: ' + err.message);
+}
+
+// ── MAPA ──────────────────────────────────────────────────────
+function initMap(phase){
+  if(!gpsMap){
+    // Get current position to center map
+    navigator.geolocation.getCurrentPosition(pos => {
+      const {latitude: lat, longitude: lng} = pos.coords;
+      if(!gpsMap){
+        gpsMap = L.map('mapDiv').setView([lat, lng], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+          attribution:'© OpenStreetMap',maxZoom:19
+        }).addTo(gpsMap);
+        // Add polylines
+        gpsPolyRetiro = L.polyline([], {color:'#4da6ff', weight:4, opacity:0.8}).addTo(gpsMap);
+        gpsPolyEntrega = L.polyline([], {color:'#00e676', weight:4, opacity:0.8}).addTo(gpsMap);
+        // Start marker
+        gpsMarkStart = L.marker([lat,lng], {
+          icon: L.divIcon({html:'<div style="background:#ff2d55;width:14px;height:14px;border-radius:50%;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.5)"></div>', iconSize:[14,14], iconAnchor:[7,7]})
+        }).addTo(gpsMap).bindPopup('📍 Inicio del pedido');
+      }
+    }, ()=>{}, {enableHighAccuracy:true, timeout:5000});
+  }
+}
+
+function toggleMap(){
+  const div = document.getElementById('mapDiv');
+  const btn = document.querySelector('.map-toggle');
+  mapVisible = !mapVisible;
+  div.classList.toggle('visible', mapVisible);
+  btn.textContent = mapVisible ? 'Ocultar' : 'Ver mapa';
+  if(mapVisible && gpsMap) setTimeout(()=>gpsMap.invalidateSize(), 100);
+}
+
+function addMapMarker(lat, lng, color, emoji, popup){
+  if(!gpsMap) return;
+  L.marker([lat,lng], {
+    icon: L.divIcon({
+      html: `<div style="background:${color};width:32px;height:32px;border-radius:50%;border:3px solid white;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,0.4)">${emoji}</div>`,
+      iconSize:[32,32], iconAnchor:[16,16]
+    })
+  }).addTo(gpsMap).bindPopup(popup);
+}
+
+// ── HAVERSINE (distancia entre 2 coords en km) ────────────────
+function haversine(lat1, lng1, lat2, lng2){
+  const R = 6371;
+  const dLat = (lat2-lat1)*Math.PI/180;
+  const dLng = (lng2-lng1)*Math.PI/180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+// ── ALERTA TIEMPO MUERTO ──────────────────────────────────────
+function checkTiempoMuerto(){
+  if(!gpsActive || gpsAlertaShown) return;
+  const minsParado = (Date.now() - gpsLastMovTime) / 60000;
+  if(minsParado >= GPS_ALERTA_MINS){
+    mostrarAlertaMovete(Math.round(minsParado));
+  }
+}
+
+function mostrarAlertaMovete(mins){
+  gpsAlertaShown = true;
+  const el = document.getElementById('alertaMovete');
+  const title = document.getElementById('alertaMoveteTitle');
+  const sub = document.getElementById('alertaMoveteSub');
+  if(!el) return;
+  title.textContent = `¡Llevás ${mins} minutos parado! 🛑`;
+  sub.textContent = 'Moví a una zona con más pedidos para conseguir más rápido';
+  el.classList.add('visible');
+  // Vibrate if available
+  if(navigator.vibrate) navigator.vibrate([300, 100, 300]);
+  // Auto hide after 30 seconds
+  setTimeout(cerrarAlertaMovete, 30000);
+}
+
+function cerrarAlertaMovete(){
+  const el = document.getElementById('alertaMovete');
+  if(el) el.classList.remove('visible');
+}
+
+// ── UPDATE GPS UI ─────────────────────────────────────────────
+function updateGpsStatusUI(state, text){
+  const dot = document.getElementById('gpsDot');
+  const info = document.getElementById('gpsCurrentInfo');
+  const statusText = document.getElementById('gpsStatusText');
+  if(!dot || !info) return;
+  dot.className = 'gps-dot';
+  if(state === 'tracking'){ dot.classList.add('tracking'); statusText.textContent = 'Activo'; }
+  else if(state === 'active'){ dot.classList.add('active'); statusText.textContent = 'Listo'; }
+  else if(state === 'done'){ statusText.textContent = 'Pausado'; }
+  else if(state === 'error'){ statusText.textContent = 'Error'; }
+  else { statusText.textContent = 'Inactivo'; }
+  info.textContent = text;
+}
+
+function updateGpsChip(type, km){
+  if(type === 'retiro'){
+    const el = document.getElementById('chipRetiro');
+    if(el) el.textContent = '🏍️ Retiro: '+km.toFixed(3)+' km';
+  } else {
+    const el = document.getElementById('chipEntrega');
+    if(el) el.textContent = '🛵 Entrega: '+km.toFixed(3)+' km';
+  }
+}
+
+// ── OVERRIDE setTime TO ALSO CONTROL GPS ─────────────────────
+const _origSetTime = setTime;
+function setTime(type){
+  _origSetTime(type);
+  const now = new Date();
+  const hm = now.toTimeString().slice(0,5);
+
+  if(type === 'aceptar'){
+    // Iniciar GPS para tramo retiro
+    startGPS('retiro');
+    updateGpsStatusUI('tracking', '🏍️ Iniciando ruta al restaurante...');
+    // Update quick modal
+    document.getElementById('qBtnAceptar').classList.add('set');
+    document.getElementById('qTimeAceptar').textContent = hm;
+
+  } else if(type === 'llegue'){
+    // Llegó al restaurante - parar tramo retiro
+    if(gpsPhase === 'retiro'){
+      stopGPS();
+      // Add restaurant marker
+      if(gpsLastPos) addMapMarker(gpsLastPos[0], gpsLastPos[1], '#ff6b35', '🏪', '🏪 Restaurante');
+      document.getElementById('kmRetiro').value = gpsKmRetiro.toFixed(3);
+      updateResult();
+    }
+    document.getElementById('qBtnLlegue').classList.add('set');
+    document.getElementById('qTimeLlegue').textContent = hm;
+    document.getElementById('qKmLlegado').textContent = gpsKmRetiro.toFixed(3)+' km GPS';
+    updateGpsStatusUI('active', '⏳ Esperando en restaurante... '+gpsKmRetiro.toFixed(3)+' km recorridos');
+
+  } else if(type === 'recogi'){
+    // Recogió - iniciar tramo entrega
+    startGPS('entrega');
+    document.getElementById('qBtnRecogi').classList.add('set');
+    document.getElementById('qTimeRecogi').textContent = hm;
+    updateGpsStatusUI('tracking', '🛵 Iniciando ruta al cliente...');
+
+  } else if(type === 'entregu'){
+    // Entregó - parar GPS
+    if(gpsPhase === 'entrega'){
+      stopGPS();
+      if(gpsLastPos) addMapMarker(gpsLastPos[0], gpsLastPos[1], '#00e676', '🏠', '🏠 Punto de entrega');
+      const kmEInput = document.getElementById('kmE_1');
+      if(kmEInput){ kmEInput.value = gpsKmEntrega.toFixed(3); updateResult(); }
+    }
+    document.getElementById('qBtnEntregu').classList.add('set');
+    document.getElementById('qTimeEntregu').textContent = hm;
+    document.getElementById('qKmEntrega').textContent = gpsKmEntrega.toFixed(3)+' km GPS';
+    updateGpsStatusUI('done', '✅ Pedido completado · Retiro: '+gpsKmRetiro.toFixed(3)+'km · Entrega: '+gpsKmEntrega.toFixed(3)+'km');
+    cerrarAlertaMovete();
+  }
+}
+
+// ── QUICK MODAL TIME BUTTONS ──────────────────────────────────
+function quickSetTime(type){
+  setTime(type);
+  // Sync to main form buttons
+  const cap = type.charAt(0).toUpperCase() + type.slice(1);
+  const hm = new Date().toTimeString().slice(0,5);
+  const mainBtn = document.getElementById('btn'+cap);
+  const mainTime = document.getElementById('time'+cap);
+  if(mainBtn) mainBtn.classList.add('set');
+  if(mainTime) mainTime.textContent = hm;
+}
+
+// ── RESET GPS ON FORM RESET ───────────────────────────────────
+const _origResetForm = resetForm;
+function resetForm(){
+  _origResetForm();
+  // Reset GPS
+  stopGPS();
+  gpsRouteRetiro = []; gpsRouteEntrega = [];
+  gpsKmRetiro = 0; gpsKmEntrega = 0;
+  gpsLastPos = null; gpsLastMovTime = null;
+  gpsAlertaShown = false;
+  // Reset map polylines
+  if(gpsPolyRetiro) gpsPolyRetiro.setLatLngs([]);
+  if(gpsPolyEntrega) gpsPolyEntrega.setLatLngs([]);
+  // Reset UI
+  document.getElementById('gpsKmChips').style.display = 'none';
+  document.getElementById('mapContainer').style.display = 'none';
+  updateGpsStatusUI('idle', 'Presioná "Acepté" para activar');
+  // Reset quick modal buttons
+  ['Aceptar','Llegue','Recogi','Entregu'].forEach(t => {
+    const el = document.getElementById('qBtn'+t);
+    if(el){ el.classList.remove('set'); }
+    const tel = document.getElementById('qTime'+t);
+    if(tel) tel.textContent = '--:--';
+  });
+  const qKmA = document.getElementById('qKmAceptar');
+  const qKmL = document.getElementById('qKmLlegado');
+  const qKmE = document.getElementById('qKmEntrega');
+  if(qKmA) qKmA.textContent = '';
+  if(qKmL) qKmL.textContent = '';
+  if(qKmE) qKmE.textContent = '';
+  cerrarAlertaMovete();
 }
 
 init();
