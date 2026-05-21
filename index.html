@@ -142,11 +142,11 @@ header{background:linear-gradient(160deg,#1c0a0a 0%,#0d0d0d 60%);padding:16px 16
 
 /* TIEMPO */
 .time-section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:12px}
-.time-btns{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.time-btn{padding:9px 4px;border-radius:10px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-size:10px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;text-align:center;transition:all 0.15s}
+.time-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.time-btn{padding:14px 4px;border-radius:12px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:700;text-align:center;transition:all 0.15s;min-height:72px}
 .time-btn.set{border-color:var(--accent);color:var(--accent);background:#1a0808}
-.time-btn .tb-icon{font-size:14px;display:block;margin-bottom:2px}
-.time-btn .tb-time{font-size:12px;font-family:'Bebas Neue',sans-serif;color:var(--text)}
+.time-btn .tb-icon{font-size:20px;display:block;margin-bottom:4px}
+.time-btn .tb-time{font-size:14px;font-family:'Bebas Neue',sans-serif;color:var(--text);margin-top:2px}
 
 /* RESULTADO */
 .result-card{background:linear-gradient(135deg,#001a08,#002210);border:1px solid #004d1a;border-radius:16px;padding:16px;margin-bottom:12px;text-align:center}
@@ -521,7 +521,7 @@ canvas{max-width:100%}
       <div class="logo" style="display:flex;align-items:center;gap:8px">
         <span style="font-size:26px;filter:drop-shadow(0 0 6px rgba(255,45,85,0.6))">🛵</span>
         CALC PYA
-        <span class="version-badge" id="versionBadge">v1.6.0</span>
+        <span class="version-badge" id="versionBadge">v1.7.0</span>
       </div>
       <div class="header-name" id="headerRiderName"></div>
     </div>
@@ -577,7 +577,7 @@ canvas{max-width:100%}
 <!-- CALCULAR -->
 <div class="tab-content active" id="tab-calc">
 
-  <!-- GPS STATUS -->
+  <!-- 1. GPS STATUS -->
   <div class="gps-status-bar" id="gpsStatusBar">
     <div class="gps-dot" id="gpsDot"></div>
     <div class="gps-info">
@@ -585,12 +585,27 @@ canvas{max-width:100%}
       <div class="gps-val" id="gpsCurrentInfo">Presioná "Acepté" para activar</div>
     </div>
   </div>
+
+  <!-- 2. BOTONES DE TIEMPO — PRIMERO, sin scrollear -->
+  <div class="time-section">
+    <div class="section-label" style="margin-bottom:10px">⏱️ Registro de tiempo</div>
+    <div class="time-btns">
+      <button class="time-btn" id="btnAceptar" onclick="setTime('aceptar')"><span class="tb-icon">✅</span>Acepté<div class="tb-time" id="timeAceptar">--:--</div></button>
+      <button class="time-btn" id="btnLlegue" onclick="setTime('llegue')"><span class="tb-icon">🏍️</span>Llegué<div class="tb-time" id="timeLlegue">--:--</div></button>
+      <button class="time-btn" id="btnRecogi" onclick="setTime('recogi')"><span class="tb-icon">📦</span>Recogí<div class="tb-time" id="timeRecogi">--:--</div></button>
+      <button class="time-btn" id="btnEntregu" onclick="setTime('entregu')"><span class="tb-icon">🏠</span>Entregué<div class="tb-time" id="timeEntregu">--:--</div></button>
+    </div>
+    <!-- Botones extra de entrega (se generan dinámicamente) -->
+    <div id="extraEntregaBtns" style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px"></div>
+  </div>
+
+  <!-- 3. KM CHIPS GPS (aparece cuando GPS activo) -->
   <div class="gps-km-chips" id="gpsKmChips" style="margin-bottom:10px;display:none;flex-wrap:wrap;gap:6px">
     <span class="gps-chip retiro" id="chipRetiro">🏍️ Retiro: 0.000 km</span>
     <span class="gps-chip entrega" id="chipEntrega" style="display:none">🛵 Entrega: 0.000 km</span>
   </div>
 
-  <!-- MAPA -->
+  <!-- 4. MAPA (aparece cuando GPS activo) -->
   <div class="map-container" id="mapContainer" style="display:none;overflow:hidden">
     <div class="map-header">
       <div class="map-title">🗺️ Ruta del pedido</div>
@@ -599,6 +614,7 @@ canvas{max-width:100%}
     <div id="mapDiv"></div>
   </div>
 
+  <!-- 5. MULTIPLICADOR -->
   <div class="mult-display">
     <div class="mult-info">
       <div class="mult-label">Multiplicador</div>
@@ -622,6 +638,7 @@ canvas{max-width:100%}
     <button class="preset-btn" onclick="setMult(2.00)">2.00</button>
   </div>
 
+  <!-- 6. LLUVIA -->
   <div class="rain-toggle" onclick="toggleRain()">
     <div class="rt-icon">🌧️</div>
     <div class="rt-info"><div class="rt-label">Multiplicador lluvia</div><div class="rt-sub">Se suma al base (ej: 1.30 + 0.25 = 1.55x)</div></div>
@@ -632,6 +649,7 @@ canvas{max-width:100%}
     <input type="number" id="rainExtra" placeholder="0.25" step="0.05" value="0.25" oninput="updateResult()">
   </div>
 
+  <!-- 7. RESTAURANTE -->
   <div class="section-label">🏪 Restaurante</div>
   <div class="restaurant-box" id="restaurantBox">
     <label>Nombre del restaurante</label>
@@ -639,6 +657,7 @@ canvas{max-width:100%}
     <div class="autocomplete-list" id="autocompleteList"></div>
   </div>
 
+  <!-- 8. RETIRO (km — se llena solo con GPS) -->
   <div class="section-label">📍 Punto de retiro</div>
   <div class="retiro-box">
     <div class="retiro-box-top">
@@ -655,11 +674,12 @@ canvas{max-width:100%}
     </div>
   </div>
 
+  <!-- 9. PEDIDO MÚLTIPLE + ENTREGAS -->
   <div class="doble-toggle" id="dobleToggle" onclick="toggleDoble()">
     <div class="doble-icon">📦📦</div>
     <div class="doble-info">
-      <div class="doble-label">Pedido doble — mismo restaurante</div>
-      <div class="doble-sub" id="dobleSub">Tocá para activar — divide el km de retiro entre 2</div>
+      <div class="doble-label">Pedido múltiple — mismo restaurante</div>
+      <div class="doble-sub" id="dobleSub">Tocá para activar — retiro se paga 1 sola vez</div>
     </div>
     <div class="doble-badge" id="dobleBadge">×2</div>
   </div>
@@ -673,34 +693,26 @@ canvas{max-width:100%}
   </div>
   <div id="entregasContainer"></div>
 
+  <!-- 10. PROPINA -->
   <div class="propina-box">
     <label>💚 Propina (opcional)</label>
     <input type="number" id="propina" placeholder="0.00" step="0.50" oninput="updateResult()">
   </div>
 
-  <div class="time-section">
-    <div class="section-label" style="margin-bottom:10px">⏱️ Registro de tiempo</div>
-    <div class="time-btns">
-      <button class="time-btn" id="btnAceptar" onclick="setTime('aceptar')"><span class="tb-icon">✅</span>Acepté<div class="tb-time" id="timeAceptar">--:--</div></button>
-      <button class="time-btn" id="btnLlegue" onclick="setTime('llegue')"><span class="tb-icon">🏍️</span>Llegué<div class="tb-time" id="timeLlegue">--:--</div></button>
-      <button class="time-btn" id="btnRecogi" onclick="setTime('recogi')"><span class="tb-icon">📦</span>Recogí<div class="tb-time" id="timeRecogi">--:--</div></button>
-      <button class="time-btn" id="btnEntregu" onclick="setTime('entregu')"><span class="tb-icon">🏠</span>Entregué<div class="tb-time" id="timeEntregu">--:--</div></button>
-    </div>
-  </div>
-
+  <!-- 11. RESULTADO -->
   <div class="result-card">
     <div class="result-label">Ganancia este pedido</div>
     <div class="result-amount" id="resultAmount">Q 0.00</div>
     <div class="result-breakdown" id="resultBreakdown"></div>
     <div class="result-neta" id="resultNeta"></div>
-  <div class="gps-dialog" id="gpsConfirmDialog">
-    <div class="gps-dialog-title">📍 GPS detectó distancia diferente</div>
-    <div id="gpsDialogText" style="font-size:12px;color:var(--muted);margin-bottom:10px"></div>
-    <div class="gps-dialog-btns">
-      <button class="gps-dialog-btn primary" onclick="useGpsKm()">🛰️ Usar GPS</button>
-      <button class="gps-dialog-btn" onclick="keepManualKm()">✏️ Mantener manual</button>
+    <div class="gps-dialog" id="gpsConfirmDialog">
+      <div class="gps-dialog-title">📍 GPS detectó distancia diferente</div>
+      <div id="gpsDialogText" style="font-size:12px;color:var(--muted);margin-bottom:10px"></div>
+      <div class="gps-dialog-btns">
+        <button class="gps-dialog-btn primary" onclick="useGpsKm()">🛰️ Usar GPS</button>
+        <button class="gps-dialog-btn" onclick="keepManualKm()">✏️ Mantener manual</button>
+      </div>
     </div>
-  </div>
   </div>
   <button class="add-btn" onclick="addOrder()">✓ AGREGAR AL HISTORIAL</button>
 </div>
@@ -890,14 +902,16 @@ canvas{max-width:100%}
 <!-- FAB -->
 <button class="fab hidden" id="fab" onclick="openQuick()">⚡</button>
 
-<!-- POPUP NOVEDADES v1.6.0 -->
+<!-- POPUP NOVEDADES v1.7.0 -->
 <div class="popup-overlay" id="popupNovedades">
   <div class="popup-card">
-    <div class="popup-version">VERSIÓN 1.6.0</div>
+    <div class="popup-version">VERSIÓN 1.7.0</div>
     <div class="popup-title">Novedades 🔥</div>
     <ul class="popup-list">
-      <li><span class="pi">⭕</span><span>Arco circular de meta — seguí tu progreso del día de un vistazo en el header</span></li>
-      <li><span class="pi">🃏</span><span>Cards de historial rediseñadas — chips de km, degradado premium y más info visible</span></li>
+      <li><span class="pi">✅</span><span><strong>Retiro corregido:</strong> Ya no se divide entre pedidos. Se paga 1 sola vez, completo.</span></li>
+      <li><span class="pi">🏠</span><span><strong>Botones por entrega:</strong> Con 2+ clientes aparece un botón "Entregué 1", "Entregué 2"... para registrar la hora exacta de cada uno.</span></li>
+      <li><span class="pi">📦</span><span><strong>Máximo 4 entregas</strong> desde el mismo restaurante con tiempos independientes.</span></li>
+    </ul>
       <li><span class="pi">🎛️</span><span>Steppers táctiles — botones +/− 0.1 km para retiro y entregas, sin teclado</span></li>
       <li><span class="pi">📱</span><span>App disponible como APK — instalala directo en tu Android</span></li>
       <li><span class="pi">🗺️</span><span>GPS en tiempo real con mini-mapa por pedido en el historial</span></li>
@@ -1227,12 +1241,74 @@ function addEntrega(isInit=false){
   entregaCount++;
   document.getElementById('addEntregaBtn').disabled = entregaCount >= 5;
   if(!isInit) setTimeout(() => document.getElementById(`kmE_${idx}`).focus(), 100);
+  rebuildEntregaBtns();
 }
 function removeEntrega(idx){
   document.getElementById(`entrega_${idx}`).remove();
   entregaCount--;
   document.getElementById('addEntregaBtn').disabled = false;
   updateResult();
+  rebuildEntregaBtns();
+}
+
+// Reconstruye los botones de "Entregué N" según cuántas entregas hay
+function rebuildEntregaBtns(){
+  const container = document.getElementById('extraEntregaBtns');
+  if(!container) return;
+  container.innerHTML = '';
+  const nEnt = entregaCount - 1; // entregaCount empieza en 1 antes del primer add
+
+  if(nEnt <= 1){
+    // Solo 1 entrega: el botón "Entregué" estático ya existe, nada extra
+    return;
+  }
+
+  // Con 2+ entregas: reemplazar botón "Entregué" estático con botones numerados
+  // El botón estático queda oculto, los dinámicos lo reemplazan
+  const btnEntregu = document.getElementById('btnEntregu');
+  if(btnEntregu) btnEntregu.style.display = 'none';
+
+  for(let i = 1; i <= nEnt; i++){
+    const hm = (times.entregas && times.entregas[i-1]) ? times.entregas[i-1] : '--:--';
+    const isSet = hm !== '--:--';
+    const btn = document.createElement('button');
+    btn.className = 'time-btn' + (isSet ? ' set' : '');
+    btn.id = `btnEntregas_${i}`;
+    btn.innerHTML = `<span class="tb-icon">🏠</span>Entregué ${i}<div class="tb-time" id="timeEntregas_${i}">${hm}</div>`;
+    btn.onclick = () => setTimeEntrega(i);
+    container.appendChild(btn);
+  }
+}
+
+// Registra la hora de entrega N
+function setTimeEntrega(n){
+  if(!times.entregas) times.entregas = [];
+  const now = new Date();
+  const hm = now.toTimeString().slice(0,5);
+  times.entregas[n-1] = hm;
+  const btn = document.getElementById(`btnEntregas_${n}`);
+  const timeEl = document.getElementById(`timeEntregas_${n}`);
+  if(btn) btn.classList.add('set');
+  if(timeEl) timeEl.textContent = hm;
+  // La última entrega detiene GPS
+  const nEnt = entregaCount - 1;
+  if(n === nEnt){
+    if(gpsPhase === 'entrega'){
+      stopGPS();
+      if(gpsLastPos) addMapMarker(gpsLastPos[0], gpsLastPos[1], '#00e676', '🏠', `🏠 Entrega ${n}`);
+      const kmEInput = document.getElementById('kmE_1');
+      if(kmEInput){ kmEInput.value = gpsKmEntrega.toFixed(3); updateResult(); }
+    }
+    updateGpsStatusUI('done', `✅ Pedido completado · ${n} entregas`);
+    cerrarAlertaMovete();
+    // Sincronizar tEntregu con la última
+    times.entregu = now; // para compatibilidad
+    const mainBtn = document.getElementById('btnEntregu');
+    if(mainBtn){ mainBtn.classList.add('set'); }
+    const mainTime = document.getElementById('timeEntregu');
+    if(mainTime) mainTime.textContent = hm;
+  }
+  if(navigator.vibrate) navigator.vibrate(30);
 }
 function getKmEntregas(){
   let total = 0, count = 0;
@@ -1252,9 +1328,14 @@ function toggleDoble(){
   const toggle = document.getElementById('dobleToggle');
   const sub = document.getElementById('dobleSub');
   toggle.classList.toggle('active', isDoble);
+  // Calcular cuántas entregas hay para mostrar el badge correcto
+  const nEnt = getKmEntregas().count;
+  const badgeN = Math.max(nEnt, isDoble ? 2 : 1);
+  const badge = document.getElementById('dobleBadge');
+  if(badge) badge.textContent = '×' + badgeN;
   sub.textContent = isDoble
-    ? '✓ Activo — el km de retiro se divide entre 2 pedidos'
-    : 'Tocá para activar — divide el km de retiro entre 2';
+    ? '✓ Activo — retiro se paga 1 sola vez, compartido'
+    : 'Tocá para activar — retiro se paga 1 sola vez';
   updateResult();
 }
 
@@ -1278,8 +1359,8 @@ function calcCostoDia(){
 }
 
 function updateResult(){
-  const kmRRaw = parseFloat(document.getElementById('kmRetiro').value) || 0;
-  const kmR = isDoble ? parseFloat((kmRRaw / 2).toFixed(3)) : kmRRaw;
+  const kmR = parseFloat(document.getElementById('kmRetiro').value) || 0;
+  // RETIRO: se paga COMPLETO, 1 sola vez (nunca se divide)
   const {total: kmETotal, count: nEnt} = getKmEntregas();
   const prop = parseFloat(document.getElementById('propina').value) || 0;
   const mult = getEffMult();
@@ -1288,10 +1369,10 @@ function updateResult(){
   const neta = parseFloat((total - costo).toFixed(2));
 
   document.getElementById('resultAmount').textContent = 'Q ' + total.toFixed(2);
-  if(kmRRaw > 0 || kmETotal > 0){
+  if(kmR > 0 || kmETotal > 0){
     const base = total - prop;
     const lines = [`Base × ${mult}x = Q${base.toFixed(2)}`];
-    if(isDoble) lines.push(`📦📦 Doble: retiro Q${kmRRaw}km ÷ 2 = ${kmR}km`);
+    if(isDoble) lines.push(`📦📦 Múltiple: retiro Q${kmR}km (pago único)`);
     if(nEnt > 1) lines.push(`${nEnt} puntos de entrega`);
     if(prop > 0) lines.push(`+ Q${prop.toFixed(2)} propina`);
     document.getElementById('resultBreakdown').innerHTML = lines.map(l=>`<span>${l}</span>`).join('');
@@ -1333,12 +1414,12 @@ function calcTimings(o){
 // AGREGAR PEDIDO
 // ============================================================
 function addOrder(){
-  const kmRRaw = parseFloat(document.getElementById('kmRetiro').value) || 0;
-  const kmR = isDoble ? parseFloat((kmRRaw / 2).toFixed(3)) : kmRRaw;
+  const kmR = parseFloat(document.getElementById('kmRetiro').value) || 0;
+  // RETIRO: siempre completo, nunca dividido
   const {total: kmETotal, count: nEnt} = getKmEntregas();
   const prop = parseFloat(document.getElementById('propina').value) || 0;
   const restaurant = document.getElementById('restaurantInput').value.trim();
-  if(kmRRaw === 0 && kmETotal === 0){ alert('Ingresá al menos un km'); return; }
+  if(kmR === 0 && kmETotal === 0){ alert('Ingresá al menos un km'); return; }
   const mult = getEffMult();
   const total = calcPedido(kmR, kmETotal, nEnt, prop, mult);
   const savedRouteR = simplifyRouteSave(gpsRouteRetiro, 80);
@@ -1351,6 +1432,7 @@ function addOrder(){
     tLlegue: times.llegue ? times.llegue.toTimeString().slice(0,5) : null,
     tRecogi: times.recogi ? times.recogi.toTimeString().slice(0,5) : null,
     tEntregu: times.entregu ? times.entregu.toTimeString().slice(0,5) : null,
+    tEntregas: times.entregas ? [...times.entregas] : [],
     routeR: savedRouteR,
     routeE: savedRouteE,
     hasRoute: savedRouteR.length > 1 || savedRouteE.length > 1,
@@ -1373,16 +1455,24 @@ function resetFormBase(){
   document.getElementById('resultAmount').textContent = 'Q 0.00';
   document.getElementById('resultBreakdown').innerHTML = '';
   document.getElementById('resultNeta').textContent = '';
-  times = {aceptar:null,llegue:null,recogi:null,entregu:null};
-  // Resetear pedido doble
+  times = {aceptar:null,llegue:null,recogi:null,entregu:null,entregas:[]};
+  // Resetear pedido múltiple
   isDoble = false;
   document.getElementById('dobleToggle').classList.remove('active');
-  document.getElementById('dobleSub').textContent = 'Tocá para activar — divide el km de retiro entre 2';
+  document.getElementById('dobleSub').textContent = 'Tocá para activar — retiro se paga 1 sola vez';
   try{localStorage.removeItem('riderTimes_'+new Date().toDateString());}catch(e){}
   ['Aceptar','Llegue','Recogi','Entregu'].forEach(t => {
     document.getElementById('time'+t).textContent = '--:--';
     document.getElementById('btn'+t).classList.remove('set');
   });
+  // Restaurar botón Entregué estático
+  const btnEntregu = document.getElementById('btnEntregu');
+  if(btnEntregu) btnEntregu.style.display = '';
+  // Limpiar botones extra de entrega
+  const extraContainer = document.getElementById('extraEntregaBtns');
+  if(extraContainer) extraContainer.innerHTML = '';
+  // Reconstruir para 1 entrega (estado base)
+  rebuildEntregaBtns();
 }
 
 // ============================================================
@@ -2860,18 +2950,21 @@ function setTime(type){
     updateGpsStatusUI('tracking', '🛵 Iniciando ruta al cliente...');
 
   } else if(type === 'entregu'){
-    // Entregó - parar GPS
-    if(gpsPhase === 'entrega'){
-      stopGPS();
-      if(gpsLastPos) addMapMarker(gpsLastPos[0], gpsLastPos[1], '#00e676', '🏠', '🏠 Punto de entrega');
-      const kmEInput = document.getElementById('kmE_1');
-      if(kmEInput){ kmEInput.value = gpsKmEntrega.toFixed(3); updateResult(); }
+    // Solo aplica si hay 1 entrega; con múltiples se usan los botones "Entregué N"
+    const nEnt = entregaCount - 1;
+    if(nEnt <= 1){
+      if(gpsPhase === 'entrega'){
+        stopGPS();
+        if(gpsLastPos) addMapMarker(gpsLastPos[0], gpsLastPos[1], '#00e676', '🏠', '🏠 Punto de entrega');
+        const kmEInput = document.getElementById('kmE_1');
+        if(kmEInput){ kmEInput.value = gpsKmEntrega.toFixed(3); updateResult(); }
+      }
+      document.getElementById('qBtnEntregu').classList.add('set');
+      document.getElementById('qTimeEntregu').textContent = hm;
+      document.getElementById('qKmEntrega').textContent = gpsKmEntrega.toFixed(3)+' km GPS';
+      updateGpsStatusUI('done', '✅ Pedido completado · Retiro: '+gpsKmRetiro.toFixed(3)+'km · Entrega: '+gpsKmEntrega.toFixed(3)+'km');
+      cerrarAlertaMovete();
     }
-    document.getElementById('qBtnEntregu').classList.add('set');
-    document.getElementById('qTimeEntregu').textContent = hm;
-    document.getElementById('qKmEntrega').textContent = gpsKmEntrega.toFixed(3)+' km GPS';
-    updateGpsStatusUI('done', '✅ Pedido completado · Retiro: '+gpsKmRetiro.toFixed(3)+'km · Entrega: '+gpsKmEntrega.toFixed(3)+'km');
-    cerrarAlertaMovete();
   }
 }
 
@@ -2924,7 +3017,7 @@ function resetForm(){
 // ============================================================
 // RIDER CALC v1.6.0 — BY KMBY
 // ============================================================
-const APP_VERSION = "1.6.0";
+const APP_VERSION = "1.7.0";
 
 // ── POPUP NOVEDADES ───────────────────────────────────────────
 function checkPopupNovedades(){
