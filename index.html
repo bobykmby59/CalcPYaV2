@@ -23,6 +23,197 @@
   --blue:#4da6ff;--yellow:#ffb347;--purple:#bf5fff;
   --text:#f5f5f5;--muted:#777;--border:#2a2a2a;
 }
+/* LIGHT MODE — full coverage */
+body.light-mode{
+  --bg:#f2f2f7;--card:#ffffff;--card2:#f0f0f5;
+  --text:#111111;--muted:#555;--border:#d8d8e0;
+  --green:#009944;--blue:#0066cc;--yellow:#b36b00;
+  --accent:#e0002a;--accent2:#cc4400;
+}
+/* Structural */
+body.light-mode{background:var(--bg);color:var(--text)}
+body.light-mode header{background:linear-gradient(160deg,#ffd6dd 0%,#f2f2f7 70%);border-bottom-color:#e0c0c5}
+body.light-mode .tabs{background:#fff;border-bottom-color:#e0e0e8}
+body.light-mode .tab{color:#888}
+body.light-mode .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+/* Cards & boxes */
+body.light-mode .stat-chip{background:#fff;border-color:#ddd}
+body.light-mode .date-badge{background:#fff;border-color:#ddd;color:#555}
+body.light-mode .meta-arc-wrap{background:#fff;border-color:#ddd}
+body.light-mode .mult-display{background:linear-gradient(135deg,#fff5f7,#ffe8ec);border-color:#ffb3c0}
+body.light-mode .mult-btn{background:#fff;border-color:#ddd;color:#111}
+body.light-mode .preset-btn{background:#fff;border-color:#ddd;color:#555}
+body.light-mode .preset-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+body.light-mode .rain-toggle{background:#fff;border-color:#ddd}
+body.light-mode .rain-extra-input{background:#fff;border-color:#0055aa}
+body.light-mode .restaurant-box{background:#fff;border-color:#ddd}
+body.light-mode .retiro-box{background:#fff;border-color:#ddd}
+body.light-mode .retiro-step-btn{background:#f0f0f5;color:#444}
+body.light-mode .retiro-step-btn:active{background:var(--accent2);color:#fff}
+body.light-mode .entrega-row{background:#fff;border-color:#ddd}
+body.light-mode .entrega-step-btn{background:#f0f0f5;color:#444}
+body.light-mode .entrega-step-btn:active{background:var(--green);color:#fff}
+body.light-mode .propina-box{background:#fff;border-color:#ddd}
+body.light-mode .time-section{background:#fff;border-color:#ddd}
+/* Time buttons — these show very dark in the screenshot */
+body.light-mode .time-btn{background:#f0f0f5;border-color:#ccc;color:#333}
+body.light-mode .time-btn.set{background:#fff5f7;border-color:var(--accent);color:var(--accent)}
+body.light-mode .time-btn .tb-time{color:#111}
+/* Results */
+body.light-mode .result-card{background:linear-gradient(135deg,#eafff3,#d0ffe6);border-color:#44bb66}
+body.light-mode .result-label{color:#006633}
+body.light-mode .result-breakdown{color:#006633}
+body.light-mode .result-neta{color:var(--yellow)}
+body.light-mode .add-btn{background:linear-gradient(135deg,var(--accent),var(--accent2))}
+/* History */
+body.light-mode .order-card{background:linear-gradient(135deg,#fff,#f8f8ff);border-color:#ddd;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+body.light-mode .order-card-accent{background:linear-gradient(90deg,var(--accent),var(--accent2))}
+body.light-mode .order-km-chip{background:#f0f0f5}
+body.light-mode .action-btn{background:#f0f0f5;border-color:#ddd;color:#555}
+body.light-mode .action-btn.edit{background:rgba(0,80,180,0.07);color:var(--blue)}
+body.light-mode .action-btn.del{background:rgba(220,0,40,0.07);color:var(--accent)}
+body.light-mode .last-delivery-btn{background:linear-gradient(135deg,#fffce8,#fff8cc);border-color:var(--yellow);color:var(--yellow)}
+body.light-mode .date-nav{background:#fff;border-color:#ddd}
+body.light-mode .date-nav-btn{background:#f0f0f5;border-color:#ddd;color:#333}
+/* Stats */
+body.light-mode .stats-card{background:#fff;border-color:#ddd}
+body.light-mode .info-card{background:#fff;border-color:#ddd}
+body.light-mode .ic-row{border-bottom-color:#eee}
+body.light-mode .meta-bar-wrap{background:#fff;border-color:#ddd}
+body.light-mode .neta-card{background:linear-gradient(135deg,#eafff3,#d0ffe6);border-color:#44bb66}
+body.light-mode .neta-row{border-bottom-color:#99ddbb}
+body.light-mode .neta-row .nv.green{color:#007a2e}
+body.light-mode .semana-row{color:#333}
+body.light-mode .hora-bar{border-bottom-color:#eee}
+/* Charts — canvas background */
+body.light-mode canvas{border-radius:10px}
+body.light-mode .chart-wrap{background:#fff;border-color:#ddd}
+/* Config */
+body.light-mode .config-section{background:#fff;border-color:#ddd}
+body.light-mode .config-rider-card{background:linear-gradient(135deg,#fff5f7,#ffe8ec);border-color:#ffb3c0}
+body.light-mode .config-field input{background:#f0f0f5;border-color:#ddd;color:#111}
+body.light-mode .schedule-item{background:#f0f0f5;border-color:#ddd}
+body.light-mode .auto-toggle-row{background:#fff;border-color:#ddd}
+body.light-mode .auto-toggle-row.active-auto{background:#eafff3;border-color:#44bb66}
+body.light-mode .toggle-switch{background:#bbb}
+body.light-mode .add-sch-btn{color:#888;border-color:#ccc}
+/* Modals */
+body.light-mode .modal{background:#fff}
+body.light-mode .modal-handle{background:#ddd}
+body.light-mode .modal-close{background:#f0f0f5;border-color:#ddd;color:#555}
+body.light-mode .quick-box{background:#f0f0f5;border-color:#ddd}
+body.light-mode .qm-btn{background:#f0f0f5;border-color:#ddd;color:#555}
+body.light-mode .quick-result{background:linear-gradient(135deg,#eafff3,#d0ffe6);border-color:#44bb66}
+body.light-mode .edit-field{background:#f0f0f5;border-color:#ddd}
+body.light-mode .odo-card{background:linear-gradient(135deg,#f0f4ff,#e8eeff);border-color:#99aaff}
+body.light-mode .odo-input-box{background:#f0f0f5;border-color:#ddd}
+body.light-mode .report-section{background:#f0f0f5;border-color:#ddd}
+/* Popups */
+body.light-mode .popup-card{background:linear-gradient(160deg,#fff5f7,#f8f8f8);border-color:#ffb3c0}
+body.light-mode .tips-card{background:linear-gradient(160deg,#eafff3,#f8fff8);border-color:#99ddbb}
+body.light-mode .tips-msg{color:#111;background:#f0f0f5;border-left-color:#009944}
+/* Doble toggle */
+body.light-mode .doble-toggle{background:linear-gradient(135deg,#f0f5ff,#e8eeff);border-color:#b3c0ff}
+body.light-mode .doble-toggle.active{background:linear-gradient(135deg,#e0ecff,#d0e4ff);border-color:#4488ff}
+/* GPS */
+body.light-mode .gps-status-bar{background:#fff;border-color:#ddd}
+body.light-mode .gps-chip.retiro{background:#e8f0ff;border-color:#6699ff;color:#003399}
+body.light-mode .gps-chip.entrega{background:#e8fff0;border-color:#44bb66;color:#005522}
+body.light-mode .map-container{background:#fff;border-color:#ddd}
+body.light-mode .map-header{border-bottom-color:#eee}
+body.light-mode .gps-dialog{background:#fff;border-color:#ddd}
+body.light-mode .gps-dialog-btn{background:#f0f0f5;border-color:#ddd;color:#111}
+/* Autocomplete */
+body.light-mode .autocomplete-list{background:#fff;border-color:#ddd}
+body.light-mode .autocomplete-item{border-bottom-color:#eee;color:#111}
+/* FAB stays vivid */
+body.light-mode .fab{background:linear-gradient(135deg,var(--accent),var(--accent2))}
+/* Alerta */
+body.light-mode .alerta-movete{background:linear-gradient(135deg,#fff8e8,#fff0cc);border-color:var(--accent2)}
+body.light-mode .alerta-movete .am-title{color:var(--accent2)}
+/* Widget cards */
+body.light-mode .widget-card{background:#fff;border:1px solid #ddd;border-radius:14px;padding:13px}
+body.light-mode .widget-row .widget-label{color:#555}
+body.light-mode .zona-card{background:#fff;border-color:#ddd}
+body.light-mode .zona-item{border-bottom-color:#eee}
+body.light-mode .impuesto-row{border-bottom-color:#eee}
+body.light-mode .proyeccion-label{color:#555}
+body.light-mode .record-badge{background:#fff;border-color:#ddd}
+/* Canvas chart override for light mode */
+body.light-mode .chart-wrap canvas{filter:none}
+
+/* WEATHER WIDGET */
+.weather-chip{
+  display:flex;align-items:center;gap:4px;
+  font-size:12px;font-weight:700;color:var(--text);
+  background:var(--card2);border:1px solid var(--border);
+  padding:3px 9px;border-radius:20px;cursor:pointer;
+  transition:all 0.2s;white-space:nowrap;
+}
+.weather-chip:active{transform:scale(0.95)}
+.weather-chip .wc-temp{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:0.5px}
+.weather-chip .wc-icon{font-size:14px}
+.weather-chip.loading{opacity:0.5}
+body.light-mode .weather-chip{background:#fff;border-color:#ddd;color:#111}
+.theme-toggle-btn{
+  width:34px;height:34px;border-radius:50%;border:1px solid var(--border);
+  background:var(--card2);color:var(--text);font-size:17px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;flex-shrink:0;
+}
+.theme-toggle-btn:active{transform:scale(0.9)}
+
+/* PULSE ANIMATION on add order */
+@keyframes successPulse{
+  0%{box-shadow:0 0 0 0 rgba(0,230,118,0.7)}
+  50%{box-shadow:0 0 0 18px rgba(0,230,118,0)}
+  100%{box-shadow:0 0 0 0 rgba(0,230,118,0)}
+}
+.pulse-success{animation:successPulse 0.6s ease}
+
+/* RIDER TIPS POPUP */
+.tips-overlay{display:none;position:fixed;inset:0;z-index:2100;background:rgba(0,0,0,0.92);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px}
+.tips-overlay.open{display:flex}
+.tips-card{
+  background:linear-gradient(160deg,#0d1a0d 0%,#0d0d0d 60%);
+  border:1px solid #1a3a1a;border-radius:24px;padding:24px 20px;
+  width:100%;max-width:400px;
+  animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1)
+}
+.tips-icon{font-size:52px;text-align:center;margin-bottom:8px;display:block;animation:bounce 1s ease infinite alternate}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-6px)}}
+.tips-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--green);margin-bottom:4px;text-align:center}
+.tips-sub{font-size:11px;color:var(--muted);text-align:center;letter-spacing:1px;text-transform:uppercase;margin-bottom:18px}
+.tips-msg{
+  font-size:15px;font-weight:600;color:var(--text);
+  background:var(--card2);border:1px solid var(--border);
+  border-radius:14px;padding:14px 16px;margin-bottom:12px;
+  line-height:1.5;text-align:center;
+  border-left:3px solid var(--green);
+}
+.tips-date{font-size:11px;color:var(--muted);text-align:center;margin-bottom:16px}
+.tips-accept-btn{
+  width:100%;padding:16px;border:none;border-radius:14px;
+  background:linear-gradient(135deg,#00a854,var(--green));
+  color:#000;font-size:16px;font-weight:800;cursor:pointer;
+  font-family:'DM Sans',sans-serif;letter-spacing:0.5px
+}
+
+/* IDLE ALERT ENHANCED */
+.alerta-movete .am-tip{font-size:10px;color:var(--yellow);margin-top:3px;font-style:italic}
+
+/* CLEAR DAY BUTTON */
+.clear-day-btn{
+  width:100%;padding:11px 14px;margin-bottom:10px;
+  border:1px dashed rgba(255,45,85,0.4);border-radius:14px;
+  background:rgba(255,45,85,0.06);color:var(--accent);
+  font-size:13px;font-weight:700;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  display:none; /* shown only when there are orders */
+  transition:all 0.15s;
+}
+.clear-day-btn:active{background:rgba(255,45,85,0.15);transform:scale(0.98)}
+body.light-mode .clear-day-btn{background:rgba(220,0,40,0.05);border-color:rgba(220,0,40,0.3)}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:120px;overscroll-behavior:none}
 
@@ -521,12 +712,19 @@ canvas{max-width:100%}
       <div class="logo" style="display:flex;align-items:center;gap:8px">
         <span style="font-size:26px;filter:drop-shadow(0 0 6px rgba(255,45,85,0.6))">🛵</span>
         CALC PYA
-        <span class="version-badge" id="versionBadge">v1.7.0</span>
+        <span class="version-badge" id="versionBadge">v1.8.0</span>
       </div>
       <div class="header-name" id="headerRiderName"></div>
     </div>
     <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-      <div class="date-badge" id="dateBadge"></div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <div class="weather-chip loading" id="weatherChip" onclick="fetchWeather()" title="Toca para actualizar">
+          <span class="wc-icon" id="weatherIcon">🌡️</span>
+          <span class="wc-temp" id="weatherTemp">--°</span>
+        </div>
+        <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Cambiar tema">🌙</button>
+        <div class="date-badge" id="dateBadge"></div>
+      </div>
       <div class="kmby-header">by KMBY</div>
     </div>
   </div>
@@ -665,7 +863,7 @@ canvas{max-width:100%}
       <div class="retiro-info">
         <label>Yo → Restaurante</label>
         <div style="font-size:9px;color:var(--muted);margin-bottom:2px">km desde donde estás al restaurante</div>
-        <input type="number" id="kmRetiro" placeholder="0.000" step="0.001" oninput="updateResult()">
+        <input type="number" id="kmRetiro" placeholder="0.000" step="0.001" oninput="updateResult()" onfocus="clearIfZero(this)" onblur="restoreIfEmpty(this)">
       </div>
     </div>
     <div class="retiro-stepper">
@@ -727,6 +925,7 @@ canvas{max-width:100%}
     </div>
     <button class="date-nav-btn" onclick="changeHistDate(1)">›</button>
   </div>
+  <button class="clear-day-btn" id="clearDayBtn" onclick="confirmClearDay()">🗑️ Borrar pedidos del día</button>
   <div id="histDaySummary"></div>
   <div class="alerta-lunes" id="alertaLunes" style="display:none">
     <div class="al-icon">⚠️</div>
@@ -895,6 +1094,7 @@ canvas{max-width:100%}
   <div class="am-info">
     <div class="am-title" id="alertaMoveteTitle">¡Llevás mucho tiempo parado!</div>
     <div class="am-sub" id="alertaMoveteSub">Moví a una zona con más pedidos</div>
+    <div class="am-tip" id="alertaMoveteTip"></div>
   </div>
   <button class="am-close" onclick="cerrarAlertaMovete()">✕</button>
 </div>
@@ -902,20 +1102,46 @@ canvas{max-width:100%}
 <!-- FAB -->
 <button class="fab hidden" id="fab" onclick="openQuick()">⚡</button>
 
-<!-- POPUP NOVEDADES v1.7.0 -->
+<!-- CLEAR DAY CONFIRM MODAL -->
+<div class="modal-overlay" id="confirmClearModal" onclick="closeModalOutside(event,'confirmClearModal')">
+  <div class="modal" style="padding-bottom:24px">
+    <div class="modal-handle"></div>
+    <div style="text-align:center;padding:10px 0 6px">
+      <div style="font-size:48px;margin-bottom:8px">🗑️</div>
+      <div class="modal-title" style="color:var(--accent)">¿Borrar pedidos?</div>
+      <div id="confirmClearText" style="font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.5">Se eliminarán todos los pedidos del día seleccionado. Esta acción no se puede deshacer.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <button onclick="closeModal('confirmClearModal')" style="padding:14px;border:1px solid var(--border);border-radius:14px;background:var(--card2);color:var(--muted);font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">Cancelar</button>
+        <button onclick="executeClearDay()" style="padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--accent),#cc0020);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">🗑️ Sí, borrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RIDER TIPS POPUP -->
+<div class="tips-overlay" id="tipsOverlay">
+  <div class="tips-card">
+    <span class="tips-icon" id="tipsIcon">🛵</span>
+    <div class="tips-title">¡A Repartir!</div>
+    <div class="tips-sub" id="tipsDateLabel">Consejo del día</div>
+    <div class="tips-msg" id="tipsMsgText">Cargando...</div>
+    <div class="tips-date" id="tipsGreeting"></div>
+    <button class="tips-accept-btn" onclick="cerrarTips()">¡Con todo mi Rider! 🛵💨</button>
+  </div>
+</div>
+
+<!-- POPUP NOVEDADES v1.8.0 -->
 <div class="popup-overlay" id="popupNovedades">
   <div class="popup-card">
-    <div class="popup-version">VERSIÓN 1.7.0</div>
+    <div class="popup-version">VERSIÓN 1.8.0</div>
     <div class="popup-title">Novedades 🔥</div>
     <ul class="popup-list">
-      <li><span class="pi">✅</span><span><strong>Retiro corregido:</strong> Ya no se divide entre pedidos. Se paga 1 sola vez, completo.</span></li>
-      <li><span class="pi">🏠</span><span><strong>Botones por entrega:</strong> Con 2+ clientes aparece un botón "Entregué 1", "Entregué 2"... para registrar la hora exacta de cada uno.</span></li>
-      <li><span class="pi">📦</span><span><strong>Máximo 4 entregas</strong> desde el mismo restaurante con tiempos independientes.</span></li>
-    </ul>
-      <li><span class="pi">🎛️</span><span>Steppers táctiles — botones +/− 0.1 km para retiro y entregas, sin teclado</span></li>
-      <li><span class="pi">📱</span><span>App disponible como APK — instalala directo en tu Android</span></li>
-      <li><span class="pi">🗺️</span><span>GPS en tiempo real con mini-mapa por pedido en el historial</span></li>
-      <li><span class="pi">🧾</span><span>Impuestos semanales, meta semanal y comparativa de semanas</span></li>
+      <li><span class="pi">🌤️</span><span><strong>Clima en tiempo real:</strong> Temperatura en °C junto al botón de tema, se actualiza cada 20 min automáticamente.</span></li>
+      <li><span class="pi">🌙</span><span><strong>Modo claro/oscuro completo:</strong> Todos los elementos, gráficas y botones respetan el tema. Auto-oscuro desde las 6 PM.</span></li>
+      <li><span class="pi">🗑️</span><span><strong>Borrar día con confirmación:</strong> Botón en Historial para limpiar todos los pedidos del día, con confirmación antes de ejecutar.</span></li>
+      <li><span class="pi">⌨️</span><span><strong>Inputs km más ágiles:</strong> Al tocar el campo de km, el 0.000 desaparece solo — ya no hay que borrar manualmente.</span></li>
+      <li><span class="pi">🛵</span><span><strong>Consejos del Rider:</strong> Pop-up motivacional diario al abrir la app con consejos de seguridad vial.</span></li>
+      <li><span class="pi">✨</span><span><strong>Pulse verde</strong> al agregar pedido y mejoras de rendimiento general.</span></li>
     </ul>
     <button class="popup-accept-btn" onclick="cerrarPopupNovedades()">¡Entendido, a repartir! 🛵</button>
     <div class="popup-kmby">Desarrollada por KMBY</div>
@@ -938,8 +1164,8 @@ canvas{max-width:100%}
       <button class="quick-time-btn" id="qBtnEntregu" onclick="quickSetTime('entregu')"><span class="qtb-icon">🏠</span>Entregué<div class="qtb-time" id="qTimeEntregu">--:--</div><div class="qtb-km" id="qKmEntrega"></div></button>
     </div>
     <div class="quick-grid">
-      <div class="quick-box"><label>📍 KM Retiro</label><input type="number" id="qKmR" placeholder="0.000" step="0.001" oninput="updateQuick()"></div>
-      <div class="quick-box"><label>🏠 KM Entrega</label><input type="number" id="qKmE" placeholder="0.000" step="0.001" oninput="updateQuick()"></div>
+      <div class="quick-box"><label>📍 KM Retiro</label><input type="number" id="qKmR" placeholder="0.000" step="0.001" oninput="updateQuick()" onfocus="clearIfZero(this)" onblur="restoreIfEmpty(this)"></div>
+      <div class="quick-box"><label>🏠 KM Entrega</label><input type="number" id="qKmE" placeholder="0.000" step="0.001" oninput="updateQuick()" onfocus="clearIfZero(this)" onblur="restoreIfEmpty(this)"></div>
       <div class="quick-box"><label>💚 Propina</label><input type="number" id="qProp" placeholder="0.00" step="0.50" oninput="updateQuick()"></div>
       <div class="quick-box"><label>🌧️ Extra lluvia</label><input type="number" id="qRain" placeholder="0.00" step="0.05" oninput="updateQuick()"></div>
     </div>
@@ -1069,11 +1295,14 @@ function init(){
   cfg.alertaMins = cfg.alertaMins||12;
   updateGreeting();
   checkPopupNovedades();
+  checkTipsPopup();
   buildQuickPresets();
   updateHeader();
   renderHistory();
   if(autoMultOn) startAutoMult();
   loadConfigUI();
+  initTheme();
+  initWeather();
 }
 
 // ============================================================
@@ -1229,7 +1458,7 @@ function addEntrega(isInit=false){
       <div class="entrega-input-wrap">
         <label>${lbl.top}</label>
         <div style="font-size:9px;color:var(--muted);margin-bottom:3px">${lbl.sub}</div>
-        <input type="number" id="kmE_${idx}" placeholder="0.000" step="0.001" oninput="updateResult()">
+        <input type="number" id="kmE_${idx}" placeholder="0.000" step="0.001" oninput="updateResult()" onfocus="clearIfZero(this)" onblur="restoreIfEmpty(this)">
       </div>
       ${idx>1?`<button class="remove-entrega" onclick="removeEntrega(${idx})">×</button>`:'<div style="width:32px"></div>'}
     </div>
@@ -1779,12 +2008,16 @@ function drawBarChart(canvasId, labels, data, color, unit){
   const pad = {top:22,right:8,bottom:36,left:36};
   const cw = w-pad.left-pad.right, ch = h-pad.top-pad.bottom;
   const max = Math.max(...data, 1);
-  ctx.clearRect(0,0,w,h); ctx.fillStyle='#181818'; ctx.fillRect(0,0,w,h);
+  const isLight = document.body.classList.contains('light-mode');
+  const bgColor = isLight ? '#ffffff' : '#181818';
+  const gridColor = isLight ? '#e0e0e8' : '#2a2a2a';
+  const labelColor = isLight ? '#666' : '#666';
+  ctx.clearRect(0,0,w,h); ctx.fillStyle=bgColor; ctx.fillRect(0,0,w,h);
   for(let i=0;i<=4;i++){
     const y=pad.top+ch*(1-i/4);
-    ctx.strokeStyle='#2a2a2a'; ctx.lineWidth=1;
+    ctx.strokeStyle=gridColor; ctx.lineWidth=1;
     ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(pad.left+cw,y); ctx.stroke();
-    ctx.fillStyle='#666'; ctx.font='9px DM Sans'; ctx.textAlign='right';
+    ctx.fillStyle=labelColor; ctx.font='9px DM Sans'; ctx.textAlign='right';
     const val = max*i/4;
     ctx.fillText((unit==='Q'?'Q':'')+val.toFixed(unit===''?0:0)+(unit==='min'?'m':''), pad.left-3, y+3);
   }
@@ -1798,7 +2031,7 @@ function drawBarChart(canvasId, labels, data, color, unit){
     if(ctx.roundRect) ctx.roundRect(x-bw/2, pad.top+ch-bh, bw, bh, 3);
     else ctx.rect(x-bw/2, pad.top+ch-bh, bw, bh);
     ctx.fill();
-    ctx.fillStyle='#666'; ctx.font='8px DM Sans'; ctx.textAlign='center';
+    ctx.fillStyle=labelColor; ctx.font='8px DM Sans'; ctx.textAlign='center';
     ctx.fillText(l, x, h-pad.bottom+12);
     if(data[i]>0){ ctx.fillStyle=color; ctx.font='bold 8px DM Sans'; ctx.fillText((unit==='Q'?'Q':'')+data[i].toFixed(0)+(unit==='min'?'m':''), x, pad.top+ch-bh-4); }
   });
@@ -1811,12 +2044,16 @@ function drawDualBarChart(canvasId, labels, data1, data2, color1, color2, lbl1, 
   const pad = {top:22,right:8,bottom:36,left:36};
   const cw = w-pad.left-pad.right, ch = h-pad.top-pad.bottom;
   const max = Math.max(...data1,...data2, 1);
-  ctx.clearRect(0,0,w,h); ctx.fillStyle='#181818'; ctx.fillRect(0,0,w,h);
+  const isLight = document.body.classList.contains('light-mode');
+  const bgColor = isLight ? '#ffffff' : '#181818';
+  const gridColor = isLight ? '#e0e0e8' : '#2a2a2a';
+  const labelColor = isLight ? '#666' : '#999';
+  ctx.clearRect(0,0,w,h); ctx.fillStyle=bgColor; ctx.fillRect(0,0,w,h);
   for(let i=0;i<=4;i++){
     const y=pad.top+ch*(1-i/4);
-    ctx.strokeStyle='#2a2a2a'; ctx.lineWidth=1;
+    ctx.strokeStyle=gridColor; ctx.lineWidth=1;
     ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(pad.left+cw,y); ctx.stroke();
-    ctx.fillStyle='#666'; ctx.font='9px DM Sans'; ctx.textAlign='right';
+    ctx.fillStyle=labelColor; ctx.font='9px DM Sans'; ctx.textAlign='right';
     ctx.fillText((max*i/4).toFixed(0), pad.left-3, y+3);
   }
   const bw = Math.max(cw/labels.length*0.28, 2);
@@ -1829,12 +2066,12 @@ function drawDualBarChart(canvasId, labels, data1, data2, color1, color2, lbl1, 
       ctx.fillStyle = col+'99';
       ctx.fillRect(x, pad.top+ch-bh, bw, bh);
     });
-    ctx.fillStyle='#666'; ctx.font='8px DM Sans'; ctx.textAlign='center';
+    ctx.fillStyle=labelColor; ctx.font='8px DM Sans'; ctx.textAlign='center';
     ctx.fillText(l, cx, h-pad.bottom+12);
   });
   // Legend
   ctx.fillStyle=color1; ctx.fillRect(pad.left, 4, 10, 7);
-  ctx.fillStyle='#999'; ctx.font='9px DM Sans'; ctx.textAlign='left';
+  ctx.fillStyle=labelColor; ctx.font='9px DM Sans'; ctx.textAlign='left';
   ctx.fillText(lbl1, pad.left+13, 11);
   ctx.fillStyle=color2; ctx.fillRect(pad.left+60, 4, 10, 7);
   ctx.fillText(lbl2, pad.left+73, 11);
@@ -2198,6 +2435,10 @@ function renderHistForDate(date){
 
   const dayOrders = allOrders.filter(o => new Date(o.ts).toDateString() === dateStr);
   const summary = document.getElementById('histDaySummary');
+
+  // Show/hide clear button
+  const clearBtn = document.getElementById('clearDayBtn');
+  if(clearBtn) clearBtn.style.display = dayOrders.length > 0 ? 'block' : 'none';
 
   if(dayOrders.length > 0){
     const total = dayOrders.reduce((s,o)=>s+o.total,0);
@@ -3017,7 +3258,7 @@ function resetForm(){
 // ============================================================
 // RIDER CALC v1.6.0 — BY KMBY
 // ============================================================
-const APP_VERSION = "1.7.0";
+const APP_VERSION = "1.8.0";
 
 // ── POPUP NOVEDADES ───────────────────────────────────────────
 function checkPopupNovedades(){
@@ -3136,8 +3377,240 @@ function keepManualKm(){
 // ── HOOK updateStats TO INCLUDE NEW SECTIONS ──────────────────
 // updateStats extended via switchTab above
 
-// ── HOOK GPS stopGPS TO REGISTER ZONA ────────────────────────
-const _origStopGPS = typeof stopGPS !== 'undefined' ? stopGPS : null;
+// ── CLEAR DAY ────────────────────────────────────────────────
+let _clearDayTarget = null;
+
+function confirmClearDay(){
+  const btn = document.getElementById('clearDayBtn');
+  if(!btn || btn.style.display === 'none') return;
+
+  const isToday = histViewDate.toDateString() === new Date().toDateString();
+  const dateLabel = isToday ? 'hoy' : histViewDate.toLocaleDateString('es-GT',{weekday:'long',day:'numeric',month:'long'});
+  const dayOrders = allOrders.filter(o => new Date(o.ts).toDateString() === histViewDate.toDateString());
+
+  _clearDayTarget = histViewDate.toDateString();
+  document.getElementById('confirmClearText').innerHTML =
+    `Se eliminarán <strong style="color:var(--accent)">${dayOrders.length} pedido${dayOrders.length!==1?'s':''}</strong> de <strong>${dateLabel}</strong>.<br>Esta acción <strong>no se puede deshacer</strong>.`;
+  openModal('confirmClearModal');
+}
+
+function executeClearDay(){
+  if(!_clearDayTarget) return;
+  allOrders = allOrders.filter(o => new Date(o.ts).toDateString() !== _clearDayTarget);
+  // If clearing today, also reset orders array
+  if(_clearDayTarget === new Date().toDateString()){
+    orders = [];
+    updateHeader();
+  }
+  saveOrders();
+  renderHistForDate(histViewDate);
+  _clearDayTarget = null;
+  closeModal('confirmClearModal');
+  // Haptic feedback
+  if(navigator.vibrate) navigator.vibrate([50,30,50]);
+}
+
+// ── KM INPUT AUTO-CLEAR ───────────────────────────────────────
+function clearIfZero(input){
+  // If value is exactly 0 or "0.000" or empty, clear it so user starts fresh
+  const v = parseFloat(input.value);
+  if(!input.value || v === 0){
+    input.value = '';
+  }
+  // Select all text for easy overwrite on Android
+  setTimeout(() => { try{ input.select(); }catch(e){} }, 50);
+}
+function restoreIfEmpty(input){
+  // Nothing to restore — leave empty, updateResult handles 0 default
+}
+
+// ── WEATHER ───────────────────────────────────────────────────
+// WMO weather code → emoji
+const WMO_ICONS = {
+  0:'☀️',1:'🌤️',2:'⛅',3:'☁️',
+  45:'🌫️',48:'🌫️',
+  51:'🌦️',53:'🌦️',55:'🌧️',
+  61:'🌧️',63:'🌧️',65:'🌧️',
+  71:'❄️',73:'❄️',75:'❄️',77:'❄️',
+  80:'🌦️',81:'🌧️',82:'⛈️',
+  85:'❄️',86:'❄️',
+  95:'⛈️',96:'⛈️',99:'⛈️'
+};
+
+let weatherInterval = null;
+
+async function fetchWeather(){
+  const chip = document.getElementById('weatherChip');
+  const iconEl = document.getElementById('weatherIcon');
+  const tempEl = document.getElementById('weatherTemp');
+  if(!chip) return;
+
+  chip.classList.add('loading');
+
+  // Need geolocation
+  if(!navigator.geolocation){
+    iconEl.textContent = '📍';
+    tempEl.textContent = 'N/A';
+    chip.classList.remove('loading');
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const {latitude: lat, longitude: lon} = pos.coords;
+    try{
+      // Open-Meteo — free, no API key needed
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lon.toFixed(4)}&current=temperature_2m,weathercode&temperature_unit=celsius&timezone=auto`;
+      const res = await fetch(url);
+      const data = await res.json();
+      const temp = Math.round(data.current.temperature_2m);
+      const code = data.current.weathercode;
+      const icon = WMO_ICONS[code] || '🌡️';
+      iconEl.textContent = icon;
+      tempEl.textContent = temp + '°';
+      chip.classList.remove('loading');
+      // Save for offline display
+      try{ localStorage.setItem('riderWeather', JSON.stringify({temp, icon, ts: Date.now()})); }catch(e){}
+    }catch(e){
+      // Try cached
+      loadCachedWeather();
+      chip.classList.remove('loading');
+    }
+  }, () => {
+    loadCachedWeather();
+    chip.classList.remove('loading');
+  }, {enableHighAccuracy:false, timeout:6000, maximumAge:600000});
+}
+
+function loadCachedWeather(){
+  try{
+    const cached = JSON.parse(localStorage.getItem('riderWeather')||'null');
+    if(cached){
+      document.getElementById('weatherIcon').textContent = cached.icon;
+      document.getElementById('weatherTemp').textContent = cached.temp + '°';
+    }
+  }catch(e){}
+}
+
+function initWeather(){
+  // Load cache immediately (instant display)
+  loadCachedWeather();
+  // Check if cache is fresh (< 20 min)
+  try{
+    const cached = JSON.parse(localStorage.getItem('riderWeather')||'null');
+    const stale = !cached || (Date.now() - cached.ts) > 20 * 60 * 1000;
+    if(stale) fetchWeather();
+  }catch(e){ fetchWeather(); }
+  // Auto-refresh every 20 minutes
+  clearInterval(weatherInterval);
+  weatherInterval = setInterval(fetchWeather, 20 * 60 * 1000);
+}
+
+// ── DARK/LIGHT MODE ──────────────────────────────────────────
+function initTheme(){
+  const saved = localStorage.getItem('riderTheme');
+  // Auto dark from 18:00 (6pm), auto light from 06:00
+  const hour = new Date().getHours();
+  const autoDark = hour >= 18 || hour < 6;
+  const theme = saved || (autoDark ? 'dark' : 'light');
+  applyTheme(theme);
+}
+function applyTheme(theme){
+  const isDark = theme === 'dark';
+  document.body.classList.toggle('light-mode', !isDark);
+  const btn = document.getElementById('themeToggleBtn');
+  if(btn) btn.textContent = isDark ? '🌙' : '☀️';
+  // Update meta-color for browser chrome
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+  if(metaTheme) metaTheme.content = isDark ? '#0d0d0d' : '#f2f2f7';
+  try{ localStorage.setItem('riderTheme', theme); }catch(e){}
+  // Re-render charts if on gráfica tab
+  if(currentTab === 'grafica') setTimeout(renderCharts, 50);
+}
+function toggleTheme(){
+  const isDark = !document.body.classList.contains('light-mode');
+  applyTheme(isDark ? 'light' : 'dark');
+}
+
+// ── RIDER TIPS POPUP ──────────────────────────────────────────
+const RIDER_TIPS = [
+  { icon:'⛑️', msg:'Recuerda andar siempre con casco. En casa te esperan, ¡protégete!' },
+  { icon:'🕶️', msg:'Protégete del sol: hidratate bien y usa protección solar. ¡Tu salud primero!' },
+  { icon:'🪖', msg:'Aguas con los cascos — siempre atento a lo que pasa alrededor en la calle.' },
+  { icon:'🔍', msg:'Atento a tus espejos en todo momento. Un vistazo rápido puede salvarte la vida.' },
+  { icon:'💪', msg:'¡A darle con todo mi Rider! Hoy es un buen día para romper tu récord. 😎' },
+  { icon:'🌧️', msg:'Si llueve, maneja despacio y con más espacio del necesario. Tu vida vale más que cualquier pedido.' },
+  { icon:'⛽', msg:'Revisá el nivel de gasolina antes de salir a ruta. No hay peor momento que quedarse varado.' },
+  { icon:'🍎', msg:'Recuerda comer bien durante el día. Con hambre no se trabaja bien ni se maneja bien.' },
+  { icon:'📱', msg:'Nunca uses el teléfono manejando. Si necesitas ver la dirección, parás primero.' },
+  { icon:'🛵', msg:'Revisá las llantas y frenos antes de arrancar. Una moto en buenas condiciones = más pedidos completados.' },
+  { icon:'🤝', msg:'Sé amable con los restaurantes y clientes. Una buena actitud siempre genera mejores propinas.' },
+  { icon:'🎯', msg:'¡Hoy es un nuevo día para alcanzar tu meta! Cada pedido cuenta, vamos con todo.' },
+];
+
+function checkTipsPopup(){
+  const today = new Date().toDateString();
+  const lastTip = localStorage.getItem('riderLastTip');
+  if(lastTip === today) return; // Ya se mostró hoy
+
+  // Solo mostrar en la mañana o cuando recién abren la app por primera vez del día
+  setTimeout(()=>{
+    showTipsPopup();
+  }, 1200);
+}
+
+function showTipsPopup(){
+  // Elegir consejo basado en el día del año (rota diariamente)
+  const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(),0,0)) / 86400000);
+  const tip = RIDER_TIPS[dayOfYear % RIDER_TIPS.length];
+
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? 'Buenos días' : hour < 18 ? 'Buenas tardes' : 'Buenas noches';
+  const nombre = cfg.nombre ? `, ${cfg.nombre}` : '';
+  const dateStr = new Date().toLocaleDateString('es-GT',{weekday:'long',day:'numeric',month:'long'});
+
+  document.getElementById('tipsIcon').textContent = tip.icon;
+  document.getElementById('tipsMsgText').textContent = tip.msg;
+  document.getElementById('tipsGreeting').textContent = `${greet}${nombre} · ${dateStr}`;
+  document.getElementById('tipsDateLabel').textContent = `Consejo #${(dayOfYear % RIDER_TIPS.length)+1} de ${RIDER_TIPS.length}`;
+
+  document.getElementById('tipsOverlay').classList.add('open');
+}
+
+function cerrarTips(){
+  document.getElementById('tipsOverlay').classList.remove('open');
+  try{ localStorage.setItem('riderLastTip', new Date().toDateString()); }catch(e){}
+}
+
+// ── PULSE FEEDBACK ON ADD ORDER ───────────────────────────────
+const _origAddOrder = addOrder;
+addOrder = function(){
+  _origAddOrder();
+  // Pulse the result card if order was added (header updates)
+  const btn = document.querySelector('.add-btn');
+  if(btn){
+    btn.classList.add('pulse-success');
+    setTimeout(()=>btn.classList.remove('pulse-success'), 700);
+  }
+};
+
+// ── ENHANCED IDLE ALERT ───────────────────────────────────────
+const MOVETE_TIPS = [
+  '💡 Las zonas de centros comerciales suelen tener más pedidos en este horario.',
+  '💡 Cerca de restaurantes populares siempre hay demanda. ¡Moví hacia allá!',
+  '💡 Este tiempo muerto cuenta como costo. ¡Cada minuto suma!',
+  '💡 Recordá hidratarte mientras esperás. ¡Tu cuerpo también trabaja!',
+  '💡 Aprovechá para revisar tu moto: llantas, frenos, aceite.',
+];
+
+const _origMostrarAlertaMovete = mostrarAlertaMovete;
+mostrarAlertaMovete = function(mins){
+  _origMostrarAlertaMovete(mins);
+  const tipEl = document.getElementById('alertaMoveteTip');
+  if(tipEl){
+    const tip = MOVETE_TIPS[Math.floor(Math.random() * MOVETE_TIPS.length)];
+    tipEl.textContent = tip;
+  }
+};
 
 // ── INIT EXTENSIONS ───────────────────────────────────────────
 // init extended inline above
