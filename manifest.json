@@ -1,30 +1,36 @@
 {
-  "name": "Rider Calc - PedidosYa GT",
+  "name": "Rider Calc · PedidosYa GT",
   "short_name": "Rider Calc",
   "description": "Calculadora de ganancias para riders de PedidosYa Guatemala",
-  "start_url": "/pedidosya-calc.html",
-  "scope": "/",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#0d0d0d",
-  "theme_color": "#ff2d55",
-  "orientation": "portrait-primary",
+  "theme_color": "#0d0d0d",
+  "orientation": "portrait",
   "lang": "es-GT",
-  "categories": [
-    "productivity",
-    "utilities"
-  ],
   "icons": [
     {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230d0d0d'/><text y='.9em' font-size='80' x='10'>🛵</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Nuevo pedido",
+      "short_name": "Pedido",
+      "description": "Ir directo a calcular",
+      "url": "/?tab=calc",
+      "icons": [{ "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧮</text></svg>", "sizes": "any" }]
     },
     {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "name": "Historial",
+      "short_name": "Historial",
+      "description": "Ver pedidos de hoy",
+      "url": "/?tab=historial",
+      "icons": [{ "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>", "sizes": "any" }]
     }
   ]
 }
