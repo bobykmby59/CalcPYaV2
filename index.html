@@ -40,9 +40,16 @@ header{background:linear-gradient(160deg,#1c0a0a 0%,#0d0d0d 60%);padding:16px 16
 .stat-chip .val{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--accent)}
 .stat-chip .lbl{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:0.3px}
 
-/* META BAR EN HEADER */
-.meta-header-bar{height:3px;background:var(--border);border-radius:2px;margin-top:8px;overflow:hidden}
-.meta-header-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));transition:width 0.6s ease;border-radius:2px}
+/* META ARC EN HEADER */
+.meta-arc-wrap{display:flex;align-items:center;gap:14px;margin-top:10px;background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:10px 14px}
+.meta-arc-svg{flex-shrink:0}
+.meta-arc-bg{stroke:#2a2a2a;stroke-width:5;fill:none}
+.meta-arc-fill{stroke:url(#arcGrad);stroke-width:5;fill:none;stroke-linecap:round;transition:stroke-dashoffset 0.8s cubic-bezier(.4,0,.2,1)}
+.meta-arc-pct{font-family:'Bebas Neue',sans-serif;font-size:14px;fill:var(--text);dominant-baseline:middle;text-anchor:middle}
+.meta-arc-info{flex:1;min-width:0}
+.meta-arc-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.meta-arc-msg{font-size:14px;font-weight:700;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meta-arc-sub{font-size:10px;color:var(--muted);margin-top:2px}
 
 /* TABS */
 .tabs{display:flex;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:122px;z-index:99;overflow-x:auto}
@@ -93,29 +100,40 @@ header{background:linear-gradient(160deg,#1c0a0a 0%,#0d0d0d 60%);padding:16px 16
 .autocomplete-item:last-child{border-bottom:none}
 .autocomplete-item:active{background:var(--accent);color:white}
 
-/* RETIRO */
-.retiro-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
-.retiro-box:focus-within{border-color:var(--accent2)}
-.retiro-icon{font-size:20px}.retiro-info{flex:1}
-.retiro-info label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px}
-.retiro-info input{background:none;border:none;outline:none;color:var(--text);font-size:26px;font-family:'Bebas Neue',sans-serif;width:100%;letter-spacing:1px}
+/* RETIRO - táctil */
+.retiro-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:0;margin-bottom:10px;overflow:hidden;transition:border-color 0.2s}
+.retiro-box:focus-within{border-color:var(--accent2);box-shadow:0 0 0 2px rgba(255,107,53,0.1)}
+.retiro-box-top{display:flex;align-items:center;gap:10px;padding:12px 14px 8px}
+.retiro-icon{font-size:20px;flex-shrink:0}
+.retiro-info{flex:1}
+.retiro-info label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:2px}
+.retiro-info input{background:none;border:none;outline:none;color:var(--text);font-size:28px;font-family:'Bebas Neue',sans-serif;width:100%;letter-spacing:1px}
 .retiro-info input::placeholder{color:var(--border)}
+.retiro-stepper{display:flex;border-top:1px solid var(--border)}
+.retiro-step-btn{flex:1;padding:10px;background:var(--card2);border:none;color:var(--muted);font-size:18px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.retiro-step-btn:first-child{border-right:1px solid var(--border)}
+.retiro-step-btn:active{background:var(--accent2);color:white}
 
-/* ENTREGAS */
+/* ENTREGAS - táctil */
 .entregas-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .add-entrega-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:700}
 .add-entrega-btn:disabled{opacity:0.3;cursor:not-allowed}
-.entrega-row{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 13px;margin-bottom:8px;display:flex;align-items:center;gap:10px;animation:slideIn 0.25s ease}
-.entrega-row:focus-within{border-color:var(--green)}
+.entrega-row{background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:8px;animation:slideIn 0.25s ease;overflow:hidden;transition:border-color 0.2s}
+.entrega-row:focus-within{border-color:var(--green);box-shadow:0 0 0 2px rgba(0,230,118,0.1)}
+.entrega-row-top{display:flex;align-items:center;gap:10px;padding:12px 13px 8px}
 @keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.entrega-num{width:26px;height:26px;border-radius:7px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:15px;flex-shrink:0}
+.entrega-num{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:15px;flex-shrink:0}
 .entrega-input-wrap{flex:1}
 .entrega-input-wrap label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:3px}
-.entrega-input-wrap input{background:none;border:none;outline:none;color:var(--text);font-size:24px;font-family:'Bebas Neue',sans-serif;width:100%;letter-spacing:1px}
+.entrega-input-wrap input{background:none;border:none;outline:none;color:var(--text);font-size:26px;font-family:'Bebas Neue',sans-serif;width:100%;letter-spacing:1px}
 .entrega-input-wrap input::placeholder{color:var(--border)}
-.remove-entrega{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.remove-entrega:active{background:var(--accent);color:white}
+.remove-entrega{width:32px;height:32px;border-radius:9px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.remove-entrega:active{background:var(--accent);color:white;border-color:var(--accent)}
+.entrega-stepper{display:flex;border-top:1px solid var(--border)}
+.entrega-step-btn{flex:1;padding:9px;background:var(--card2);border:none;color:var(--muted);font-size:16px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.entrega-step-btn:first-child{border-right:1px solid var(--border)}
+.entrega-step-btn:active{background:var(--green);color:#000}
 
 /* PROPINA */
 .propina-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
@@ -143,25 +161,48 @@ header{background:linear-gradient(160deg,#1c0a0a 0%,#0d0d0d 60%);padding:16px 16
 .history-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .history-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px}
 .clear-btn{font-size:12px;color:var(--accent);background:none;border:1px solid var(--accent);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:'DM Sans',sans-serif}
-.order-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 13px;margin-bottom:8px;animation:slideIn 0.25s ease}
-.order-main{display:flex;align-items:center;gap:10px}
-.order-num{width:32px;height:32px;border-radius:9px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:16px;flex-shrink:0}
+
+/* ORDER CARD PREMIUM */
+.order-card{
+  background:linear-gradient(135deg,#1c1c1c 0%,#141414 100%);
+  border:1px solid #2a2a2a;
+  border-radius:18px;padding:0;margin-bottom:10px;
+  animation:slideIn 0.25s ease;
+  overflow:hidden;
+  box-shadow:0 2px 12px rgba(0,0,0,0.4);
+  transition:transform 0.15s;
+}
+.order-card:active{transform:scale(0.99)}
+.order-card-accent{height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));width:100%}
+.order-main{display:flex;align-items:center;gap:12px;padding:12px 13px 8px}
+.order-num{
+  width:36px;height:36px;border-radius:11px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',sans-serif;font-size:17px;flex-shrink:0;
+  box-shadow:0 2px 8px rgba(255,45,85,0.4);
+}
 .order-details{flex:1;min-width:0}
-.order-restaurant{font-size:13px;font-weight:600;color:var(--purple);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.order-km{font-size:11px;color:var(--muted);margin-bottom:2px}
+.order-restaurant{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.order-km{font-size:11px;color:var(--muted);margin-bottom:4px;display:flex;align-items:center;gap:4px}
 .order-meta{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
-.order-mult{font-size:11px;background:#1a0808;color:var(--accent);padding:2px 6px;border-radius:6px;border:1px solid #3a1515;font-weight:600}
-.order-type{font-size:10px;background:#0a1a0a;color:var(--green);padding:2px 6px;border-radius:6px;border:1px solid #004d1a}
-.order-time{font-size:11px;color:var(--muted)}
-.order-timing{font-size:10px;color:var(--muted);margin-top:4px;display:flex;flex-wrap:wrap;gap:5px}
-.order-timing span{color:var(--yellow)}
+.order-mult{font-size:11px;background:rgba(255,45,85,0.15);color:var(--accent);padding:3px 8px;border-radius:8px;border:1px solid rgba(255,45,85,0.3);font-weight:700}
+.order-type{font-size:10px;background:rgba(0,230,118,0.1);color:var(--green);padding:3px 8px;border-radius:8px;border:1px solid rgba(0,230,118,0.2)}
+.order-time{font-size:10px;color:var(--muted);background:var(--card2);padding:3px 8px;border-radius:8px}
+.order-timing{font-size:10px;color:var(--muted);padding:0 13px 10px;display:flex;flex-wrap:wrap;gap:6px}
+.order-timing span{color:var(--yellow);font-weight:600}
 .order-right{text-align:right;flex-shrink:0}
-.order-amount{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--green);letter-spacing:1px}
-.order-propina{font-size:10px;color:var(--green);opacity:0.7}
-.order-actions{display:flex;gap:6px;margin-top:8px;border-top:1px solid var(--border);padding-top:8px}
-.action-btn{flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;text-align:center}
-.action-btn.edit{border-color:var(--blue);color:var(--blue)}
-.action-btn.del{border-color:var(--accent);color:var(--accent)}
+.order-amount{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--green);letter-spacing:1px;line-height:1}
+.order-propina{font-size:10px;color:var(--green);opacity:0.6;margin-top:2px}
+.order-km-row{display:flex;gap:6px;padding:0 13px 10px}
+.order-km-chip{flex:1;background:var(--card2);border-radius:8px;padding:5px 8px;text-align:center}
+.order-km-chip .okc-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px}
+.order-km-chip .okc-val{font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--blue);letter-spacing:0.5px}
+.order-actions{display:flex;gap:6px;margin:0 13px 12px}
+.action-btn{flex:1;padding:8px;border-radius:10px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;text-align:center;transition:all 0.15s}
+.action-btn:active{transform:scale(0.96)}
+.action-btn.edit{border-color:rgba(77,166,255,0.4);color:var(--blue);background:rgba(77,166,255,0.08)}
+.action-btn.del{border-color:rgba(255,45,85,0.4);color:var(--accent);background:rgba(255,45,85,0.08)}
 .last-delivery-btn{width:100%;padding:15px;border:2px solid var(--yellow);border-radius:16px;background:linear-gradient(135deg,#1a1000,#201500);color:var(--yellow);font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:0.5px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px}
 .last-delivery-btn:active{transform:scale(0.98)}
 
@@ -413,7 +454,8 @@ canvas{max-width:100%}
 ═══════════════════════════════════════════════ */
 
 /* VERSIÓN BADGE */
-.version-badge{font-size:9px;color:#444;background:#111;border:1px solid #222;padding:2px 7px;border-radius:10px;letter-spacing:0.5px;font-family:'DM Sans',sans-serif}
+.version-badge{font-size:9px;color:#ff6b35;background:rgba(255,107,53,0.12);border:1px solid rgba(255,107,53,0.4);padding:2px 7px;border-radius:10px;letter-spacing:0.5px;font-family:'DM Sans',sans-serif;font-weight:700}
+.kmby-header{font-size:9px;letter-spacing:2px;text-transform:uppercase;font-family:'DM Sans',sans-serif;font-weight:700;background:linear-gradient(90deg,#ff2d55,#ff6b35);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 
 /* KMBY FOOTER */
 .kmby-footer{text-align:center;padding:20px 16px 8px;border-top:1px solid var(--border);margin-top:10px}
@@ -432,7 +474,7 @@ canvas{max-width:100%}
 .popup-list li:last-child{border-bottom:none}
 .popup-list li .pi{font-size:16px;flex-shrink:0;margin-top:1px}
 .popup-accept-btn{width:100%;padding:16px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;font-size:16px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:0.5px}
-.popup-kmby{text-align:center;margin-top:12px;font-size:10px;color:#333;letter-spacing:2px;text-transform:uppercase}
+.popup-kmby{text-align:center;margin-top:12px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-family:'Bebas Neue',sans-serif;font-size:14px;background:linear-gradient(90deg,#ff2d55,#ff6b35,#ffb347);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 
 /* PRO HEADER UPGRADE */
 .header-greeting{font-size:12px;color:var(--muted);margin-bottom:2px}
@@ -466,13 +508,18 @@ canvas{max-width:100%}
 
 <header>
   <div class="header-top">
-    <div>
+    <div style="flex:1">
       <div class="header-greeting" id="headerGreeting">Buenas noches</div>
-      <div class="logo" style="display:flex;align-items:center;gap:8px">🛵 RIDER CALC <span class="version-badge" id="versionBadge">v1.5.0</span></div>
+      <div class="logo" style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:26px;filter:drop-shadow(0 0 6px rgba(255,45,85,0.6))">🛵</span>
+        CALC PYA
+        <span class="version-badge" id="versionBadge">v1.6.0</span>
+      </div>
       <div class="header-name" id="headerRiderName"></div>
     </div>
-    <div style="text-align:right">
-      <div class="date-badge" id="dateBadge" style="margin-bottom:4px"></div>
+    <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+      <div class="date-badge" id="dateBadge"></div>
+      <div class="kmby-header">by KMBY</div>
     </div>
   </div>
   <div class="total-row">
@@ -482,7 +529,26 @@ canvas{max-width:100%}
     </div>
     <div class="meta-mini" id="metaMini" style="display:none"></div>
   </div>
-  <div class="meta-header-bar"><div class="meta-header-fill" id="metaHeaderFill" style="width:0%"></div></div>
+  <div class="meta-arc-wrap" id="metaArcWrap" style="display:none">
+    <svg class="meta-arc-svg" width="56" height="56" viewBox="0 0 56 56">
+      <defs>
+        <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#ff2d55"/>
+          <stop offset="100%" stop-color="#00e676"/>
+        </linearGradient>
+      </defs>
+      <circle class="meta-arc-bg" cx="28" cy="28" r="22"/>
+      <circle class="meta-arc-fill" id="metaArcFill" cx="28" cy="28" r="22"
+        stroke-dasharray="138.2" stroke-dashoffset="138.2"
+        transform="rotate(-90 28 28)"/>
+      <text class="meta-arc-pct" id="metaArcPct" x="28" y="29">0%</text>
+    </svg>
+    <div class="meta-arc-info">
+      <div class="meta-arc-label">Meta diaria</div>
+      <div class="meta-arc-msg" id="metaArcMsg">Cargando...</div>
+      <div class="meta-arc-sub" id="metaArcSub"></div>
+    </div>
+  </div>
   <div class="stats-row">
     <div class="stat-chip"><div class="val" id="statPedidos">0</div><div class="lbl">Pedidos</div></div>
     <div class="stat-chip"><div class="val" id="statEntregas">0</div><div class="lbl">Entregas</div></div>
@@ -567,10 +633,16 @@ canvas{max-width:100%}
 
   <div class="section-label">📍 Punto de retiro</div>
   <div class="retiro-box">
-    <div class="retiro-icon">🏪</div>
-    <div class="retiro-info">
-      <label>KM al punto de retiro</label>
-      <input type="number" id="kmRetiro" placeholder="0.000" step="0.001" oninput="updateResult()">
+    <div class="retiro-box-top">
+      <div class="retiro-icon">🏪</div>
+      <div class="retiro-info">
+        <label>KM al punto de retiro</label>
+        <input type="number" id="kmRetiro" placeholder="0.000" step="0.001" oninput="updateResult()">
+      </div>
+    </div>
+    <div class="retiro-stepper">
+      <button class="retiro-step-btn" onclick="stepKm('kmRetiro',-0.1)">− 0.1</button>
+      <button class="retiro-step-btn" onclick="stepKm('kmRetiro',0.1)">+ 0.1</button>
     </div>
   </div>
 
@@ -797,19 +869,18 @@ canvas{max-width:100%}
 <!-- FAB -->
 <button class="fab hidden" id="fab" onclick="openQuick()">⚡</button>
 
-<!-- POPUP NOVEDADES v1.5.0 -->
+<!-- POPUP NOVEDADES v1.6.0 -->
 <div class="popup-overlay" id="popupNovedades">
   <div class="popup-card">
-    <div class="popup-version">VERSIÓN 1.5.0</div>
+    <div class="popup-version">VERSIÓN 1.6.0</div>
     <div class="popup-title">Novedades 🔥</div>
     <ul class="popup-list">
-      <li><span class="pi">🗺️</span><span>GPS en tiempo real — trazá tu ruta automáticamente al aceptar cada pedido</span></li>
-      <li><span class="pi">🛑</span><span>Alerta de tiempo muerto — te avisa si llevás más de 12 min parado</span></li>
-      <li><span class="pi">⚡</span><span>Burbuja mejorada — botones de tiempo directo desde cualquier pantalla</span></li>
-      <li><span class="pi">🧾</span><span>Impuestos semanales — IVA 5% y Q18.50 uso de app calculados automáticamente</span></li>
-      <li><span class="pi">📅</span><span>Meta semanal configurable + comparativa semana anterior</span></li>
-      <li><span class="pi">👤</span><span>Perfil del rider — personalizá la app con tu nombre</span></li>
-      <li><span class="pi">📍</span><span>Mejores zonas del día según GPS</span></li>
+      <li><span class="pi">⭕</span><span>Arco circular de meta — seguí tu progreso del día de un vistazo en el header</span></li>
+      <li><span class="pi">🃏</span><span>Cards de historial rediseñadas — chips de km, degradado premium y más info visible</span></li>
+      <li><span class="pi">🎛️</span><span>Steppers táctiles — botones +/− 0.1 km para retiro y entregas, sin teclado</span></li>
+      <li><span class="pi">📱</span><span>App disponible como APK — instalala directo en tu Android</span></li>
+      <li><span class="pi">🗺️</span><span>GPS en tiempo real con mini-mapa por pedido en el historial</span></li>
+      <li><span class="pi">🧾</span><span>Impuestos semanales, meta semanal y comparativa de semanas</span></li>
     </ul>
     <button class="popup-accept-btn" onclick="cerrarPopupNovedades()">¡Entendido, a repartir! 🛵</button>
     <div class="popup-kmby">Desarrollada por KMBY</div>
@@ -971,6 +1042,18 @@ function init(){
 }
 
 // ============================================================
+// STEPPER DE KM
+// ============================================================
+function stepKm(inputId, delta){
+  const el = document.getElementById(inputId);
+  if(!el) return;
+  const val = parseFloat(el.value) || 0;
+  const newVal = Math.max(0, parseFloat((val + delta).toFixed(3)));
+  el.value = newVal === 0 ? '' : newVal.toFixed(3);
+  updateResult();
+}
+
+// ============================================================
 // MULTIPLICADOR
 // ============================================================
 function changeMult(d){
@@ -1095,12 +1178,19 @@ function addEntrega(isInit=false){
   const idx = entregaCount;
   const div = document.createElement('div');
   div.className = 'entrega-row'; div.id = `entrega_${idx}`;
-  div.innerHTML = `<div class="entrega-num">${idx}</div>
-    <div class="entrega-input-wrap">
-      <label>KM Entrega ${idx}</label>
-      <input type="number" id="kmE_${idx}" placeholder="0.000" step="0.001" oninput="updateResult()">
+  div.innerHTML = `
+    <div class="entrega-row-top">
+      <div class="entrega-num">${idx}</div>
+      <div class="entrega-input-wrap">
+        <label>KM Entrega ${idx}</label>
+        <input type="number" id="kmE_${idx}" placeholder="0.000" step="0.001" oninput="updateResult()">
+      </div>
+      ${idx>1?`<button class="remove-entrega" onclick="removeEntrega(${idx})">×</button>`:'<div style="width:32px"></div>'}
     </div>
-    ${idx>1?`<button class="remove-entrega" onclick="removeEntrega(${idx})">×</button>`:'<div style="width:30px"></div>'}`;
+    <div class="entrega-stepper">
+      <button class="entrega-step-btn" onclick="stepKm('kmE_${idx}',-0.1)">− 0.1</button>
+      <button class="entrega-step-btn" onclick="stepKm('kmE_${idx}',0.1)">+ 0.1</button>
+    </div>`;
   document.getElementById('entregasContainer').appendChild(div);
   entregaCount++;
   document.getElementById('addEntregaBtn').disabled = entregaCount >= 5;
@@ -1257,23 +1347,31 @@ function updateHeader(){
   document.getElementById('statEntregas').textContent = nEnt;
   document.getElementById('statKm').textContent = km.toFixed(1);
   document.getElementById('statPromedio').textContent = 'Q'+avg.toFixed(0);
-  // Solo mostrar neta si hay pedidos, sino 0
   document.getElementById('statNeta').textContent = orders.length > 0 ? 'Q'+neta.toFixed(0) : 'Q0';
 
-  // Meta
+  // Arco circular de meta
+  const arcWrap = document.getElementById('metaArcWrap');
   if(cfg.meta > 0){
+    arcWrap.style.display = 'flex';
     const pct = Math.min(100, (earned/cfg.meta)*100);
-    document.getElementById('metaHeaderFill').style.width = pct+'%';
+    const circumference = 138.2;
+    const offset = circumference - (pct/100)*circumference;
+    document.getElementById('metaArcFill').style.strokeDashoffset = offset;
+    document.getElementById('metaArcPct').textContent = Math.round(pct)+'%';
     const falta = cfg.meta - earned;
-    const metaMini = document.getElementById('metaMini');
-    metaMini.style.display = 'block';
+    const msg = document.getElementById('metaArcMsg');
+    const sub = document.getElementById('metaArcSub');
     if(falta <= 0){
-      metaMini.textContent = '🔥 META COMPLETADA';
-      metaMini.style.color = 'var(--green)';
+      msg.textContent = '🔥 ¡Meta completada!';
+      msg.style.color = 'var(--green)';
+      sub.textContent = `Ganaste Q${earned.toFixed(0)} de Q${cfg.meta}`;
     } else {
-      metaMini.textContent = `Faltan Q${falta.toFixed(0)}`;
-      metaMini.style.color = 'var(--yellow)';
+      msg.textContent = `Faltan Q${falta.toFixed(0)}`;
+      msg.style.color = 'var(--yellow)';
+      sub.textContent = `Q${earned.toFixed(0)} de Q${cfg.meta} — ${Math.round(pct)}%`;
     }
+  } else {
+    arcWrap.style.display = 'none';
   }
 }
 
@@ -2003,22 +2101,30 @@ function renderHistForDate(date){
         <div class="order-minimap-div" id="mmDiv_${o.id}"></div>
       </div>` : '';
     return `<div class="order-card">
+      <div class="order-card-accent"></div>
       <div class="order-main">
         <div class="order-num">${dayOrders.length-i}</div>
         <div class="order-details">
-          ${o.restaurant?`<div class="order-restaurant">🏪 ${o.restaurant}</div>`:''}
-          <div class="order-km">📍 ${o.kmR}km · 🏠 ${o.kmETotal}km</div>
+          <div class="order-restaurant">${o.restaurant ? '🏪 '+o.restaurant : '🛵 Pedido #'+(dayOrders.length-i)}</div>
           <div class="order-meta">
             <span class="order-mult">${o.mult}x</span>
             <span class="order-type">${tipo}</span>
             <span class="order-time">${t}</span>
-          </div>${timing}
+          </div>
         </div>
         <div class="order-right">
           <div class="order-amount">Q${o.total.toFixed(2)}</div>
-          ${o.prop>0?`<div class="order-propina">+Q${o.prop.toFixed(2)}</div>`:''}
+          ${o.prop>0?`<div class="order-propina">+Q${o.prop.toFixed(2)} propina</div>`:''}
         </div>
-      </div>${mapSection}${actions}
+      </div>
+      <div class="order-km-row">
+        <div class="order-km-chip"><div class="okc-label">🏪 Retiro</div><div class="okc-val">${o.kmR} km</div></div>
+        <div class="order-km-chip"><div class="okc-label">🏠 Entrega</div><div class="okc-val">${o.kmETotal} km</div></div>
+        <div class="order-km-chip"><div class="okc-label">📦 Entregas</div><div class="okc-val">${o.nEnt}</div></div>
+      </div>
+      ${timing}
+      ${mapSection}
+      ${actions}
     </div>`;
   }).join('');
 }
@@ -2760,9 +2866,9 @@ function resetForm(){
 
 
 // ============================================================
-// RIDER CALC v1.5.0 — BY KMBY
+// RIDER CALC v1.6.0 — BY KMBY
 // ============================================================
-const APP_VERSION = "1.5.0";
+const APP_VERSION = "1.6.0";
 
 // ── POPUP NOVEDADES ───────────────────────────────────────────
 function checkPopupNovedades(){
