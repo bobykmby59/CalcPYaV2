@@ -764,6 +764,8 @@ canvas{max-width:100%}
     <button class="export-btn csv" onclick="exportCSV()">📊 Exportar CSV (Excel)</button>
     <button class="export-btn txt" onclick="exportTXT()">📄 Exportar resumen TXT</button>
     <button class="export-btn share" onclick="shareWhatsApp()">💬 Compartir por WhatsApp</button>
+    <button class="export-btn csv" onclick="exportFullBackup()" style="background:linear-gradient(135deg,#001a2a,#002a40);color:var(--blue);border-color:#002a5a">💾 Backup completo JSON</button>
+    <button class="export-btn txt" onclick="importBackup()" style="background:linear-gradient(135deg,#1a1a00,#2a2a00);color:var(--yellow);border-color:#3a3a00">📂 Restaurar backup JSON</button>
   </div>
 
 </div>
@@ -899,7 +901,7 @@ let times = {aceptar:null,llegue:null,recogi:null,entregu:null};
 let restaurants = [];
 let autoMultOn = false, schedules = [];
 let autoMultInterval = null;
-let cfg = {meta:0, base:0, gasPrice:32, kmGalon:40, mant:15, otros:0};
+let cfg = {meta:0, base:0, gasPrice:32, kmGalon:40, mant:15, otros:0, nombre:'', metaSemanal:0, alertaMins:12};
 let reportText = '';
 
 // ============================================================
@@ -942,6 +944,11 @@ function init(){
   addEntrega(true);
   restoreTimesUI();
   setMult(1.30);
+  cfg.nombre = cfg.nombre||'';
+  cfg.metaSemanal = cfg.metaSemanal||0;
+  cfg.alertaMins = cfg.alertaMins||12;
+  updateGreeting();
+  checkPopupNovedades();
   buildQuickPresets();
   updateHeader();
   renderHistory();
@@ -1147,7 +1154,7 @@ function updateResult(){
 // ============================================================
 // TIEMPO
 // ============================================================
-function setTime(type){
+function setTimeBase(type){
   const now = new Date(); times[type] = now;
   const hm = now.toTimeString().slice(0,5);
   const cap = type.charAt(0).toUpperCase() + type.slice(1);
@@ -1195,7 +1202,7 @@ function addOrder(){
 }
 function saveTimes(t){ try{localStorage.setItem("riderTimes_"+new Date().toDateString(),JSON.stringify(t));}catch(e){} }
 function loadTimes(){ try{const t=localStorage.getItem("riderTimes_"+new Date().toDateString());return t?JSON.parse(t):{};}catch(e){return {};} }
-function resetForm(){
+function resetFormBase(){
   document.getElementById('kmRetiro').value = '';
   document.getElementById('propina').value = '';
   document.getElementById('restaurantInput').value = '';
@@ -1713,6 +1720,9 @@ function loadConfigUI(){
   document.getElementById('autoMultSwitch').classList.toggle('on', autoMultOn);
   document.getElementById('autoToggleRow').classList.toggle('active-auto', autoMultOn);
   document.getElementById('autoMultBadge').style.display = autoMultOn?'inline-block':'none';
+  if(document.getElementById('cfgNombre')) document.getElementById('cfgNombre').value = cfg.nombre||'';
+  if(document.getElementById('cfgMetaSemanal')) document.getElementById('cfgMetaSemanal').value = cfg.metaSemanal||'';
+  if(document.getElementById('cfgAlertaMins')) document.getElementById('cfgAlertaMins').value = cfg.alertaMins||12;
   // Schedules
   document.getElementById('scheduleList').innerHTML = '';
   schedules.forEach(s => addScheduleItem(s.time, s.mult));
@@ -1720,6 +1730,9 @@ function loadConfigUI(){
 function saveConfig(){
   cfg.meta = parseFloat(document.getElementById('cfgMeta').value)||0;
   cfg.base = parseFloat(document.getElementById('cfgBase').value)||0;
+  cfg.nombre = document.getElementById('cfgNombre')?.value?.trim()||'';
+  cfg.metaSemanal = parseFloat(document.getElementById('cfgMetaSemanal')?.value)||0;
+  cfg.alertaMins = parseFloat(document.getElementById('cfgAlertaMins')?.value)||12;
   cfg.gasPrice = parseFloat(document.getElementById('cfgGasPrice').value)||32;
   cfg.kmGalon = parseFloat(document.getElementById('cfgKmGalon').value)||40;
   cfg.mant = parseFloat(document.getElementById('cfgMant').value)||0;
@@ -1731,6 +1744,8 @@ function saveConfig(){
   }catch(e){}
   updateHeader();
   // Visual feedback
+  updateGreeting();
+  if(typeof GPS_ALERTA_MINS !== 'undefined') window.GPS_ALERTA_MINS = cfg.alertaMins||12;
   const btn = document.querySelector('.save-config-btn');
   if(btn){ const orig=btn.textContent; btn.textContent='✅ Guardado'; setTimeout(()=>btn.textContent=orig,1500); }
 }
@@ -1792,7 +1807,89 @@ function clearToday(){
     orders=[]; saveOrders(); updateHeader(); renderHistory();
   }
 }
-function saveOrders(){ try{localStorage.setItem('riderAllOrders',JSON.stringify(allOrders));}catch(e){} }
+function saveOrders(){
+  try{
+    // Validate before saving
+    const valid = allOrders.filter(o => o && o.id && o.ts && typeof o.total === 'number');
+    if(valid.length !== allOrders.length){
+      console.warn('Filtered', allOrders.length - valid.length, 'invalid orders');
+      allOrders = valid;
+    }
+    const data = JSON.stringify(allOrders);
+    localStorage.setItem('riderAllOrders', data);
+    // Auto backup every 10 saves
+    const saveCount = (parseInt(localStorage.getItem('riderSaveCount')||'0') + 1);
+    localStorage.setItem('riderSaveCount', saveCount);
+    if(saveCount % 10 === 0){
+      localStorage.setItem('riderBackup_'+new Date().toDateString(), data);
+      cleanOldBackups();
+    }
+  }catch(e){
+    console.error('Save failed:', e);
+    // Try saving less data if storage full
+    try{
+      const today = new Date().toDateString();
+      const todayOnly = allOrders.filter(o => new Date(o.ts).toDateString() === today);
+      localStorage.setItem('riderAllOrders', JSON.stringify(todayOnly));
+    }catch(e2){ console.error('Emergency save failed:', e2); }
+  }
+}
+
+function cleanOldBackups(){
+  // Keep only last 3 daily backups
+  const backupKeys = Object.keys(localStorage).filter(k => k.startsWith('riderBackup_'));
+  if(backupKeys.length > 3){
+    backupKeys.sort().slice(0, backupKeys.length-3).forEach(k => localStorage.removeItem(k));
+  }
+}
+
+function exportFullBackup(){
+  try{
+    const backup = {
+      version: APP_VERSION,
+      date: new Date().toISOString(),
+      orders: allOrders,
+      config: cfg,
+      restaurants: restaurants,
+      record: JSON.parse(localStorage.getItem('riderRecord')||'null')
+    };
+    const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `rider_backup_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }catch(e){ alert('Error al exportar: '+e.message); }
+}
+
+function importBackup(){
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try{
+        const backup = JSON.parse(ev.target.result);
+        if(!backup.orders) throw new Error('Archivo inválido');
+        if(confirm(`¿Restaurar ${backup.orders.length} pedidos del ${backup.date?.slice(0,10)}?`)){
+          allOrders = backup.orders;
+          if(backup.config) cfg = {...cfg, ...backup.config};
+          if(backup.restaurants) restaurants = backup.restaurants;
+          saveOrders();
+          orders = allOrders.filter(o => new Date(o.ts).toDateString() === new Date().toDateString());
+          updateHeader(); renderHistory();
+          alert('✅ Backup restaurado correctamente');
+        }
+      }catch(e){ alert('Error al importar: '+e.message); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
 
 function switchTab(tab){
   currentTab = tab;
@@ -1801,7 +1898,7 @@ function switchTab(tab){
   document.getElementById('tab-'+tab).classList.add('active');
   document.getElementById('fab').classList.toggle('hidden', tab!=='historial');
   if(tab==='historial'){ histViewDate=new Date(); renderHistForDate(histViewDate); updateImpuestos(); }
-  if(tab==='stats'){ renderDeadTimes(); updateStats(); updateWidgets(); updateSemanaComparativa(); updateImpuestos(); }
+  if(tab==='stats'){ renderDeadTimes(); updateStats(); updateWidgets(); updateSemanaComparativa(); updateImpuestos(); updateMetaSemanal(); updateZonaStats(); }
   if(tab==='grafica') renderCharts();
   if(tab==='config') loadConfigUI();
 }
@@ -2107,7 +2204,7 @@ function updateImpuestoChip(){
 let gpsWatchId = null;
 let gpsMap = null;
 let gpsActive = false;
-let gpsPhase = null; // 'retiro' | 'entrega' | null
+let gpsPhase = null;
 let gpsRouteRetiro = [];
 let gpsRouteEntrega = [];
 let gpsPolyRetiro = null;
@@ -2120,7 +2217,15 @@ let gpsLastMovTime = null;
 let gpsAlertaTimer = null;
 let gpsAlertaShown = false;
 let mapVisible = false;
-const GPS_ALERTA_MINS = 12; // Alerta a los 12 minutos parado
+let gpsLastUpdateTime = 0;
+
+// GPS OPTIMIZATION CONSTANTS
+const GPS_MAX_POINTS = 200;        // Max puntos por ruta
+const GPS_MIN_DISTANCE = 0.008;    // Mínimo 8m entre puntos
+const GPS_MIN_INTERVAL_MOVING = 3000;   // 3s en movimiento
+const GPS_MIN_INTERVAL_STOPPED = 15000; // 15s detenido
+const GPS_SPEED_THRESHOLD = 1.5;   // m/s para considerar "en movimiento"
+let GPS_ALERTA_MINS = 12;
 
 // ── INICIAR GPS ───────────────────────────────────────────────
 function startGPS(phase){
@@ -2179,15 +2284,26 @@ function stopGPS(){
   updateGpsStatusUI('done', '✅ GPS pausado');
 }
 
-// ── ON GPS UPDATE ─────────────────────────────────────────────
+// ── ON GPS UPDATE (OPTIMIZED) ─────────────────────────────────
 function onGpsUpdate(pos, phase){
+  const now = Date.now();
   const {latitude: lat, longitude: lng, accuracy, speed} = pos.coords;
   const pt = [lat, lng];
+  const isMoving = speed !== null ? speed > GPS_SPEED_THRESHOLD : true;
+
+  // Throttle: limit update frequency based on movement
+  const minInterval = isMoving ? GPS_MIN_INTERVAL_MOVING : GPS_MIN_INTERVAL_STOPPED;
+  if(now - gpsLastUpdateTime < minInterval) return;
+  gpsLastUpdateTime = now;
+
+  // Skip low accuracy readings when stopped
+  if(!isMoving && accuracy > 30) return;
 
   // Check movement for alerta
   if(gpsLastPos){
     const dist = haversine(gpsLastPos[0], gpsLastPos[1], lat, lng);
-    if(dist > 0.015){ // Moved more than 15m
+    if(dist < GPS_MIN_DISTANCE) return; // Skip if barely moved
+    if(dist > 0.015){
       gpsLastMovTime = Date.now();
       gpsAlertaShown = false;
       cerrarAlertaMovete();
@@ -2197,6 +2313,9 @@ function onGpsUpdate(pos, phase){
 
   if(phase === 'retiro'){
     gpsRouteRetiro.push(pt);
+    if(gpsRouteRetiro.length > GPS_MAX_POINTS){
+      gpsRouteRetiro = simplifyRoute(gpsRouteRetiro);
+    }
     if(gpsRouteRetiro.length > 1){
       const prev = gpsRouteRetiro[gpsRouteRetiro.length - 2];
       gpsKmRetiro += haversine(prev[0], prev[1], pt[0], pt[1]);
@@ -2209,6 +2328,9 @@ function onGpsUpdate(pos, phase){
     if(gpsMap) gpsMap.setView(pt, 15);
   } else if(phase === 'entrega'){
     gpsRouteEntrega.push(pt);
+    if(gpsRouteEntrega.length > GPS_MAX_POINTS){
+      gpsRouteEntrega = simplifyRoute(gpsRouteEntrega);
+    }
     if(gpsRouteEntrega.length > 1){
       const prev = gpsRouteEntrega[gpsRouteEntrega.length - 2];
       gpsKmEntrega += haversine(prev[0], prev[1], pt[0], pt[1]);
@@ -2278,6 +2400,17 @@ function addMapMarker(lat, lng, color, emoji, popup){
   }).addTo(gpsMap).bindPopup(popup);
 }
 
+// ── SIMPLIFY ROUTE (Douglas-Peucker simplified) ──────────────
+function simplifyRoute(points, tolerance=0.0001){
+  if(points.length <= 10) return points;
+  // Keep every other point when too many
+  const result = [];
+  for(let i=0; i<points.length; i++){
+    if(i % 2 === 0 || i === points.length-1) result.push(points[i]);
+  }
+  return result;
+}
+
 // ── HAVERSINE (distancia entre 2 coords en km) ────────────────
 function haversine(lat1, lng1, lat2, lng2){
   const R = 6371;
@@ -2342,9 +2475,9 @@ function updateGpsChip(type, km){
 }
 
 // ── OVERRIDE setTime TO ALSO CONTROL GPS ─────────────────────
-const _origSetTime = setTime;
+// GPS overrides setTime below
 function setTime(type){
-  _origSetTime(type);
+  setTimeBase(type);
   const now = new Date();
   const hm = now.toTimeString().slice(0,5);
 
@@ -2406,9 +2539,9 @@ function quickSetTime(type){
 }
 
 // ── RESET GPS ON FORM RESET ───────────────────────────────────
-const _origResetForm = resetForm;
+// GPS overrides resetForm below
 function resetForm(){
-  _origResetForm();
+  resetFormBase();
   // Reset GPS
   stopGPS();
   gpsRouteRetiro = []; gpsRouteEntrega = [];
@@ -2554,48 +2687,18 @@ function keepManualKm(){
 }
 
 // ── SAVE/LOAD CONFIG EXTENSIONS ───────────────────────────────
-const _origSaveConfig = saveConfig;
-function saveConfig(){
-  cfg.nombre = document.getElementById('cfgNombre')?.value?.trim() || '';
-  cfg.metaSemanal = parseFloat(document.getElementById('cfgMetaSemanal')?.value)||0;
-  cfg.alertaMins = parseFloat(document.getElementById('cfgAlertaMins')?.value)||12;
-  _origSaveConfig();
-  updateGreeting();
-  // Update GPS alerta threshold
-  if(typeof GPS_ALERTA_MINS !== 'undefined') window.GPS_ALERTA_MINS = cfg.alertaMins || 12;
-}
+// saveConfig extended inline above
 
-const _origLoadConfigUI = loadConfigUI;
-function loadConfigUI(){
-  _origLoadConfigUI();
-  if(document.getElementById('cfgNombre')) document.getElementById('cfgNombre').value = cfg.nombre||'';
-  if(document.getElementById('cfgMetaSemanal')) document.getElementById('cfgMetaSemanal').value = cfg.metaSemanal||'';
-  if(document.getElementById('cfgAlertaMins')) document.getElementById('cfgAlertaMins').value = cfg.alertaMins||12;
-}
+// loadConfigUI extended inline above
 
 // ── HOOK updateStats TO INCLUDE NEW SECTIONS ──────────────────
-const _origUpdateStats = updateStats;
-function updateStats(){
-  _origUpdateStats();
-  updateMetaSemanal();
-  updateZonaStats();
-}
+// updateStats extended via switchTab above
 
 // ── HOOK GPS stopGPS TO REGISTER ZONA ────────────────────────
 const _origStopGPS = typeof stopGPS !== 'undefined' ? stopGPS : null;
 
 // ── INIT EXTENSIONS ───────────────────────────────────────────
-const _origInit = init;
-function init(){
-  _origInit();
-  updateGreeting();
-  checkPopupNovedades();
-  // Load extended config
-  cfg.nombre = cfg.nombre || '';
-  cfg.metaSemanal = cfg.metaSemanal || 0;
-  cfg.alertaMins = cfg.alertaMins || 12;
-  updateGreeting();
-}
+// init extended inline above
 
 init();
 </script>
