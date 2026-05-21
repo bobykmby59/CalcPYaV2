@@ -430,7 +430,15 @@ canvas{max-width:100%}
 .quick-time-btn .qtb-time{font-size:12px;font-family:'Bebas Neue',sans-serif;color:var(--text)}
 .quick-time-btn .qtb-km{font-size:10px;color:var(--green);margin-top:2px}
 
-/* PEDIDO MAP CARD EN HISTORIAL */
+/* PEDIDO DOBLE */
+.doble-toggle{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#0a0a1a,#101028);border:1px solid #2a2a5a;border-radius:14px;padding:11px 14px;margin-bottom:10px;cursor:pointer;transition:all 0.2s}
+.doble-toggle.active{border-color:#4da6ff;background:linear-gradient(135deg,#050a1a,#0a1530);box-shadow:0 0 0 2px rgba(77,166,255,0.15)}
+.doble-icon{font-size:20px;flex-shrink:0}
+.doble-info{flex:1}
+.doble-label{font-size:13px;font-weight:700;color:var(--text)}
+.doble-sub{font-size:10px;color:var(--muted);margin-top:1px}
+.doble-badge{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--blue);letter-spacing:1px;flex-shrink:0;opacity:0;transition:opacity 0.2s}
+.doble-toggle.active .doble-badge{opacity:1}
 .order-map-btn{font-size:11px;color:var(--blue);cursor:pointer;font-weight:600;padding:4px 0;display:inline-block}
 .order-gps-info{font-size:10px;color:var(--green);margin-top:3px}
 
@@ -636,7 +644,8 @@ canvas{max-width:100%}
     <div class="retiro-box-top">
       <div class="retiro-icon">🏪</div>
       <div class="retiro-info">
-        <label>KM al punto de retiro</label>
+        <label>Yo → Restaurante</label>
+        <div style="font-size:9px;color:var(--muted);margin-bottom:2px">km desde donde estás al restaurante</div>
         <input type="number" id="kmRetiro" placeholder="0.000" step="0.001" oninput="updateResult()">
       </div>
     </div>
@@ -646,8 +655,20 @@ canvas{max-width:100%}
     </div>
   </div>
 
+  <div class="doble-toggle" id="dobleToggle" onclick="toggleDoble()">
+    <div class="doble-icon">📦📦</div>
+    <div class="doble-info">
+      <div class="doble-label">Pedido doble — mismo restaurante</div>
+      <div class="doble-sub" id="dobleSub">Tocá para activar — divide el km de retiro entre 2</div>
+    </div>
+    <div class="doble-badge" id="dobleBadge">×2</div>
+  </div>
+
   <div class="entregas-header">
-    <div class="section-label" style="margin:0">🏠 Puntos de entrega</div>
+    <div>
+      <div class="section-label" style="margin:0">🏠 Tramos de entrega</div>
+      <div style="font-size:9px;color:var(--muted);margin-top:2px">Km de cada tramo entre puntos</div>
+    </div>
     <button class="add-entrega-btn" id="addEntregaBtn" onclick="addEntrega()">+ Agregar</button>
   </div>
   <div id="entregasContainer"></div>
@@ -1178,11 +1199,22 @@ function addEntrega(isInit=false){
   const idx = entregaCount;
   const div = document.createElement('div');
   div.className = 'entrega-row'; div.id = `entrega_${idx}`;
+
+  // Labels descriptivos según el tramo
+  const labels = {
+    1: { icon:'🏠', top:'Restaurante → Cliente 1', sub:'km desde el restaurante' },
+    2: { icon:'🏠', top:'Cliente 1 → Cliente 2',   sub:'km entre clientes' },
+    3: { icon:'🏠', top:'Cliente 2 → Cliente 3',   sub:'km entre clientes' },
+    4: { icon:'🏠', top:'Cliente 3 → Cliente 4',   sub:'km entre clientes' },
+  };
+  const lbl = labels[idx] || { icon:'🏠', top:`Entrega ${idx}`, sub:'km' };
+
   div.innerHTML = `
     <div class="entrega-row-top">
       <div class="entrega-num">${idx}</div>
       <div class="entrega-input-wrap">
-        <label>KM Entrega ${idx}</label>
+        <label>${lbl.top}</label>
+        <div style="font-size:9px;color:var(--muted);margin-bottom:3px">${lbl.sub}</div>
         <input type="number" id="kmE_${idx}" placeholder="0.000" step="0.001" oninput="updateResult()">
       </div>
       ${idx>1?`<button class="remove-entrega" onclick="removeEntrega(${idx})">×</button>`:'<div style="width:32px"></div>'}
@@ -1212,6 +1244,21 @@ function getKmEntregas(){
 }
 
 // ============================================================
+// PEDIDO DOBLE
+// ============================================================
+let isDoble = false;
+function toggleDoble(){
+  isDoble = !isDoble;
+  const toggle = document.getElementById('dobleToggle');
+  const sub = document.getElementById('dobleSub');
+  toggle.classList.toggle('active', isDoble);
+  sub.textContent = isDoble
+    ? '✓ Activo — el km de retiro se divide entre 2 pedidos'
+    : 'Tocá para activar — divide el km de retiro entre 2';
+  updateResult();
+}
+
+// ============================================================
 // CÁLCULO (con soporte decimales exactos)
 // ============================================================
 function calcPedido(kmR, kmETotal, nEnt, prop, mult){
@@ -1231,7 +1278,8 @@ function calcCostoDia(){
 }
 
 function updateResult(){
-  const kmR = parseFloat(document.getElementById('kmRetiro').value) || 0;
+  const kmRRaw = parseFloat(document.getElementById('kmRetiro').value) || 0;
+  const kmR = isDoble ? parseFloat((kmRRaw / 2).toFixed(3)) : kmRRaw;
   const {total: kmETotal, count: nEnt} = getKmEntregas();
   const prop = parseFloat(document.getElementById('propina').value) || 0;
   const mult = getEffMult();
@@ -1240,9 +1288,10 @@ function updateResult(){
   const neta = parseFloat((total - costo).toFixed(2));
 
   document.getElementById('resultAmount').textContent = 'Q ' + total.toFixed(2);
-  if(kmR > 0 || kmETotal > 0){
+  if(kmRRaw > 0 || kmETotal > 0){
     const base = total - prop;
     const lines = [`Base × ${mult}x = Q${base.toFixed(2)}`];
+    if(isDoble) lines.push(`📦📦 Doble: retiro Q${kmRRaw}km ÷ 2 = ${kmR}km`);
     if(nEnt > 1) lines.push(`${nEnt} puntos de entrega`);
     if(prop > 0) lines.push(`+ Q${prop.toFixed(2)} propina`);
     document.getElementById('resultBreakdown').innerHTML = lines.map(l=>`<span>${l}</span>`).join('');
@@ -1284,18 +1333,19 @@ function calcTimings(o){
 // AGREGAR PEDIDO
 // ============================================================
 function addOrder(){
-  const kmR = parseFloat(document.getElementById('kmRetiro').value) || 0;
+  const kmRRaw = parseFloat(document.getElementById('kmRetiro').value) || 0;
+  const kmR = isDoble ? parseFloat((kmRRaw / 2).toFixed(3)) : kmRRaw;
   const {total: kmETotal, count: nEnt} = getKmEntregas();
   const prop = parseFloat(document.getElementById('propina').value) || 0;
   const restaurant = document.getElementById('restaurantInput').value.trim();
-  if(kmR === 0 && kmETotal === 0){ alert('Ingresá al menos un km'); return; }
+  if(kmRRaw === 0 && kmETotal === 0){ alert('Ingresá al menos un km'); return; }
   const mult = getEffMult();
   const total = calcPedido(kmR, kmETotal, nEnt, prop, mult);
-  // Simplify routes before saving (max 80 points each to keep localStorage small)
   const savedRouteR = simplifyRouteSave(gpsRouteRetiro, 80);
   const savedRouteE = simplifyRouteSave(gpsRouteEntrega, 80);
   const order = {
     id: Date.now(), kmR, kmETotal, nEnt, prop, mult, total, restaurant,
+    doble: isDoble,
     ts: new Date().toISOString(),
     tAceptar: times.aceptar ? times.aceptar.toTimeString().slice(0,5) : null,
     tLlegue: times.llegue ? times.llegue.toTimeString().slice(0,5) : null,
@@ -1324,6 +1374,10 @@ function resetFormBase(){
   document.getElementById('resultBreakdown').innerHTML = '';
   document.getElementById('resultNeta').textContent = '';
   times = {aceptar:null,llegue:null,recogi:null,entregu:null};
+  // Resetear pedido doble
+  isDoble = false;
+  document.getElementById('dobleToggle').classList.remove('active');
+  document.getElementById('dobleSub').textContent = 'Tocá para activar — divide el km de retiro entre 2';
   try{localStorage.removeItem('riderTimes_'+new Date().toDateString());}catch(e){}
   ['Aceptar','Llegue','Recogi','Entregu'].forEach(t => {
     document.getElementById('time'+t).textContent = '--:--';
@@ -2078,6 +2132,7 @@ function renderHistForDate(date){
   list.innerHTML = dayOrders.map((o,i) => {
     const t = new Date(o.ts).toTimeString().slice(0,5);
     const tipo = o.nEnt > 1 ? o.nEnt+' entregas' : '1 entrega';
+    const dobleTag = o.doble ? `<span class="order-type" style="background:rgba(77,166,255,0.1);color:var(--blue);border-color:rgba(77,166,255,0.3)">📦📦 Doble</span>` : '';
     const tim = calcTimings(o);
     let timing = '';
     if(tim.totalPedido !== null){
@@ -2109,6 +2164,7 @@ function renderHistForDate(date){
           <div class="order-meta">
             <span class="order-mult">${o.mult}x</span>
             <span class="order-type">${tipo}</span>
+            ${dobleTag}
             <span class="order-time">${t}</span>
           </div>
         </div>
