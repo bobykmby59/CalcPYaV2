@@ -393,14 +393,73 @@ canvas{max-width:100%}
 /* PEDIDO MAP CARD EN HISTORIAL */
 .order-map-btn{font-size:11px;color:var(--blue);cursor:pointer;font-weight:600;padding:4px 0;display:inline-block}
 .order-gps-info{font-size:10px;color:var(--green);margin-top:3px}
+
+/* ═══════════════════════════════════════════════
+   RIDER CALC v1.5.0 - PRO DESIGN BY KMBY
+═══════════════════════════════════════════════ */
+
+/* VERSIÓN BADGE */
+.version-badge{font-size:9px;color:#444;background:#111;border:1px solid #222;padding:2px 7px;border-radius:10px;letter-spacing:0.5px;font-family:'DM Sans',sans-serif}
+
+/* KMBY FOOTER */
+.kmby-footer{text-align:center;padding:20px 16px 8px;border-top:1px solid var(--border);margin-top:10px}
+.kmby-footer .kmby-label{font-size:10px;color:#333;text-transform:uppercase;letter-spacing:2px}
+.kmby-footer .kmby-brand{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;background:linear-gradient(90deg,#ff2d55,#ff6b35,#ffb347);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+/* POPUP NOVEDADES */
+.popup-overlay{display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.92);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px}
+.popup-overlay.open{display:flex}
+.popup-card{background:linear-gradient(160deg,#1a0808 0%,#0d0d0d 60%);border:1px solid #3a1515;border-radius:24px;padding:24px 20px;width:100%;max-width:400px;animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1)}
+@keyframes popIn{from{opacity:0;transform:scale(0.85)}to{opacity:1;transform:scale(1)}}
+.popup-version{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:3px;color:var(--accent);margin-bottom:6px}
+.popup-title{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;color:var(--text);margin-bottom:16px;line-height:1}
+.popup-list{list-style:none;margin-bottom:20px}
+.popup-list li{padding:8px 0;border-bottom:1px solid #1f1f1f;font-size:13px;color:#ccc;display:flex;align-items:flex-start;gap:10px}
+.popup-list li:last-child{border-bottom:none}
+.popup-list li .pi{font-size:16px;flex-shrink:0;margin-top:1px}
+.popup-accept-btn{width:100%;padding:16px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;font-size:16px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:0.5px}
+.popup-kmby{text-align:center;margin-top:12px;font-size:10px;color:#333;letter-spacing:2px;text-transform:uppercase}
+
+/* PRO HEADER UPGRADE */
+.header-greeting{font-size:12px;color:var(--muted);margin-bottom:2px}
+.header-name{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--text);letter-spacing:1px}
+
+/* MEJOR ZONA GPS */
+.zona-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px;margin-bottom:10px}
+.zona-item{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border)}
+.zona-item:last-child{border-bottom:none}
+.zona-num{width:24px;height:24px;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:13px;flex-shrink:0}
+.zona-info{flex:1}
+.zona-name{font-size:12px;color:var(--text);font-weight:600}
+.zona-sub{font-size:10px;color:var(--muted)}
+.zona-val{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--green)}
+
+/* GPS DIALOG */
+.gps-dialog{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;display:none}
+.gps-dialog.visible{display:block}
+.gps-dialog-title{font-size:12px;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px}
+.gps-dialog-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gps-dialog-btn{padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;text-align:center}
+.gps-dialog-btn.primary{background:linear-gradient(135deg,var(--blue),#0044aa);border-color:var(--blue);color:white}
+
+/* CONFIG PRO */
+.config-rider-card{background:linear-gradient(135deg,#1a0808,#1f1212);border:1px solid #3a1515;border-radius:16px;padding:16px;margin-bottom:12px}
+.config-rider-card h3{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;margin-bottom:12px;color:var(--accent)}
+.rider-name-display{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--text);letter-spacing:2px;margin-bottom:4px}
 </style>
 </head>
 <body>
 
 <header>
   <div class="header-top">
-    <div class="logo">🛵 RIDER CALC</div>
-    <div class="date-badge" id="dateBadge"></div>
+    <div>
+      <div class="header-greeting" id="headerGreeting">Buenas noches</div>
+      <div class="logo" style="display:flex;align-items:center;gap:8px">🛵 RIDER CALC <span class="version-badge" id="versionBadge">v1.5.0</span></div>
+      <div class="header-name" id="headerRiderName"></div>
+    </div>
+    <div style="text-align:right">
+      <div class="date-badge" id="dateBadge" style="margin-bottom:4px"></div>
+    </div>
   </div>
   <div class="total-row">
     <div>
@@ -527,6 +586,14 @@ canvas{max-width:100%}
     <div class="result-amount" id="resultAmount">Q 0.00</div>
     <div class="result-breakdown" id="resultBreakdown"></div>
     <div class="result-neta" id="resultNeta"></div>
+  <div class="gps-dialog" id="gpsConfirmDialog">
+    <div class="gps-dialog-title">📍 GPS detectó distancia diferente</div>
+    <div id="gpsDialogText" style="font-size:12px;color:var(--muted);margin-bottom:10px"></div>
+    <div class="gps-dialog-btns">
+      <button class="gps-dialog-btn primary" onclick="useGpsKm()">🛰️ Usar GPS</button>
+      <button class="gps-dialog-btn" onclick="keepManualKm()">✏️ Mantener manual</button>
+    </div>
+  </div>
   </div>
   <button class="add-btn" onclick="addOrder()">✓ AGREGAR AL HISTORIAL</button>
 </div>
@@ -600,6 +667,14 @@ canvas{max-width:100%}
     <div class="ic-title">🧾 Impuestos y cargos semanales</div>
     <div id="impuestoContent" style="text-align:center;color:var(--muted);padding:14px;font-size:13px">Sin datos esta semana</div>
   </div>
+  <div class="zona-card" id="zonaCard" style="display:none">
+    <div class="ic-title">📍 Mejores zonas del día (GPS)</div>
+    <div id="zonaContent"></div>
+  </div>
+  <div class="info-card" id="metaSemanalCard" style="display:none">
+    <div class="ic-title">📅 Meta semanal</div>
+    <div id="metaSemanalContent"></div>
+  </div>
   <div class="semana-card" id="semanaCard">
     <div class="ic-title">📅 Esta semana vs semana anterior</div>
     <div id="semanaContent" style="text-align:center;color:var(--muted);padding:14px;font-size:13px">Sin datos aún</div>
@@ -629,9 +704,24 @@ canvas{max-width:100%}
 <!-- CONFIG -->
 <div class="tab-content" id="tab-config">
 
+  <!-- RIDER -->
+  <div class="config-rider-card">
+    <h3>👤 Tu perfil</h3>
+    <div class="config-field">
+      <label>Tu nombre</label>
+      <input type="text" id="cfgNombre" placeholder="Ej: Luis Fernando" style="font-family:'DM Sans',sans-serif;font-size:16px;color:var(--text);background:none;border:none;outline:none;width:100%">
+    </div>
+    <div class="config-field">
+      <label>Alerta tiempo muerto (minutos)</label>
+      <input type="number" id="cfgAlertaMins" placeholder="12" step="1" min="5" max="60">
+      <span class="unit">min</span>
+    </div>
+    <button class="save-config-btn" onclick="saveConfig()">💾 Guardar perfil</button>
+  </div>
+
   <!-- META DIARIA -->
   <div class="config-section">
-    <h3>🎯 Meta diaria</h3>
+    <h3>🎯 Metas</h3>
     <div class="config-field">
       <label>Meta de ganancias</label>
       <input type="number" id="cfgMeta" placeholder="500" step="50">
@@ -690,6 +780,25 @@ canvas{max-width:100%}
 
 <!-- FAB -->
 <button class="fab hidden" id="fab" onclick="openQuick()">⚡</button>
+
+<!-- POPUP NOVEDADES v1.5.0 -->
+<div class="popup-overlay" id="popupNovedades">
+  <div class="popup-card">
+    <div class="popup-version">VERSIÓN 1.5.0</div>
+    <div class="popup-title">Novedades 🔥</div>
+    <ul class="popup-list">
+      <li><span class="pi">🗺️</span><span>GPS en tiempo real — trazá tu ruta automáticamente al aceptar cada pedido</span></li>
+      <li><span class="pi">🛑</span><span>Alerta de tiempo muerto — te avisa si llevás más de 12 min parado</span></li>
+      <li><span class="pi">⚡</span><span>Burbuja mejorada — botones de tiempo directo desde cualquier pantalla</span></li>
+      <li><span class="pi">🧾</span><span>Impuestos semanales — IVA 5% y Q18.50 uso de app calculados automáticamente</span></li>
+      <li><span class="pi">📅</span><span>Meta semanal configurable + comparativa semana anterior</span></li>
+      <li><span class="pi">👤</span><span>Perfil del rider — personalizá la app con tu nombre</span></li>
+      <li><span class="pi">📍</span><span>Mejores zonas del día según GPS</span></li>
+    </ul>
+    <button class="popup-accept-btn" onclick="cerrarPopupNovedades()">¡Entendido, a repartir! 🛵</button>
+    <div class="popup-kmby">Desarrollada por KMBY</div>
+  </div>
+</div>
 
 <!-- QUICK MODAL -->
 <div class="modal-overlay" id="quickModal" onclick="closeModalOutside(event,'quickModal')">
@@ -2327,6 +2436,165 @@ function resetForm(){
   if(qKmL) qKmL.textContent = '';
   if(qKmE) qKmE.textContent = '';
   cerrarAlertaMovete();
+}
+
+
+// ============================================================
+// RIDER CALC v1.5.0 — BY KMBY
+// ============================================================
+const APP_VERSION = "1.5.0";
+
+// ── POPUP NOVEDADES ───────────────────────────────────────────
+function checkPopupNovedades(){
+  const lastSeen = localStorage.getItem('riderLastVersion');
+  if(lastSeen !== APP_VERSION){
+    setTimeout(()=>{
+      document.getElementById('popupNovedades').classList.add('open');
+    }, 800);
+  }
+}
+function cerrarPopupNovedades(){
+  document.getElementById('popupNovedades').classList.remove('open');
+  localStorage.setItem('riderLastVersion', APP_VERSION);
+}
+
+// ── GREETING ─────────────────────────────────────────────────
+function updateGreeting(){
+  const h = new Date().getHours();
+  const greet = h < 12 ? 'Buenos días' : h < 18 ? 'Buenas tardes' : 'Buenas noches';
+  const el = document.getElementById('headerGreeting');
+  if(el) el.textContent = greet;
+  const nameEl = document.getElementById('headerRiderName');
+  if(nameEl && cfg.nombre) nameEl.textContent = cfg.nombre.toUpperCase();
+  else if(nameEl) nameEl.textContent = '';
+}
+
+// ── META SEMANAL ──────────────────────────────────────────────
+function updateMetaSemanal(){
+  const el = document.getElementById('metaSemanalContent');
+  const card = document.getElementById('metaSemanalCard');
+  if(!el || !cfg.metaSemanal || cfg.metaSemanal <= 0){ if(card) card.style.display='none'; return; }
+  card.style.display = 'block';
+  const weekOrders = getWeekOrders();
+  const semanaTotal = weekOrders.reduce((s,o)=>s+o.total,0);
+  const pct = Math.min(100,(semanaTotal/cfg.metaSemanal)*100);
+  const falta = cfg.metaSemanal - semanaTotal;
+  el.innerHTML = `
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+      <span style="font-size:12px;color:var(--muted)">Esta semana</span>
+      <span style="font-family:'Bebas Neue';font-size:20px;color:var(--green)">Q${semanaTotal.toFixed(2)}</span>
+    </div>
+    <div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:6px">
+      <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:4px;transition:width 0.5s"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted)">
+      <span>${pct.toFixed(0)}% completado</span>
+      <span>${falta>0?'Faltan Q'+falta.toFixed(0):'🔥 META CUMPLIDA'}</span>
+    </div>`;
+}
+
+// ── ZONAS GPS ─────────────────────────────────────────────────
+let gpsZonas = []; // [{lat,lng,km,ganancia,hora}]
+
+function registrarZona(lat, lng, km, ganancia){
+  gpsZonas.push({lat, lng, km, ganancia, hora: new Date().getHours()});
+}
+
+function updateZonaStats(){
+  const card = document.getElementById('zonaCard');
+  const el = document.getElementById('zonaContent');
+  if(!el || gpsZonas.length === 0){ if(card) card.style.display='none'; return; }
+  card.style.display = 'block';
+  // Group by hour
+  const byHora = {};
+  gpsZonas.forEach(z => {
+    const k = z.hora+':00';
+    if(!byHora[k]) byHora[k] = {total:0,km:0,count:0};
+    byHora[k].total += z.ganancia;
+    byHora[k].km += z.km;
+    byHora[k].count++;
+  });
+  const sorted = Object.entries(byHora).sort((a,b)=>b[1].total-a[1].total).slice(0,4);
+  el.innerHTML = sorted.map(([hora,d],i)=>`
+    <div class="zona-item">
+      <div class="zona-num">${i+1}</div>
+      <div class="zona-info">
+        <div class="zona-name">${hora} hrs</div>
+        <div class="zona-sub">${d.count} pedido${d.count>1?'s':''} · ${d.km.toFixed(1)}km recorridos</div>
+      </div>
+      <div class="zona-val">Q${d.total.toFixed(0)}</div>
+    </div>`).join('');
+}
+
+// ── GPS CONFIRM DIALOG (GPS vs Manual) ───────────────────────
+let _pendingGpsKmR = 0, _pendingGpsKmE = 0;
+
+function showGpsConfirmDialog(gpsR, gpsE, manualR, manualE){
+  _pendingGpsKmR = gpsR;
+  _pendingGpsKmE = gpsE;
+  const dialog = document.getElementById('gpsConfirmDialog');
+  const text = document.getElementById('gpsDialogText');
+  if(!dialog) return;
+  text.innerHTML = `
+    <div style="display:flex;gap:16px;margin-bottom:6px">
+      <div><div style="color:var(--blue);font-weight:600">🛰️ GPS</div><div>Retiro: ${gpsR.toFixed(3)}km</div><div>Entrega: ${gpsE.toFixed(3)}km</div></div>
+      <div><div style="color:var(--yellow);font-weight:600">✏️ Manual</div><div>Retiro: ${manualR.toFixed(3)}km</div><div>Entrega: ${manualE.toFixed(3)}km</div></div>
+    </div>`;
+  dialog.classList.add('visible');
+}
+function useGpsKm(){
+  document.getElementById('kmRetiro').value = _pendingGpsKmR.toFixed(3);
+  const kmE1 = document.getElementById('kmE_1');
+  if(kmE1) kmE1.value = _pendingGpsKmE.toFixed(3);
+  updateResult();
+  document.getElementById('gpsConfirmDialog').classList.remove('visible');
+}
+function keepManualKm(){
+  document.getElementById('gpsConfirmDialog').classList.remove('visible');
+}
+
+// ── SAVE/LOAD CONFIG EXTENSIONS ───────────────────────────────
+const _origSaveConfig = saveConfig;
+function saveConfig(){
+  cfg.nombre = document.getElementById('cfgNombre')?.value?.trim() || '';
+  cfg.metaSemanal = parseFloat(document.getElementById('cfgMetaSemanal')?.value)||0;
+  cfg.alertaMins = parseFloat(document.getElementById('cfgAlertaMins')?.value)||12;
+  _origSaveConfig();
+  updateGreeting();
+  // Update GPS alerta threshold
+  if(typeof GPS_ALERTA_MINS !== 'undefined') window.GPS_ALERTA_MINS = cfg.alertaMins || 12;
+}
+
+const _origLoadConfigUI = loadConfigUI;
+function loadConfigUI(){
+  _origLoadConfigUI();
+  if(document.getElementById('cfgNombre')) document.getElementById('cfgNombre').value = cfg.nombre||'';
+  if(document.getElementById('cfgMetaSemanal')) document.getElementById('cfgMetaSemanal').value = cfg.metaSemanal||'';
+  if(document.getElementById('cfgAlertaMins')) document.getElementById('cfgAlertaMins').value = cfg.alertaMins||12;
+}
+
+// ── HOOK updateStats TO INCLUDE NEW SECTIONS ──────────────────
+const _origUpdateStats = updateStats;
+function updateStats(){
+  _origUpdateStats();
+  updateMetaSemanal();
+  updateZonaStats();
+}
+
+// ── HOOK GPS stopGPS TO REGISTER ZONA ────────────────────────
+const _origStopGPS = typeof stopGPS !== 'undefined' ? stopGPS : null;
+
+// ── INIT EXTENSIONS ───────────────────────────────────────────
+const _origInit = init;
+function init(){
+  _origInit();
+  updateGreeting();
+  checkPopupNovedades();
+  // Load extended config
+  cfg.nombre = cfg.nombre || '';
+  cfg.metaSemanal = cfg.metaSemanal || 0;
+  cfg.alertaMins = cfg.alertaMins || 12;
+  updateGreeting();
 }
 
 init();
