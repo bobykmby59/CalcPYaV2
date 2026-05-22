@@ -701,6 +701,213 @@ canvas{max-width:100%}
 .config-rider-card{background:linear-gradient(135deg,#1a0808,#1f1212);border:1px solid #3a1515;border-radius:16px;padding:16px;margin-bottom:12px}
 .config-rider-card h3{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;margin-bottom:12px;color:var(--accent)}
 .rider-name-display{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--text);letter-spacing:2px;margin-bottom:4px}
+
+/* ═══════════════════════════════
+   QUICK ACTION PANEL v2.1.0
+═══════════════════════════════ */
+.quick-action-panel{
+  background:linear-gradient(135deg,#1a0808,#1f1010);
+  border:1px solid #3a1515;border-radius:18px;
+  padding:14px;margin-bottom:12px;
+}
+.qap-title{
+  font-size:10px;color:var(--muted);text-transform:uppercase;
+  letter-spacing:2px;margin-bottom:10px;text-align:center;
+}
+.qap-buttons{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+}
+.qap-btn{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:16px 8px;border-radius:14px;border:1px solid var(--border);
+  background:var(--card2);cursor:pointer;transition:all 0.15s;
+  gap:4px;min-height:80px;
+}
+.qap-btn:active{transform:scale(0.94);}
+.qap-icon{font-size:26px;line-height:1;}
+.qap-label{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:var(--muted);}
+.qap-time{font-size:13px;font-family:'Bebas Neue',sans-serif;color:var(--text);letter-spacing:1px;}
+.qap-btn.set{border-width:2px;}
+.qap-aceptar.set{border-color:var(--green);background:rgba(0,230,118,0.08);}
+.qap-aceptar.set .qap-label{color:var(--green);}
+.qap-llegue.set{border-color:var(--blue);background:rgba(77,166,255,0.08);}
+.qap-llegue.set .qap-label{color:var(--blue);}
+.qap-recogi.set{border-color:var(--yellow);background:rgba(255,179,71,0.08);}
+.qap-recogi.set .qap-label{color:var(--yellow);}
+.qap-entregu.set{border-color:var(--accent);background:rgba(255,45,85,0.08);}
+.qap-entregu.set .qap-label{color:var(--accent);}
+body.light-mode .quick-action-panel{background:linear-gradient(135deg,#fff5f7,#ffe8ec);border-color:#ffb3c0;}
+body.light-mode .qap-btn{background:#f8f8f8;border-color:#ddd;}
+body.light-mode .qap-label{color:#888;}
+
+/* UPDATE POPUP v2.1.0 */
+.popup-list li .pi-new{
+  font-size:9px;background:var(--accent);color:white;
+  border-radius:4px;padding:1px 5px;font-weight:700;
+  font-family:'DM Sans',sans-serif;letter-spacing:0.5px;
+  vertical-align:middle;margin-left:4px;
+}
+
+/* ═══════════════════════════════════════════
+   v2.1.0 PREMIUM STYLES BY KMBY
+═══════════════════════════════════════════ */
+
+/* MAPA DEDICADO */
+.mapa-header-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:10px}
+.mapa-status-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.mapa-status-dot{width:12px;height:12px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:all 0.3s}
+.mapa-status-dot.active{background:var(--green);box-shadow:0 0 10px var(--green);animation:pulse 1.5s infinite}
+.mapa-status-dot.tracking{background:var(--accent);box-shadow:0 0 10px var(--accent);animation:pulse 1s infinite}
+.mapa-status-info{flex:1}
+.mapa-status-label{font-size:13px;font-weight:700;color:var(--text)}
+.mapa-status-sub{font-size:11px;color:var(--muted)}
+.mapa-km-badge{background:linear-gradient(135deg,#001a08,#002210);border:1px solid #004d1a;border-radius:10px;padding:8px 12px;text-align:center}
+.mkb-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--green);line-height:1}
+.mkb-lbl{font-size:9px;color:#00a844;text-transform:uppercase;letter-spacing:1px}
+.mapa-tramos{display:flex;gap:8px}
+.mapa-tramo{flex:1;display:flex;align-items:center;gap:8px;background:var(--card2);border-radius:10px;padding:8px 10px}
+.mt-color{width:4px;height:32px;border-radius:2px;flex-shrink:0}
+.mt-info{flex:1}
+.mt-label{font-size:10px;color:var(--muted)}
+.mt-val{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--text);letter-spacing:1px}
+.mapa-legend{display:flex;gap:12px;padding:10px 0;flex-wrap:wrap}
+.ml-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+.ml-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+
+/* WAKE LOCK INDICATOR */
+.wake-lock-badge{display:none;align-items:center;gap:5px;background:#001a08;border:1px solid #004d1a;border-radius:8px;padding:3px 8px;font-size:10px;color:var(--green)}
+.wake-lock-badge.active{display:flex}
+.wake-lock-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+
+/* MODO MOTO - Compact premium */
+.modo-moto-btn{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:20px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;transition:all 0.2s;margin-bottom:12px;width:100%;justify-content:center}
+.modo-moto-btn.active{border-color:var(--accent);color:var(--accent);background:#1a0808}
+.modo-moto-btn .mmb-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);transition:all 0.2s}
+.modo-moto-btn.active .mmb-dot{background:var(--accent);box-shadow:0 0 6px var(--accent)}
+
+/* COMPACT MULT ROW */
+.compact-controls{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.compact-mult-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.compact-mult-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;width:80px;flex-shrink:0}
+.compact-mult-val{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--accent);line-height:1;flex:1;background:none;border:none;outline:none;-moz-appearance:textfield}
+.compact-mult-val::-webkit-outer-spin-button,.compact-mult-val::-webkit-inner-spin-button{-webkit-appearance:none}
+.compact-mult-btns{display:flex;gap:6px}
+.compact-mult-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
+.compact-mult-btn:active{background:var(--accent);transform:scale(0.9)}
+.compact-rain-row{display:flex;align-items:center;gap:10px}
+.compact-rain-label{font-size:12px;color:var(--muted);flex:1;display:flex;align-items:center;gap:6px}
+.compact-rain-extra{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--blue);background:none;border:none;outline:none;width:50px;text-align:right;display:none}
+.compact-rain-extra.visible{display:block}
+.compact-rain-total{font-size:11px;color:var(--accent2);margin-left:4px}
+
+/* QAP PREMIUM - No repeat, only in calc */
+.quick-action-panel{background:linear-gradient(135deg,#130606,#1a0a0a);border:1px solid #2a1010;border-radius:20px;padding:16px;margin-bottom:14px;position:relative;overflow:hidden}
+.quick-action-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent)}
+.qap-title{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:3px;margin-bottom:12px;text-align:center}
+.qap-buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.qap-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px 8px;border-radius:16px;border:1px solid #2a2a2a;background:#111;cursor:pointer;transition:all 0.2s;gap:5px;min-height:88px;position:relative;overflow:hidden}
+.qap-btn::after{content:'';position:absolute;inset:0;opacity:0;transition:opacity 0.2s;border-radius:16px}
+.qap-btn:active{transform:scale(0.93)}
+.qap-icon{font-size:28px;line-height:1}
+.qap-label{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1.5px;color:#555;transition:color 0.2s}
+.qap-time{font-size:14px;font-family:'Bebas Neue',sans-serif;color:var(--text);letter-spacing:1px}
+.qap-btn.set .qap-label{font-size:14px}
+.qap-aceptar.set{border-color:#00e676;background:rgba(0,230,118,0.06)}
+.qap-aceptar.set .qap-label{color:#00e676}
+.qap-llegue.set{border-color:#4da6ff;background:rgba(77,166,255,0.06)}
+.qap-llegue.set .qap-label{color:#4da6ff}
+.qap-recogi.set{border-color:#ffb347;background:rgba(255,179,71,0.06)}
+.qap-recogi.set .qap-label{color:#ffb347}
+.qap-entregu.set{border-color:#ff2d55;background:rgba(255,45,85,0.06)}
+.qap-entregu.set .qap-label{color:#ff2d55}
+body.light-mode .quick-action-panel{background:linear-gradient(135deg,#fff5f5,#fff0f0);border-color:#ffe0e0}
+body.light-mode .qap-btn{background:#fafafa;border-color:#eee}
+body.light-mode .qap-label{color:#aaa}
+body.light-mode .mapa-header-card{background:#fff;border-color:#eee}
+body.light-mode .mapa-tramo{background:#f5f5f5}
+
+/* ═══════════════════════════════════════════════
+   MODO MOTO v2.1.0 PREMIUM
+═══════════════════════════════════════════════ */
+.modo-moto-overlay{
+  display:none;position:fixed;inset:0;z-index:1500;
+  background:#000;flex-direction:column;
+  font-family:'DM Sans',sans-serif;
+}
+.modo-moto-overlay.open{display:flex}
+
+/* HEADER */
+.mm-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 10px;background:#0a0a0a;border-bottom:1px solid #1f1f1f;flex-shrink:0}
+.mm-header-left{flex:1}
+.mm-title{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:3px;color:#555;line-height:1}
+.mm-total{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--green);letter-spacing:2px;line-height:1}
+.mm-header-right{display:flex;gap:8px;align-items:center}
+.mm-reset-btn{width:38px;height:38px;border-radius:10px;border:1px solid #ff6b3544;background:#1a0800;color:var(--accent2);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.mm-reset-btn:active{background:var(--accent2);color:#000}
+.mm-close-btn{width:38px;height:38px;border-radius:10px;border:1px solid #333;background:#111;color:#666;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.mm-close-btn:active{background:#333}
+
+/* TIME GRID */
+.mm-time-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 12px;flex-shrink:0}
+.mm-time-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 6px;border-radius:16px;border:1px solid #1f1f1f;background:#0d0d0d;cursor:pointer;transition:all 0.2s;gap:4px;min-height:90px;position:relative;overflow:hidden}
+.mm-time-btn:active{transform:scale(0.93)}
+.mm-icon{font-size:30px;line-height:1}
+.mm-label{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:#444;transition:all 0.2s}
+.mm-time{font-size:16px;font-family:'Bebas Neue',sans-serif;color:var(--text);letter-spacing:1px}
+.mm-aceptar.set{border-color:#00e676;background:rgba(0,230,118,0.07)}
+.mm-aceptar.set .mm-label{color:#00e676}
+.mm-llegue.set{border-color:#4da6ff;background:rgba(77,166,255,0.07)}
+.mm-llegue.set .mm-label{color:#4da6ff}
+.mm-recogi.set{border-color:#ffb347;background:rgba(255,179,71,0.07)}
+.mm-recogi.set .mm-label{color:#ffb347}
+.mm-entregu.set{border-color:#ff2d55;background:rgba(255,45,85,0.07)}
+.mm-entregu.set .mm-label{color:#ff2d55}
+
+/* MULTIPLICADOR */
+.mm-mult-section{padding:0 12px 8px;flex-shrink:0}
+.mm-mult-row{display:flex;align-items:center;gap:8px;background:#0d0d0d;border:1px solid #1f1f1f;border-radius:14px;padding:10px 14px}
+.mm-mult-label{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:2px;width:36px;flex-shrink:0}
+.mm-mult-btn{width:36px;height:36px;border-radius:10px;border:1px solid #2a2a2a;background:#111;color:var(--text);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
+.mm-mult-btn:active{background:var(--accent);transform:scale(0.9)}
+.mm-mult-val{font-family:'Bebas Neue',sans-serif;font-size:34px;color:var(--accent);background:none;border:none;outline:none;flex:1;text-align:center;-moz-appearance:textfield}
+.mm-mult-val::-webkit-outer-spin-button,.mm-mult-val::-webkit-inner-spin-button{-webkit-appearance:none}
+.mm-rain-toggle{display:flex;align-items:center;gap:6px;cursor:pointer;flex-shrink:0}
+.mm-rain-val{font-size:12px;color:var(--blue);font-weight:600}
+
+/* MAPA */
+.mm-map-section{flex:1;padding:0 12px 8px;display:flex;flex-direction:column;gap:6px;min-height:0}
+.mm-map-status{display:flex;align-items:center;gap:8px;font-size:12px;color:#555}
+.mm-km-badge{margin-left:auto;font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--green)}
+
+/* FOOTER */
+.mm-footer{padding:10px 12px 20px;display:flex;gap:10px;align-items:center;flex-shrink:0;background:#0a0a0a;border-top:1px solid #1f1f1f}
+.mm-result{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--green);letter-spacing:2px;flex-shrink:0}
+.mm-register-btn{flex:1;padding:16px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;font-size:16px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:0.5px}
+.mm-register-btn:active{transform:scale(0.97);opacity:0.9}
+
+/* CONFIRM RESET */
+.mm-confirm-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.92);display:flex;align-items:center;justify-content:center;padding:20px;z-index:10}
+.mm-confirm-box{background:#111;border:1px solid #333;border-radius:20px;padding:24px 20px;width:100%;max-width:320px;text-align:center}
+.mm-confirm-icon{font-size:40px;margin-bottom:10px}
+.mm-confirm-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;color:var(--text);margin-bottom:8px}
+.mm-confirm-sub{font-size:13px;color:#666;margin-bottom:20px;line-height:1.5}
+.mm-confirm-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mm-confirm-cancel{padding:13px;border-radius:12px;border:1px solid #333;background:#1a1a1a;color:#888;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+.mm-confirm-ok{padding:13px;border-radius:12px;border:none;background:var(--accent);color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* SEMAFORO */
+.semaforo-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.95);display:flex;align-items:center;justify-content:center;z-index:20;animation:fadeIn 0.3s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.semaforo-box{text-align:center}
+.semaforo-luces{display:flex;gap:16px;justify-content:center;margin-bottom:20px}
+.semaforo-luz{width:60px;height:60px;border-radius:50%;background:#1a0000;border:3px solid #2a0000;transition:all 0.3s}
+.semaforo-luz.on-rojo{background:#ff2d55;box-shadow:0 0 30px #ff2d55,0 0 60px #ff2d5566;border-color:#ff2d55}
+.semaforo-luz.on-amarillo{background:#ffb347;box-shadow:0 0 30px #ffb347,0 0 60px #ffb34766;border-color:#ffb347}
+.semaforo-luz.on-verde{background:#00e676;box-shadow:0 0 30px #00e676,0 0 60px #00e67666;border-color:#00e676}
+.semaforo-texto{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:4px;color:var(--text);margin-bottom:10px}
+.bandera-container{animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1)}
+.bandera{font-size:60px;margin-bottom:8px}
+.bandera-texto{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:var(--green)}
 </style>
 </head>
 <body>
@@ -712,9 +919,13 @@ canvas{max-width:100%}
       <div class="logo" style="display:flex;align-items:center;gap:8px">
         <span style="font-size:26px;filter:drop-shadow(0 0 6px rgba(255,45,85,0.6))">🛵</span>
         CALC PYA
-        <span class="version-badge" id="versionBadge">v1.8.0</span>
+        <span class="version-badge" id="versionBadge">v2.1.0</span>
       </div>
       <div class="header-name" id="headerRiderName"></div>
+      <div class="wake-lock-badge" id="wakeLockBadge">
+        <div class="wake-lock-dot"></div>
+        <span>Pantalla activa</span>
+      </div>
     </div>
     <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px">
       <div style="display:flex;align-items:center;gap:6px">
@@ -768,6 +979,7 @@ canvas{max-width:100%}
   <div class="tab active" onclick="switchTab('calc')">🧮 Calc</div>
   <div class="tab" onclick="switchTab('historial')">📋 Historial</div>
   <div class="tab" onclick="switchTab('stats')">📊 Stats</div>
+  <div class="tab" onclick="switchTab('mapa')">🗺️ Mapa</div>
   <div class="tab" onclick="switchTab('grafica')">📈 Gráfica</div>
   <div class="tab" onclick="switchTab('config')">⚙️ Config</div>
 </div>
@@ -784,17 +996,17 @@ canvas{max-width:100%}
     </div>
   </div>
 
-  <!-- 2. BOTONES DE TIEMPO — PRIMERO, sin scrollear -->
-  <div class="time-section">
-    <div class="section-label" style="margin-bottom:10px">⏱️ Registro de tiempo</div>
-    <div class="time-btns">
-      <button class="time-btn" id="btnAceptar" onclick="setTime('aceptar')"><span class="tb-icon">✅</span>Acepté<div class="tb-time" id="timeAceptar">--:--</div></button>
-      <button class="time-btn" id="btnLlegue" onclick="setTime('llegue')"><span class="tb-icon">🏍️</span>Llegué<div class="tb-time" id="timeLlegue">--:--</div></button>
-      <button class="time-btn" id="btnRecogi" onclick="setTime('recogi')"><span class="tb-icon">📦</span>Recogí<div class="tb-time" id="timeRecogi">--:--</div></button>
-      <button class="time-btn" id="btnEntregu" onclick="setTime('entregu')"><span class="tb-icon">🏠</span>Entregué<div class="tb-time" id="timeEntregu">--:--</div></button>
-    </div>
-    <!-- Botones extra de entrega (se generan dinámicamente) -->
-    <div id="extraEntregaBtns" style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px"></div>
+  <!-- TIEMPO BUTTONS - Hidden in calc tab, shown in Modo Moto -->
+  <div id="timeSectionHidden" style="display:none">
+    <button id="btnAceptar" onclick="setTime('aceptar')"></button>
+    <button id="btnLlegue" onclick="setTime('llegue')"></button>
+    <button id="btnRecogi" onclick="setTime('recogi')"></button>
+    <button id="btnEntregu" onclick="setTime('entregu')"></button>
+    <span id="timeAceptar"></span>
+    <span id="timeLlegue"></span>
+    <span id="timeRecogi"></span>
+    <span id="timeEntregu"></span>
+    <div id="extraEntregaBtns"></div>
   </div>
 
   <!-- 3. KM CHIPS GPS (aparece cuando GPS activo) -->
@@ -802,6 +1014,48 @@ canvas{max-width:100%}
     <span class="gps-chip retiro" id="chipRetiro">🏍️ Retiro: 0.000 km</span>
     <span class="gps-chip entrega" id="chipEntrega" style="display:none">🛵 Entrega: 0.000 km</span>
   </div>
+
+  <!-- QUICK ACTION PANEL v2.1.0 PREMIUM -->
+  <div class="quick-action-panel" id="quickActionPanel">
+    <div class="qap-title">⚡ ACCIÓN RÁPIDA</div>
+    <div class="qap-buttons">
+      <button class="qap-btn qap-aceptar" id="qapAceptar" onclick="setTime('aceptar')">
+        <span class="qap-icon">✅</span>
+        <span class="qap-label">ACEPTÉ</span>
+        <span class="qap-time" id="qapTimeAceptar">--:--</span>
+      </button>
+      <button class="qap-btn qap-llegue" id="qapLlegue" onclick="setTime('llegue')">
+        <span class="qap-icon">🏍️</span>
+        <span class="qap-label">LLEGUÉ</span>
+        <span class="qap-time" id="qapTimeLlegue">--:--</span>
+      </button>
+      <button class="qap-btn qap-recogi" id="qapRecogi" onclick="setTime('recogi')">
+        <span class="qap-icon">📦</span>
+        <span class="qap-label">RECOGÍ</span>
+        <span class="qap-time" id="qapTimeRecogi">--:--</span>
+      </button>
+      <button class="qap-btn qap-entregu" id="qapEntregu" onclick="setTime('entregu')">
+        <span class="qap-icon">🏠</span>
+        <span class="qap-label">ENTREGUÉ</span>
+        <span class="qap-time" id="qapTimeEntregu">--:--</span>
+      </button>
+    </div>
+    <!-- COMPACT RAIN SWITCH -->
+    <div class="compact-rain-row" style="margin-top:12px;padding-top:10px;border-top:1px solid #1f1f1f" onclick="toggleRain()">
+      <div class="compact-rain-label">
+        🌧️ Lluvia
+        <span class="compact-rain-total" id="compactRainTotal"></span>
+      </div>
+      <input type="number" class="compact-rain-extra" id="compactRainExtra" placeholder=".25" step="0.05" value="0.25" onclick="event.stopPropagation()" oninput="onCompactRainInput()">
+      <div class="toggle-switch" id="rainSwitchCompact"><div class="toggle-knob"></div></div>
+    </div>
+  </div>
+
+  <!-- MODO MOTO BUTTON -->
+  <button class="modo-moto-btn" id="modoMotoBtnToggle" onclick="abrirModoMoto()">
+    <div class="mmb-dot"></div>
+    🏍️ Activar Modo Moto
+  </button>
 
   <!-- 4. MAPA (aparece cuando GPS activo) -->
   <div class="map-container" id="mapContainer" style="display:none;overflow:hidden">
@@ -999,6 +1253,45 @@ canvas{max-width:100%}
   </div>
 </div>
 
+<!-- MAPA DEDICADO -->
+<div class="tab-content" id="tab-mapa">
+  <div class="mapa-header-card">
+    <div class="mapa-status-row">
+      <div class="mapa-status-dot" id="mapaStatusDot"></div>
+      <div class="mapa-status-info">
+        <div class="mapa-status-label" id="mapaStatusLabel">GPS Inactivo</div>
+        <div class="mapa-status-sub" id="mapaStatusSub">Aceptá un pedido para iniciar el trazado</div>
+      </div>
+      <div class="mapa-km-badge" id="mapaKmBadge" style="display:none">
+        <div class="mkb-val" id="mapaKmTotal">0.000</div>
+        <div class="mkb-lbl">km GPS</div>
+      </div>
+    </div>
+    <div class="mapa-tramos" id="mapaTramos" style="display:none">
+      <div class="mapa-tramo">
+        <div class="mt-color" style="background:#4da6ff"></div>
+        <div class="mt-info">
+          <div class="mt-label">🏍️ Al restaurante</div>
+          <div class="mt-val" id="mapaKmRetiro">0.000 km</div>
+        </div>
+      </div>
+      <div class="mapa-tramo">
+        <div class="mt-color" style="background:#00e676"></div>
+        <div class="mt-info">
+          <div class="mt-label">🛵 Al cliente</div>
+          <div class="mt-val" id="mapaKmEntrega">0.000 km</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="mapaFullDiv" style="width:100%;height:calc(100vh - 280px);min-height:300px;border-radius:16px;overflow:hidden;border:1px solid var(--border)"></div>
+  <div class="mapa-legend">
+    <div class="ml-item"><div class="ml-dot" style="background:#4da6ff"></div><span>Retiro al restaurante</span></div>
+    <div class="ml-item"><div class="ml-dot" style="background:#00e676"></div><span>Entrega al cliente</span></div>
+    <div class="ml-item"><div class="ml-dot" style="background:#ff2d55;width:12px;height:12px;border-radius:50%"></div><span>Puntos clave</span></div>
+  </div>
+</div>
+
 <!-- GRÁFICA -->
 <div class="tab-content" id="tab-grafica">
   <div class="chart-wrap">
@@ -1130,18 +1423,120 @@ canvas{max-width:100%}
   </div>
 </div>
 
-<!-- POPUP NOVEDADES v1.8.0 -->
+<!-- MODO MOTO FULLSCREEN -->
+<div class="modo-moto-overlay" id="modoMotoOverlay">
+
+  <!-- SEMAFORO ANIMATION -->
+  <div class="semaforo-overlay" id="semaforoOverlay" style="display:none">
+    <div class="semaforo-box">
+      <div class="semaforo-luces">
+        <div class="semaforo-luz rojo" id="semLuz1"></div>
+        <div class="semaforo-luz rojo" id="semLuz2"></div>
+        <div class="semaforo-luz rojo" id="semLuz3"></div>
+      </div>
+      <div class="semaforo-texto" id="semaforoTexto">PREPARADO</div>
+      <div class="bandera-container" id="banderaContainer" style="display:none">
+        <div class="bandera">🏁</div>
+        <div class="bandera-texto">¡A REPARTIR!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER MODO MOTO -->
+  <div class="mm-header">
+    <div class="mm-header-left">
+      <div class="mm-title">🏍️ MODO MOTO</div>
+      <div class="mm-total" id="mmTotal">Q 0.00</div>
+    </div>
+    <div class="mm-header-right">
+      <button class="mm-reset-btn" onclick="confirmarResetViaje()" title="Reiniciar viaje">↺</button>
+      <button class="mm-close-btn" onclick="cerrarModoMoto()">✕</button>
+    </div>
+  </div>
+
+  <!-- BOTONES DE TIEMPO GRANDES -->
+  <div class="mm-time-grid">
+    <button class="mm-time-btn mm-aceptar" id="mmBtnAceptar" onclick="mmSetTime('aceptar')">
+      <span class="mm-icon">✅</span>
+      <span class="mm-label">ACEPTÉ</span>
+      <span class="mm-time" id="mmTimeAceptar">--:--</span>
+    </button>
+    <button class="mm-time-btn mm-llegue" id="mmBtnLlegue" onclick="mmSetTime('llegue')">
+      <span class="mm-icon">🏍️</span>
+      <span class="mm-label">LLEGUÉ</span>
+      <span class="mm-time" id="mmTimeLlegue">--:--</span>
+    </button>
+    <button class="mm-time-btn mm-recogi" id="mmBtnRecogi" onclick="mmSetTime('recogi')">
+      <span class="mm-icon">📦</span>
+      <span class="mm-label">RECOGÍ</span>
+      <span class="mm-time" id="mmTimeRecogi">--:--</span>
+    </button>
+    <button class="mm-time-btn mm-entregu" id="mmBtnEntregu" onclick="mmSetTime('entregu')">
+      <span class="mm-icon">🏠</span>
+      <span class="mm-label">ENTREGUÉ</span>
+      <span class="mm-time" id="mmTimeEntregu">--:--</span>
+    </button>
+  </div>
+
+  <!-- MULTIPLICADOR COMPACTO -->
+  <div class="mm-mult-section">
+    <div class="mm-mult-row">
+      <span class="mm-mult-label">MULT</span>
+      <button class="mm-mult-btn" onclick="changeMult(-0.05)">−</button>
+      <input type="number" class="mm-mult-val" id="mmMultVal" value="1.30" step="0.05" oninput="onMmMultInput()">
+      <button class="mm-mult-btn" onclick="changeMult(0.05)">+</button>
+      <div class="mm-rain-toggle" onclick="toggleRain()">
+        <span>🌧️</span>
+        <div class="toggle-switch" id="mmRainSwitch"><div class="toggle-knob"></div></div>
+        <span class="mm-rain-val" id="mmRainVal" style="display:none"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAPA EN MODO MOTO -->
+  <div class="mm-map-section">
+    <div class="mm-map-status">
+      <div class="mapa-status-dot" id="mmMapDot"></div>
+      <span id="mmMapStatus">GPS inactivo</span>
+      <span class="mm-km-badge" id="mmKmBadge">0.000 km</span>
+    </div>
+    <div id="mmMapDiv" style="width:100%;flex:1;min-height:180px;border-radius:14px;overflow:hidden"></div>
+  </div>
+
+  <!-- BOTÓN REGISTRAR VIAJE -->
+  <div class="mm-footer">
+    <div class="mm-result" id="mmResult">Q 0.00</div>
+    <button class="mm-register-btn" onclick="mmRegistrarViaje()">
+      ✓ REGISTRAR VIAJE
+    </button>
+  </div>
+
+  <!-- MODAL CONFIRMACIÓN RESET -->
+  <div class="mm-confirm-overlay" id="mmConfirmOverlay" style="display:none">
+    <div class="mm-confirm-box">
+      <div class="mm-confirm-icon">⚠️</div>
+      <div class="mm-confirm-title">¿Reiniciar viaje?</div>
+      <div class="mm-confirm-sub">Se borrará el progreso actual del GPS y tiempos. No se eliminará del historial.</div>
+      <div class="mm-confirm-btns">
+        <button class="mm-confirm-cancel" onclick="cerrarConfirmReset()">Cancelar</button>
+        <button class="mm-confirm-ok" onclick="ejecutarResetViaje()">Sí, reiniciar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP NOVEDADES v2.1.0 -->
 <div class="popup-overlay" id="popupNovedades">
   <div class="popup-card">
     <div class="popup-version">VERSIÓN 1.8.0</div>
     <div class="popup-title">Novedades 🔥</div>
     <ul class="popup-list">
-      <li><span class="pi">🌤️</span><span><strong>Clima en tiempo real:</strong> Temperatura en °C junto al botón de tema, se actualiza cada 20 min automáticamente.</span></li>
-      <li><span class="pi">🌙</span><span><strong>Modo claro/oscuro completo:</strong> Todos los elementos, gráficas y botones respetan el tema. Auto-oscuro desde las 6 PM.</span></li>
-      <li><span class="pi">🗑️</span><span><strong>Borrar día con confirmación:</strong> Botón en Historial para limpiar todos los pedidos del día, con confirmación antes de ejecutar.</span></li>
-      <li><span class="pi">⌨️</span><span><strong>Inputs km más ágiles:</strong> Al tocar el campo de km, el 0.000 desaparece solo — ya no hay que borrar manualmente.</span></li>
-      <li><span class="pi">🛵</span><span><strong>Consejos del Rider:</strong> Pop-up motivacional diario al abrir la app con consejos de seguridad vial.</span></li>
-      <li><span class="pi">✨</span><span><strong>Pulse verde</strong> al agregar pedido y mejoras de rendimiento general.</span></li>
+      <li><span class="pi">🏍️</span><span>Modo Moto — pantalla completa dedicada para repartir <span class="pi-new">NUEVO</span></span></li>
+      <li><span class="pi">🚦</span><span>Animación semáforo Gran Prix al aceptar pedido <span class="pi-new">NUEVO</span></span></li>
+      <li><span class="pi">↺</span><span>Botón reiniciar viaje con confirmación <span class="pi-new">NUEVO</span></span></li>
+      <li><span class="pi">🗺️</span><span>Mapa integrado en Modo Moto + pestaña dedicada</span></li>
+      <li><span class="pi">😴</span><span>Wake Lock — pantalla activa mientras repartís</span></li>
+      <li><span class="pi">🏪</span><span>Fix autocomplete restaurantes al tocar</span></li>
     </ul>
     <button class="popup-accept-btn" onclick="cerrarPopupNovedades()">¡Entendido, a repartir! 🛵</button>
     <div class="popup-kmby">Desarrollada por KMBY</div>
@@ -1351,7 +1746,7 @@ function getEffMult(){
   const rain = rainOn ? (parseFloat(document.getElementById('rainExtra').value)||0) : 0;
   return parseFloat((multiplier + rain).toFixed(2));
 }
-function toggleRain(){
+function toggleRainBase(){
   rainOn = !rainOn;
   document.getElementById('rainSwitch').classList.toggle('on', rainOn);
   document.getElementById('rainInput').classList.toggle('visible', rainOn);
@@ -1417,7 +1812,7 @@ function handleRestaurantInput(){
   if(!val){list.innerHTML='';return;}
   const matches = restaurants.filter(r => r.toLowerCase().includes(val));
   if(matches.length === 0){list.innerHTML='';return;}
-  list.innerHTML = matches.map(r => `<div class="autocomplete-item" onclick="selectRestaurant('${r.replace(/'/g,"\\'")}'">${r}</div>`).join('');
+  list.innerHTML = matches.map(r => `<div class="autocomplete-item" onmousedown="event.preventDefault();selectRestaurant('${r.replace(/'/g,"\\'")}')" ontouchend="event.preventDefault();selectRestaurant('${r.replace(/'/g,"\\'")}')">${r}</div>`).join('');
 }
 function selectRestaurant(name){
   document.getElementById('restaurantInput').value = name;
@@ -1675,6 +2070,16 @@ function saveTimes(t){ try{localStorage.setItem("riderTimes_"+new Date().toDateS
 function loadTimes(){ try{const t=localStorage.getItem("riderTimes_"+new Date().toDateString());return t?JSON.parse(t):{};}catch(e){return {};} }
 function resetFormBase(){
   document.getElementById('kmRetiro').value = '';
+  // Reset Quick Action Panel
+  ['Aceptar','Llegue','Recogi','Entregu'].forEach(t => {
+    const b = document.getElementById('qap'+t); if(b) b.classList.remove('set');
+    const ti = document.getElementById('qapTime'+t); if(ti) ti.textContent = '--:--';
+  });
+  // Reset QAP buttons
+  ['Aceptar','Llegue','Recogi','Entregu'].forEach(t => {
+    const b = document.getElementById('qap'+t); if(b) b.classList.remove('set');
+    const ti = document.getElementById('qapTime'+t); if(ti) ti.textContent = '--:--';
+  });
   document.getElementById('propina').value = '';
   document.getElementById('restaurantInput').value = '';
   for(let i=1;i<6;i++){ const el=document.getElementById(`kmE_${i}`); if(el) el.value=''; }
@@ -2391,7 +2796,7 @@ function importBackup(){
   input.click();
 }
 
-function switchTab(tab){
+function switchTabBase(tab){
   currentTab = tab;
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['calc','historial','stats','grafica','config'][i]===tab));
   document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
@@ -2867,7 +3272,7 @@ const GPS_SPEED_THRESHOLD = 1.5;   // m/s para considerar "en movimiento"
 let GPS_ALERTA_MINS = 12;
 
 // ── INICIAR GPS ───────────────────────────────────────────────
-function startGPS(phase){
+function startGPSBase(phase){
   if(!navigator.geolocation){
     alert('Tu dispositivo no soporta GPS');
     return;
@@ -2920,7 +3325,7 @@ function startGPS(phase){
 }
 
 // ── PARAR GPS ─────────────────────────────────────────────────
-function stopGPS(){
+function stopGPSBase(){
   if(gpsWatchId !== null){
     navigator.geolocation.clearWatch(gpsWatchId);
     gpsWatchId = null;
@@ -2932,7 +3337,7 @@ function stopGPS(){
 }
 
 // ── ON GPS UPDATE (OPTIMIZED) ─────────────────────────────────
-function onGpsUpdate(pos, phase){
+function onGpsUpdateBase(pos, phase){
   const now = Date.now();
   const {latitude: lat, longitude: lng, accuracy, speed} = pos.coords;
   const pt = [lat, lng];
@@ -3160,6 +3565,13 @@ function setTime(type){
   setTimeBase(type);
   const now = new Date();
   const hm = now.toTimeString().slice(0,5);
+  const cap = type.charAt(0).toUpperCase() + type.slice(1);
+
+  // Sync Quick Action Panel
+  const qapBtn = document.getElementById('qap'+cap);
+  const qapTime = document.getElementById('qapTime'+cap);
+  if(qapBtn) qapBtn.classList.add('set');
+  if(qapTime) qapTime.textContent = hm;
 
   if(type === 'aceptar'){
     // Iniciar GPS para tramo retiro
@@ -3258,7 +3670,7 @@ function resetForm(){
 // ============================================================
 // RIDER CALC v1.6.0 — BY KMBY
 // ============================================================
-const APP_VERSION = "1.8.0";
+const APP_VERSION = "2.1.0";
 
 // ── POPUP NOVEDADES ───────────────────────────────────────────
 function checkPopupNovedades(){
@@ -3615,14 +4027,378 @@ mostrarAlertaMovete = function(mins){
 // ── INIT EXTENSIONS ───────────────────────────────────────────
 // init extended inline above
 
-init();
-</script>
-<script>
-if('serviceWorker' in navigator){
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+// ============================================================
+// v2.1.0 — WAKE LOCK + MAPA DEDICADO + GPS MEJORADO
+// ============================================================
+
+// ── WAKE LOCK ─────────────────────────────────────────────
+let wakeLock = null;
+async function requestWakeLock(){
+  try{
+    if('wakeLock' in navigator){
+      wakeLock = await navigator.wakeLock.request('screen');
+      document.getElementById('wakeLockBadge')?.classList.add('active');
+      wakeLock.addEventListener('release', ()=>{
+        document.getElementById('wakeLockBadge')?.classList.remove('active');
+        wakeLock = null;
+      });
+    }
+  }catch(e){ console.log('WakeLock no disponible:', e.message); }
+}
+async function releaseWakeLock(){
+  if(wakeLock){ await wakeLock.release(); wakeLock = null; }
+  document.getElementById('wakeLockBadge')?.classList.remove('active');
+}
+// Re-acquire on visibility change
+document.addEventListener('visibilitychange', async ()=>{
+  if(document.visibilityState === 'visible' && gpsActive) await requestWakeLock();
+});
+
+// ── MAPA DEDICADO ─────────────────────────────────────────
+let mapaFull = null;
+let mapaPolyRetiro = null;
+let mapaPolyEntrega = null;
+let mapaInitialized = false;
+
+function initMapaFull(){
+  if(mapaInitialized) return;
+  const div = document.getElementById('mapaFullDiv');
+  if(!div) return;
+  mapaFull = L.map('mapaFullDiv',{zoomControl:true,attributionControl:false}).setView([14.6349, -90.5069], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(mapaFull);
+  mapaPolyRetiro = L.polyline([],{color:'#4da6ff',weight:5,opacity:0.9,lineJoin:'round',lineCap:'round'}).addTo(mapaFull);
+  mapaPolyEntrega = L.polyline([],{color:'#00e676',weight:5,opacity:0.9,lineJoin:'round',lineCap:'round'}).addTo(mapaFull);
+  mapaInitialized = true;
+  setTimeout(()=>mapaFull.invalidateSize(),200);
+}
+
+function syncMapaFull(){
+  if(!mapaInitialized) return;
+  // Sync routes from GPS
+  if(gpsRouteRetiro.length > 0){
+    mapaPolyRetiro.setLatLngs(gpsRouteRetiro);
+    document.getElementById('mapaKmRetiro').textContent = gpsKmRetiro.toFixed(3)+' km';
+  }
+  if(gpsRouteEntrega.length > 0){
+    mapaPolyEntrega.setLatLngs(gpsRouteEntrega);
+    document.getElementById('mapaKmEntrega').textContent = gpsKmEntrega.toFixed(3)+' km';
+  }
+  const totalKm = gpsKmRetiro + gpsKmEntrega;
+  if(totalKm > 0){
+    document.getElementById('mapaKmTotal').textContent = totalKm.toFixed(3);
+    document.getElementById('mapaKmBadge').style.display = 'block';
+    document.getElementById('mapaTramos').style.display = 'flex';
+  }
+  // Fit bounds
+  const allPoints = [...gpsRouteRetiro, ...gpsRouteEntrega];
+  if(allPoints.length > 1){
+    mapaFull.fitBounds(L.latLngBounds(allPoints),{padding:[20,20]});
+  } else if(allPoints.length === 1){
+    mapaFull.setView(allPoints[0], 16);
+  }
+  if(gpsActive){
+    document.getElementById('mapaStatusDot').className = 'mapa-status-dot tracking';
+    document.getElementById('mapaStatusLabel').textContent = gpsPhase==='retiro'?'🏍️ Yendo al restaurante':'🛵 Yendo al cliente';
+    document.getElementById('mapaStatusSub').textContent = `${totalKm.toFixed(3)} km recorridos`;
+  } else if(totalKm > 0){
+    document.getElementById('mapaStatusDot').className = 'mapa-status-dot active';
+    document.getElementById('mapaStatusLabel').textContent = '✅ Pedido completado';
+    document.getElementById('mapaStatusSub').textContent = `Total: ${totalKm.toFixed(3)} km`;
+  }
+}
+
+// ── GPS MEJORADO - High accuracy with smoothing ───────────
+let gpsPositionBuffer = []; // Buffer for smoothing
+const GPS_BUFFER_SIZE = 3;
+
+function smoothPosition(newPos){
+  gpsPositionBuffer.push(newPos);
+  if(gpsPositionBuffer.length > GPS_BUFFER_SIZE) gpsPositionBuffer.shift();
+  // Average of buffer
+  const avgLat = gpsPositionBuffer.reduce((s,p)=>s+p[0],0)/gpsPositionBuffer.length;
+  const avgLng = gpsPositionBuffer.reduce((s,p)=>s+p[1],0)/gpsPositionBuffer.length;
+  return [avgLat, avgLng];
+}
+
+// Override startGPS to request wake lock and use smoothing
+function startGPS(phase){
+  startGPSBase(phase);
+  requestWakeLock();
+  gpsPositionBuffer = [];
+  // Also update mapa tab status
+  if(mapaInitialized){
+    document.getElementById('mapaStatusDot').className = 'mapa-status-dot tracking';
+    document.getElementById('mapaStatusLabel').textContent = phase==='retiro'?'🏍️ Yendo al restaurante':'🛵 Yendo al cliente';
+    document.getElementById('mapaStatusSub').textContent = 'GPS activo...';
+  }
+}
+
+// Override stopGPS to release wake lock
+function stopGPS(){
+  stopGPSBase();
+  if(!gpsActive) releaseWakeLock();
+  syncMapaFull();
+}
+
+// ── COMPACT RAIN SWITCH SYNC ──────────────────────────────
+function onCompactRainInput(){
+  const val = document.getElementById('compactRainExtra').value;
+  const mainInput = document.getElementById('rainExtra');
+  if(mainInput) mainInput.value = val;
+  updateResult();
+  updateMultDisplay();
+  const total = parseFloat((multiplier + (parseFloat(val)||0)).toFixed(2));
+  const el = document.getElementById('compactRainTotal');
+  if(el) el.textContent = rainOn ? `= ${total}x` : '';
+}
+
+// Override toggleRain to sync compact switch
+// toggleRain merged below
+function switchTab(tab){
+  switchTabBase(tab);
+  if(tab === 'mapa'){
+    if(!mapaInitialized) initMapaFull();
+    else setTimeout(()=>{ mapaFull.invalidateSize(); syncMapaFull(); }, 100);
+    syncMapaFull();
+  }
+}
+
+// ── SYNC MAPA ON GPS UPDATE ───────────────────────────────
+// Patch onGpsUpdate to sync mapa full
+function onGpsUpdateSmooth(pos, phase){
+  // Apply position smoothing before passing to original
+  const {latitude:lat, longitude:lng} = pos.coords;
+  const smoothed = smoothPosition([lat,lng]);
+  // Create a smoothed position object
+  const smoothedPos = {
+    coords: {
+      latitude: smoothed[0],
+      longitude: smoothed[1],
+      accuracy: pos.coords.accuracy,
+      speed: pos.coords.speed
+    }
+  };
+  onGpsUpdateBase(smoothedPos, phase);
+  // Sync to full map if on mapa tab
+  if(currentTab === 'mapa') syncMapaFull();
+  // Update mapa status dots
+  if(mapaInitialized){
+    const dot = document.getElementById('mapaStatusDot');
+    if(dot) dot.className = 'mapa-status-dot tracking';
+  }
+}
+
+
+// ============================================================
+// MODO MOTO v2.1.0
+// ============================================================
+let mmMap = null;
+let mmMapInit = false;
+let mmPolyRetiro = null;
+let mmPolyEntrega = null;
+
+// ── ABRIR/CERRAR MODO MOTO ────────────────────────────────
+function abrirModoMoto(){
+  document.getElementById('modoMotoOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  requestWakeLock();
+  initMmMap();
+  syncMmMult();
+  syncMmTimes();
+  updateMmResult();
+}
+
+function cerrarModoMoto(){
+  document.getElementById('modoMotoOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ── INIT MAPA MODO MOTO ───────────────────────────────────
+function initMmMap(){
+  if(mmMapInit) return;
+  const div = document.getElementById('mmMapDiv');
+  if(!div) return;
+  mmMap = L.map('mmMapDiv',{zoomControl:false,attributionControl:false}).setView([14.6349,-90.5069],13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(mmMap);
+  mmPolyRetiro = L.polyline([],{color:'#4da6ff',weight:5,opacity:0.9,lineJoin:'round',lineCap:'round'}).addTo(mmMap);
+  mmPolyEntrega = L.polyline([],{color:'#00e676',weight:5,opacity:0.9,lineJoin:'round',lineCap:'round'}).addTo(mmMap);
+  mmMapInit = true;
+  setTimeout(()=>mmMap.invalidateSize(),200);
+}
+
+function syncMmMap(){
+  if(!mmMapInit) return;
+  if(gpsRouteRetiro.length > 0) mmPolyRetiro.setLatLngs(gpsRouteRetiro);
+  if(gpsRouteEntrega.length > 0) mmPolyEntrega.setLatLngs(gpsRouteEntrega);
+  const all = [...gpsRouteRetiro,...gpsRouteEntrega];
+  if(all.length > 1) mmMap.fitBounds(L.latLngBounds(all),{padding:[10,10]});
+  else if(all.length===1) mmMap.setView(all[0],16);
+  const total = gpsKmRetiro + gpsKmEntrega;
+  const badge = document.getElementById('mmKmBadge');
+  if(badge) badge.textContent = total.toFixed(3)+' km';
+  const dot = document.getElementById('mmMapDot');
+  const status = document.getElementById('mmMapStatus');
+  if(dot) dot.className = gpsActive?'mapa-status-dot tracking':'mapa-status-dot '+(total>0?'active':'');
+  if(status) status.textContent = gpsActive?(gpsPhase==='retiro'?'🏍️ Al restaurante':'🛵 Al cliente'):(total>0?'✅ Completado':'GPS inactivo');
+}
+
+// ── SET TIME DESDE MODO MOTO ──────────────────────────────
+function mmSetTime(type){
+  setTime(type); // calls full setTime with GPS
+  syncMmTimes();
+  updateMmResult();
+  if(type === 'aceptar') mostrarSemaforo();
+}
+
+function syncMmTimes(){
+  ['aceptar','llegue','recogi','entregu'].forEach(t => {
+    const cap = t.charAt(0).toUpperCase()+t.slice(1);
+    const btn = document.getElementById('mmBtn'+cap);
+    const timeEl = document.getElementById('mmTime'+cap);
+    const mainTime = document.getElementById('time'+cap)?.textContent || '--:--';
+    if(btn) btn.classList.toggle('set', mainTime !== '--:--' && mainTime !== '');
+    if(timeEl) timeEl.textContent = mainTime || '--:--';
   });
 }
-</script>
-</body>
-</html>
+
+function syncMmMult(){
+  const el = document.getElementById('mmMultVal');
+  if(el) el.value = multiplier.toFixed(2);
+  const sw = document.getElementById('mmRainSwitch');
+  if(sw) sw.classList.toggle('on', rainOn);
+  const rv = document.getElementById('mmRainVal');
+  if(rv){ rv.style.display = rainOn?'inline':'none'; rv.textContent = '='+getEffMult()+'x'; }
+}
+
+function onMmMultInput(){
+  const v = parseFloat(document.getElementById('mmMultVal').value);
+  if(!isNaN(v) && v >= 1.00){
+    multiplier = parseFloat(v.toFixed(2));
+    document.getElementById('multDisplay').value = v.toFixed(2);
+    updateMultDisplay(); updateResult(); updateMmResult();
+    document.querySelectorAll('.preset-btn').forEach(b=>b.classList.toggle('active',parseFloat(b.textContent)===multiplier));
+  }
+}
+
+function updateMmResult(){
+  const kmR = parseFloat(document.getElementById('kmRetiro')?.value)||gpsKmRetiro||0;
+  const kmE = parseFloat(document.getElementById('kmE_1')?.value)||gpsKmEntrega||0;
+  const prop = parseFloat(document.getElementById('propina')?.value)||0;
+  const total = calcPedido(kmR,kmE,1,prop,getEffMult());
+  const el = document.getElementById('mmResult');
+  if(el) el.textContent = 'Q '+total.toFixed(2);
+  const tot = document.getElementById('mmTotal');
+  const earned = orders.reduce((s,o)=>s+o.total,0)+(cfg.base||0);
+  if(tot) tot.textContent = 'Q '+earned.toFixed(2);
+}
+
+// ── REGISTRAR VIAJE DESDE MODO MOTO ──────────────────────
+function mmRegistrarViaje(){
+  addOrder();
+  syncMmTimes();
+  updateMmResult();
+  // Reset mm buttons
+  ['Aceptar','Llegue','Recogi','Entregu'].forEach(t=>{
+    const b=document.getElementById('mmBtn'+t); if(b) b.classList.remove('set');
+    const ti=document.getElementById('mmTime'+t); if(ti) ti.textContent='--:--';
+  });
+  if(mmPolyRetiro) mmPolyRetiro.setLatLngs([]);
+  if(mmPolyEntrega) mmPolyEntrega.setLatLngs([]);
+  const badge=document.getElementById('mmKmBadge'); if(badge) badge.textContent='0.000 km';
+}
+
+// ── RESET VIAJE ───────────────────────────────────────────
+function confirmarResetViaje(){
+  document.getElementById('mmConfirmOverlay').style.display='flex';
+}
+function cerrarConfirmReset(){
+  document.getElementById('mmConfirmOverlay').style.display='none';
+}
+function ejecutarResetViaje(){
+  cerrarConfirmReset();
+  // Reset GPS
+  stopGPS();
+  gpsRouteRetiro=[]; gpsRouteEntrega=[];
+  gpsKmRetiro=0; gpsKmEntrega=0;
+  gpsLastPos=null; gpsPositionBuffer=[];
+  if(gpsPolyRetiro) gpsPolyRetiro.setLatLngs([]);
+  if(gpsPolyEntrega) gpsPolyEntrega.setLatLngs([]);
+  if(mmPolyRetiro) mmPolyRetiro.setLatLngs([]);
+  if(mmPolyEntrega) mmPolyEntrega.setLatLngs([]);
+  // Reset times
+  times={aceptar:null,llegue:null,recogi:null,entregu:null};
+  try{localStorage.removeItem('riderTimes_'+new Date().toDateString());}catch(e){}
+  // Reset UI
+  ['Aceptar','Llegue','Recogi','Entregu'].forEach(t=>{
+    const b=document.getElementById('mmBtn'+t); if(b) b.classList.remove('set');
+    const ti=document.getElementById('mmTime'+t); if(ti) ti.textContent='--:--';
+    const qb=document.getElementById('qap'+t); if(qb) qb.classList.remove('set');
+    const qt=document.getElementById('qapTime'+t); if(qt) qt.textContent='--:--';
+  });
+  document.getElementById('kmRetiro').value='';
+  const km1=document.getElementById('kmE_1'); if(km1) km1.value='';
+  document.getElementById('propina').value='';
+  updateGpsStatusUI('idle','Presioná "Acepté" para activar');
+  updateMmResult(); syncMmMap();
+  if(navigator.vibrate) navigator.vibrate([50,30,50]);
+}
+
+// ── SEMÁFORO GRAN PRIX ────────────────────────────────────
+function mostrarSemaforo(){
+  const overlay = document.getElementById('semaforoOverlay');
+  const texto = document.getElementById('semaforoTexto');
+  const bandera = document.getElementById('banderaContainer');
+  const luces = [document.getElementById('semLuz1'),document.getElementById('semLuz2'),document.getElementById('semLuz3')];
+  if(!overlay) return;
+  overlay.style.display='flex';
+  bandera.style.display='none';
+  luces.forEach(l=>l.className='semaforo-luz');
+  if(navigator.vibrate) navigator.vibrate(200);
+
+  // Secuencia: 3 rojos → amarillo → verde → bandera
+  texto.textContent='PREPARADO';
+  setTimeout(()=>{ luces[0].classList.add('on-rojo'); texto.textContent='LISTO...'; if(navigator.vibrate) navigator.vibrate(100); },300);
+  setTimeout(()=>{ luces[1].classList.add('on-rojo'); if(navigator.vibrate) navigator.vibrate(100); },700);
+  setTimeout(()=>{ luces[2].classList.add('on-rojo'); if(navigator.vibrate) navigator.vibrate(100); },1100);
+  setTimeout(()=>{
+    luces.forEach(l=>l.className='semaforo-luz on-amarillo');
+    texto.textContent='ATENTO...';
+    if(navigator.vibrate) navigator.vibrate(150);
+  },1700);
+  setTimeout(()=>{
+    luces.forEach(l=>l.className='semaforo-luz on-verde');
+    texto.textContent='¡ARRANCA!';
+    bandera.style.display='block';
+    if(navigator.vibrate) navigator.vibrate([100,50,100,50,200]);
+  },2400);
+  setTimeout(()=>{ overlay.style.display='none'; },3800);
+}
+
+// ── SYNC MODO MOTO FROM GPS UPDATES ──────────────────────
+function onGpsUpdate(pos, phase){
+  onGpsUpdateSmooth(pos, phase);
+  // Sync modo moto map if open
+  const overlay = document.getElementById('modoMotoOverlay');
+  if(overlay?.classList.contains('open')){
+    syncMmMap();
+    updateMmResult();
+  }
+}
+
+// ── SYNC TOGGLERAIN TO MM ─────────────────────────────────
+function toggleRain(){
+  toggleRainBase();
+  // Sync compact rain switch
+  const sw = document.getElementById('rainSwitchCompact');
+  const extra = document.getElementById('compactRainExtra');
+  const total = document.getElementById('compactRainTotal');
+  if(sw) sw.classList.toggle('on', rainOn);
+  if(extra) extra.classList.toggle('visible', rainOn);
+  if(total) total.textContent = rainOn ? `= ${getEffMult()}x` : '';
+  // Sync modo moto rain switch
+  const mmSw=document.getElementById('mmRainSwitch'); if(mmSw) mmSw.classList.toggle('on',rainOn);
+  const rv=document.getElementById('mmRainVal');
+  if(rv){ rv.style.display=rainOn?'inline':'none'; rv.textContent='='+getEffMult()+'x'; }
+  updateMmResult();
+}
