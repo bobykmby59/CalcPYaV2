@@ -908,6 +908,23 @@ body.light-mode .mapa-tramo{background:#f5f5f5}
 .mm-km-badge{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--green);margin-left:auto}
 .mm-map-action-btn{background:#1c1c1c;border:1px solid #333;border-radius:8px;color:#ccc;font-size:15px;padding:4px 7px;cursor:pointer;line-height:1;flex-shrink:0}
 .mm-map-action-btn:active{background:var(--accent);border-color:var(--accent)}
+/* MARCADOR POSICIÓN ESTILO GOOGLE MAPS */
+.gm-dot-outer{
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(66,133,244,0.25);
+  display:flex;align-items:center;justify-content:center;
+  animation:gmPulse 2s ease-in-out infinite;
+}
+.gm-dot-inner{
+  width:14px;height:14px;border-radius:50%;
+  background:#4285f4;
+  border:2.5px solid #fff;
+  box-shadow:0 1px 6px rgba(66,133,244,0.6);
+}
+@keyframes gmPulse{
+  0%,100%{transform:scale(1);opacity:1}
+  50%{transform:scale(1.35);opacity:0.7}
+}
 
 /* FOOTER */
 .mm-footer{padding:10px 12px 20px;display:flex;gap:10px;align-items:center;flex-shrink:0;background:#0a0a0a;border-top:1px solid #1f1f1f}
@@ -1597,8 +1614,7 @@ body.light-mode .mapa-tramo{background:#f5f5f5}
     </button>
   </div>
 
-  </div>
-</div>
+</div><!-- /modoMotoOverlay -->
 
 <!-- MODAL CONFIRMACIÓN RESET — fuera del overlay para z-index correcto -->
 <div class="mm-confirm-overlay" id="mmConfirmOverlay" style="display:none">
@@ -4371,8 +4387,9 @@ function updateMmIdleMarker(pt){
   if(!cascoIcon){
     cascoIcon = L.divIcon({
       className:'',
-      html:`<div style="width:38px;height:38px;border-radius:50%;background:#ff2d55;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 2px 14px rgba(255,45,85,0.8)">🏍️</div>`,
-      iconSize:[38,38], iconAnchor:[19,19]
+      html:`<div class="gm-dot-outer"><div class="gm-dot-inner"></div></div>`,
+      iconSize:[22,22],
+      iconAnchor:[11,11]
     });
   }
   if(!mmRiderMarker){
@@ -4419,10 +4436,12 @@ function initMmMap(){
   const div = document.getElementById('mmMapDiv');
   if(!div) return;
 
+  // Marcador azul pulsante estilo Google Maps
   cascoIcon = L.divIcon({
     className:'',
-    html:`<div style="width:38px;height:38px;border-radius:50%;background:#ff2d55;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 2px 14px rgba(255,45,85,0.8)">🏍️</div>`,
-    iconSize:[38,38], iconAnchor:[19,19]
+    html:`<div class="gm-dot-outer"><div class="gm-dot-inner"></div></div>`,
+    iconSize:[22,22],
+    iconAnchor:[11,11]
   });
 
   mmMap = L.map('mmMapDiv',{zoomControl:false,attributionControl:false}).setView([14.6349,-90.5069],15);
