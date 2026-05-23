@@ -859,27 +859,15 @@ body.light-mode .mapa-tramo{background:#f5f5f5}
 ═══════════════════════════════════════════════ */
 .modo-moto-overlay{
   display:none;position:fixed;inset:0;z-index:1500;
-  background:#000;flex-direction:column;
+  background:#000 !important;
+  color:#fff !important;
+  flex-direction:column;
   font-family:'DM Sans',sans-serif;
   overflow-y:auto;
   overflow-x:hidden;
 }
 .modo-moto-overlay.open{display:flex}
-
-/* Modo día en Modo Moto */
-body.light-mode .modo-moto-overlay{background:#f5f5f5}
-body.light-mode .mm-header{background:#fff;border-color:#e0e0e0}
-body.light-mode .mm-time-btn{background:#f8f8f8;border-color:#e0e0e0}
-body.light-mode .mm-label{color:#bbb}
-body.light-mode .mm-time{color:#222}
-body.light-mode .mm-mult-row{background:#f8f8f8;border-color:#e0e0e0}
-body.light-mode .mm-mult-label{color:#999}
-body.light-mode .mm-map-status{color:#888}
-body.light-mode .mm-footer{background:#fff;border-color:#e0e0e0}
-body.light-mode .mm-close-btn{background:#f0f0f0;border-color:#ddd;color:#555}
-body.light-mode .mm-map-action-btn{background:#f0f0f0;border-color:#ddd;color:#555}
-body.light-mode .mm-rest-input{background:#f8f8f8;color:#222}
-body.light-mode .mm-map-status span{color:#555}
+.modo-moto-overlay *{box-sizing:border-box}
 
 /* HEADER */
 .mm-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 10px;background:#0a0a0a;border-bottom:1px solid #1f1f1f;flex-shrink:0}
@@ -1141,15 +1129,6 @@ body.light-mode .mm-map-status span{color:#555}
     <div class="mmb-dot"></div>
     🏍️ Activar Modo Moto
   </button>
-
-  <!-- 4. MAPA (aparece cuando GPS activo) -->
-  <div class="map-container" id="mapContainer" style="display:none;overflow:hidden">
-    <div class="map-header">
-      <div class="map-title">🗺️ Ruta del pedido</div>
-      <div class="map-toggle" onclick="toggleMap()" id="mapToggleBtn">🗺️ Ocultar mapa</div>
-    </div>
-    <div id="mapDiv"></div>
-  </div>
 
   <!-- 5. MULTIPLICADOR -->
   <div class="mult-display">
@@ -2955,15 +2934,7 @@ function switchTabBase(tab){
   document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
   document.getElementById('fab').classList.toggle('hidden', tab!=='historial');
-  // Ocultar mapa GPS si no estamos en Calc
-  if(tab !== 'calc'){
-    const mc = document.getElementById('mapContainer');
-    if(mc) mc.style.display = 'none';
-  } else if(gpsActive){
-    // Restaurar mapa si GPS activo y volvemos a Calc
-    const mc = document.getElementById('mapContainer');
-    if(mc) mc.style.display = 'block';
-  }
+  // mapContainer ya no existe — mapa GPS solo en Modo Moto
   if(tab==='historial'){ histViewDate=new Date(); renderHistForDate(histViewDate); updateImpuestos(); }
   if(tab==='stats'){ renderDeadTimes(); updateStats(); updateWidgets(); updateSemanaComparativa(); updateImpuestos(); updateMetaSemanal(); updateZonaStats(); }
   if(tab==='grafica') renderCharts();
@@ -3458,15 +3429,7 @@ function startGPSBase_orig(phase){
   }
 
   document.getElementById('gpsKmChips').style.display = 'flex';
-  document.getElementById('mapContainer').style.display = 'block';
-  // Auto-expand map only when GPS actually starts (not on error)
-  if(!mapVisible){
-    mapVisible = true;
-    const mapDiv = document.getElementById('mapDiv');
-    mapDiv.style.height = '260px';
-    const btn = document.getElementById('mapToggleBtn');
-    if(btn) btn.textContent = '🗺️ Ocultar mapa';
-  }
+  // Mapa GPS ahora solo en Modo Moto — syncMmMap() lo actualiza
   updateGpsStatusUI('tracking', phase === 'retiro' ? '🏍️ Yendo al restaurante...' : '🛵 Yendo al cliente...');
 
   // Clear previous watcher
@@ -3582,36 +3545,16 @@ function onGpsError(err){
   updateGpsStatusUI('error', msg);
   // Si GPS falla antes de tener puntos, ocultar mapa y chips
   if(gpsRouteRetiro.length === 0 && gpsRouteEntrega.length === 0){
-    document.getElementById('mapContainer').style.display = 'none';
     document.getElementById('gpsKmChips').style.display = 'none';
-    mapVisible = false;
+    // Mapa solo en Modo Moto
   }
 }
 
-// ── MAPA ──────────────────────────────────────────────────────
+// ── MAPA — solo en Modo Moto (mmMap) ─────────────────────────
 function initMap(phase){
-  if(!gpsMap){
-    // Get current position to center map
-    navigator.geolocation.getCurrentPosition(pos => {
-      const {latitude: lat, longitude: lng} = pos.coords;
-      if(!gpsMap){
-        gpsMap = L.map('mapDiv').setView([lat, lng], 15);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-          attribution:'© OpenStreetMap',maxZoom:19
-        }).addTo(gpsMap);
-        // Add polylines
-        gpsPolyRetiro = L.polyline([], {color:'#4da6ff', weight:4, opacity:0.8}).addTo(gpsMap);
-        gpsPolyEntrega = L.polyline([], {color:'#00e676', weight:4, opacity:0.8}).addTo(gpsMap);
-        // Start marker
-        gpsMarkStart = L.marker([lat,lng], {
-          icon: L.divIcon({html:'<div style="background:#ff2d55;width:14px;height:14px;border-radius:50%;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.5)"></div>', iconSize:[14,14], iconAnchor:[7,7]})
-        }).addTo(gpsMap).bindPopup('📍 Inicio del pedido');
-      }
-    }, ()=>{}, {enableHighAccuracy:true, timeout:5000});
-  } else {
-    // Map already exists, just refresh size
-    setTimeout(()=>gpsMap.invalidateSize(), 200);
-  }
+  // El mapa GPS ahora vive en el Modo Moto (mmMapDiv)
+  // syncMmMap() se encarga de actualizar las rutas
+  if(mmMapInit) syncMmMap();
 }
 
 function toggleMap(){
@@ -3810,7 +3753,6 @@ function resetForm(){
   if(gpsPolyEntrega) gpsPolyEntrega.setLatLngs([]);
   // Reset UI
   document.getElementById('gpsKmChips').style.display = 'none';
-  document.getElementById('mapContainer').style.display = 'none';
   updateGpsStatusUI('idle', 'Presioná "Acepté" para activar');
   // Reset quick modal buttons
   ['Aceptar','Llegue','Recogi','Entregu'].forEach(t => {
