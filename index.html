@@ -1597,16 +1597,18 @@ body.light-mode .mapa-tramo{background:#f5f5f5}
     </button>
   </div>
 
-  <!-- MODAL CONFIRMACIÓN RESET -->
-  <div class="mm-confirm-overlay" id="mmConfirmOverlay" style="display:none">
-    <div class="mm-confirm-box">
-      <div class="mm-confirm-icon">⚠️</div>
-      <div class="mm-confirm-title">¿Reiniciar viaje?</div>
-      <div class="mm-confirm-sub">Se borrará el progreso actual del GPS y tiempos. No se eliminará del historial.</div>
-      <div class="mm-confirm-btns">
-        <button class="mm-confirm-cancel" onclick="cerrarConfirmReset()">Cancelar</button>
-        <button class="mm-confirm-ok" onclick="ejecutarResetViaje()">Sí, reiniciar</button>
-      </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIRMACIÓN RESET — fuera del overlay para z-index correcto -->
+<div class="mm-confirm-overlay" id="mmConfirmOverlay" style="display:none">
+  <div class="mm-confirm-box">
+    <div class="mm-confirm-icon">⚠️</div>
+    <div class="mm-confirm-title">¿Reiniciar viaje?</div>
+    <div class="mm-confirm-sub">Se borrará el progreso actual del GPS y tiempos. No se eliminará del historial.</div>
+    <div class="mm-confirm-btns">
+      <button class="mm-confirm-cancel" onclick="cerrarConfirmReset()">Cancelar</button>
+      <button class="mm-confirm-ok" onclick="ejecutarResetViaje()">Sí, reiniciar</button>
     </div>
   </div>
 </div>
@@ -4330,8 +4332,8 @@ function abrirModoMoto(){
   syncMmMult();
   syncMmTimes();
   updateMmResult();
-  // GPS idle: siempre rastrear posición aunque no haya pedido activo
-  startMmIdleGPS();
+  // GPS idle después de que el mapa esté listo
+  setTimeout(() => startMmIdleGPS(), 400);
 }
 
 function cerrarModoMoto(){
@@ -4364,15 +4366,21 @@ function stopMmIdleGPS(){
 }
 
 function updateMmIdleMarker(pt){
-  if(!mmMapInit || !mmMap || !cascoIcon) return;
+  if(!mmMapInit || !mmMap) return;
+  // Crear cascoIcon si aún no existe
+  if(!cascoIcon){
+    cascoIcon = L.divIcon({
+      className:'',
+      html:`<div style="width:38px;height:38px;border-radius:50%;background:#ff2d55;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 2px 14px rgba(255,45,85,0.8)">🏍️</div>`,
+      iconSize:[38,38], iconAnchor:[19,19]
+    });
+  }
   if(!mmRiderMarker){
     mmRiderMarker = L.marker(pt, {icon:cascoIcon, zIndexOffset:1000}).addTo(mmMap);
   } else {
     mmRiderMarker.setLatLng(pt);
   }
-  // En idle (sin pedido activo), centrar suavemente
   mmMap.panTo(pt, {animate:true, duration:0.8});
-  // Actualizar status
   const dot = document.getElementById('mmMapDot');
   const status = document.getElementById('mmMapStatus');
   if(dot) dot.className = 'mapa-status-dot active';
