@@ -861,8 +861,25 @@ body.light-mode .mapa-tramo{background:#f5f5f5}
   display:none;position:fixed;inset:0;z-index:1500;
   background:#000;flex-direction:column;
   font-family:'DM Sans',sans-serif;
+  overflow-y:auto;
+  overflow-x:hidden;
 }
 .modo-moto-overlay.open{display:flex}
+
+/* Modo día en Modo Moto */
+body.light-mode .modo-moto-overlay{background:#f5f5f5}
+body.light-mode .mm-header{background:#fff;border-color:#e0e0e0}
+body.light-mode .mm-time-btn{background:#f8f8f8;border-color:#e0e0e0}
+body.light-mode .mm-label{color:#bbb}
+body.light-mode .mm-time{color:#222}
+body.light-mode .mm-mult-row{background:#f8f8f8;border-color:#e0e0e0}
+body.light-mode .mm-mult-label{color:#999}
+body.light-mode .mm-map-status{color:#888}
+body.light-mode .mm-footer{background:#fff;border-color:#e0e0e0}
+body.light-mode .mm-close-btn{background:#f0f0f0;border-color:#ddd;color:#555}
+body.light-mode .mm-map-action-btn{background:#f0f0f0;border-color:#ddd;color:#555}
+body.light-mode .mm-rest-input{background:#f8f8f8;color:#222}
+body.light-mode .mm-map-status span{color:#555}
 
 /* HEADER */
 .mm-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 10px;background:#0a0a0a;border-bottom:1px solid #1f1f1f;flex-shrink:0}
@@ -2938,6 +2955,15 @@ function switchTabBase(tab){
   document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
   document.getElementById('fab').classList.toggle('hidden', tab!=='historial');
+  // Ocultar mapa GPS si no estamos en Calc
+  if(tab !== 'calc'){
+    const mc = document.getElementById('mapContainer');
+    if(mc) mc.style.display = 'none';
+  } else if(gpsActive){
+    // Restaurar mapa si GPS activo y volvemos a Calc
+    const mc = document.getElementById('mapContainer');
+    if(mc) mc.style.display = 'block';
+  }
   if(tab==='historial'){ histViewDate=new Date(); renderHistForDate(histViewDate); updateImpuestos(); }
   if(tab==='stats'){ renderDeadTimes(); updateStats(); updateWidgets(); updateSemanaComparativa(); updateImpuestos(); updateMetaSemanal(); updateZonaStats(); }
   if(tab==='grafica') renderCharts();
