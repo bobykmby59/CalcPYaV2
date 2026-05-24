@@ -703,7 +703,7 @@ canvas{max-width:100%}
 .rider-name-display{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--text);letter-spacing:2px;margin-bottom:4px}
 
 /* ═══════════════════════════════
-   QUICK ACTION PANEL v2.3.0
+   QUICK ACTION PANEL v2.4.0
 ═══════════════════════════════ */
 .quick-action-panel{
   background:linear-gradient(135deg,#1a0808,#1f1010);
@@ -740,7 +740,7 @@ body.light-mode .quick-action-panel{background:linear-gradient(135deg,#fff5f7,#f
 body.light-mode .qap-btn{background:#f8f8f8;border-color:#ddd;}
 body.light-mode .qap-label{color:#888;}
 
-/* UPDATE POPUP v2.3.0 */
+/* UPDATE POPUP v2.4.0 */
 .popup-list li .pi-new{
   font-size:9px;background:var(--accent);color:white;
   border-radius:4px;padding:1px 5px;font-weight:700;
@@ -749,7 +749,7 @@ body.light-mode .qap-label{color:#888;}
 }
 
 /* ═══════════════════════════════════════════
-   v2.3.0 PREMIUM STYLES BY KMBY
+   v2.4.0 PREMIUM STYLES BY KMBY
 ═══════════════════════════════════════════ */
 
 /* MAPA DEDICADO */
@@ -827,7 +827,7 @@ body.light-mode .mapa-header-card{background:#fff;border-color:#eee}
 body.light-mode .mapa-tramo{background:#f5f5f5}
 
 /* ═══════════════════════════════════════════════
-   MODO MOTO v2.3.0 PREMIUM
+   MODO MOTO v2.4.0 PREMIUM
 ═══════════════════════════════════════════════ */
 .modo-moto-overlay{
   display:none;position:fixed;inset:0;z-index:1500;
@@ -896,7 +896,7 @@ body.light-mode .mapa-tramo{background:#f5f5f5}
 .mm-confirm-ok{padding:13px;border-radius:12px;border:none;background:var(--accent);color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
 
 /* SEMAFORO */
-.semaforo-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.95);display:flex;align-items:center;justify-content:center;z-index:20;animation:fadeIn 0.3s ease}
+.semaforo-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.97);display:flex;align-items:center;justify-content:center;z-index:99999;animation:fadeIn 0.3s ease}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .semaforo-box{text-align:center}
 .semaforo-luces{display:flex;gap:16px;justify-content:center;margin-bottom:20px}
@@ -919,7 +919,7 @@ body.light-mode .mapa-tramo{background:#f5f5f5}
 .mm-rest-clear:active{color:var(--accent)}
 
 /* ═══════════════════════════════════════════
-   MODO MOTO - LIGHT MODE v2.3.0
+   MODO MOTO - LIGHT MODE v2.4.0
 ═══════════════════════════════════════════ */
 body.light-mode .modo-moto-overlay{background:#f5f5f5}
 body.light-mode .mm-header{background:#ffffff;border-bottom-color:#e0e0e0}
@@ -969,7 +969,7 @@ body.light-mode .mm-rain-toggle{color:#111}
       <div class="logo" style="display:flex;align-items:center;gap:8px">
         <span style="font-size:26px;filter:drop-shadow(0 0 6px rgba(255,45,85,0.6))">🛵</span>
         CALC PYA
-        <span class="version-badge" id="versionBadge">v2.3.0</span>
+        <span class="version-badge" id="versionBadge">v2.4.0</span>
       </div>
       <div class="header-name" id="headerRiderName"></div>
       <div class="wake-lock-badge" id="wakeLockBadge">
@@ -1065,7 +1065,7 @@ body.light-mode .mm-rain-toggle{color:#111}
     <span class="gps-chip entrega" id="chipEntrega" style="display:none">🛵 Entrega: 0.000 km</span>
   </div>
 
-  <!-- QUICK ACTION PANEL v2.3.0 PREMIUM -->
+  <!-- QUICK ACTION PANEL v2.4.0 PREMIUM -->
   <div class="quick-action-panel" id="quickActionPanel">
     <div class="qap-title">⚡ ACCIÓN RÁPIDA</div>
     <div class="qap-buttons">
@@ -1594,16 +1594,17 @@ body.light-mode .mm-rain-toggle{color:#111}
   </div>
 </div>
 
-<!-- POPUP NOVEDADES v2.3.0 -->
+<!-- POPUP NOVEDADES v2.4.0 -->
 <div class="popup-overlay" id="popupNovedades">
   <div class="popup-card">
     <div class="popup-version">VERSIÓN 1.8.0</div>
     <div class="popup-title">Novedades 🔥</div>
     <ul class="popup-list">
-      <li><span class="pi">🪖</span><span>Marcador de casco rojo en el mapa — tu posición en tiempo real <span class="pi-new">NUEVO</span></span></li>
-      <li><span class="pi">🗺️</span><span>Mapa movido debajo del restaurante en Modo Moto <span class="pi-new">NUEVO</span></span></li>
-      <li><span class="pi">☀️</span><span>Modo claro completo en Modo Moto <span class="pi-new">FIX</span></span></li>
-      <li><span class="pi">⚡</span><span>Fix: "L is not defined" — Leaflet carga correctamente antes del mapa <span class="pi-new">FIX</span></span></li>
+      <li><span class="pi">📍</span><span>GPS multicapa en segundo plano — AudioContext + watchPosition agresivo + restart automático <span class="pi-new">FIX</span></span></li>
+      <li><span class="pi">🔄</span><span>Auto-reinicio del GPS al volver a la app <span class="pi-new">FIX</span></span></li>
+      <li><span class="pi">🚦</span><span>Semáforo ya no queda detrás del mapa <span class="pi-new">FIX</span></span></li>
+      <li><span class="pi">➖</span><span>Botón menos del multiplicador en Modo Moto ahora funciona <span class="pi-new">FIX</span></span></li>
+      <li><span class="pi">💰</span><span>Q base ya no aparece como Q5 en Modo Moto <span class="pi-new">FIX</span></span></li>
     </ul>
     <button class="popup-accept-btn" onclick="cerrarPopupNovedades()">¡Entendido, a repartir! 🛵</button>
     <div class="popup-kmby">Desarrollada por KMBY</div>
@@ -1709,7 +1710,7 @@ let times = {aceptar:null,llegue:null,recogi:null,entregu:null};
 let restaurants = [];
 let autoMultOn = false, schedules = [];
 let autoMultInterval = null;
-let cfg = {meta:0, base:0, gasPrice:32, kmGalon:40, mant:15, otros:0, nombre:'', metaSemanal:0, alertaMins:12};
+let cfg = {meta:0, base:0, gasPrice:32, kmGalon:40, mant:15, otros:0, nombre:'', metaSemanal:0, alertaMins:12}; // base=0 always start from 0
 let reportText = '';
 
 // ============================================================
@@ -1785,7 +1786,10 @@ function stepKm(inputId, delta){
 function changeMult(d){
   multiplier = Math.max(1.00, parseFloat((multiplier + d).toFixed(2)));
   document.getElementById('multDisplay').value = multiplier.toFixed(2);
-  updateMultDisplay(); updateResult();
+  const mm = document.getElementById('mmMultVal');
+  if(mm) mm.value = multiplier.toFixed(2);
+  updateMultDisplay(); updateResult(); updateMmResult();
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.toggle('active',parseFloat(b.textContent)===multiplier));
 }
 function setMult(v){
   multiplier = v;
@@ -3767,7 +3771,7 @@ function resetForm(){
 // ============================================================
 // RIDER CALC v1.6.0 — BY KMBY
 // ============================================================
-const APP_VERSION = "2.3.0";
+const APP_VERSION = "2.4.0";
 
 // ── POPUP NOVEDADES ───────────────────────────────────────────
 function checkPopupNovedades(){
@@ -4126,7 +4130,7 @@ mostrarAlertaMovete = function(mins){
 
 
 // ============================================================
-// v2.3.0 — WAKE LOCK + MAPA DEDICADO + GPS MEJORADO
+// v2.4.0 — WAKE LOCK + MAPA DEDICADO + GPS MEJORADO
 // ============================================================
 
 // ── WAKE LOCK ─────────────────────────────────────────────
@@ -4298,7 +4302,7 @@ function onGpsUpdateSmooth(pos, phase){
 
 
 // ============================================================
-// MODO MOTO v2.3.0
+// MODO MOTO v2.4.0
 // ============================================================
 let mmMap = null;
 let mmMapInit = false;
@@ -4306,16 +4310,7 @@ let mmPolyRetiro = null;
 let mmPolyEntrega = null;
 
 // ── ABRIR/CERRAR MODO MOTO ────────────────────────────────
-function abrirModoMoto(){
-  document.getElementById('modoMotoOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-  requestWakeLock();
-  initMmMap();
-  syncMmMult();
-  syncMmTimes();
-  updateMmResult();
-}
-
+// abrirModoMoto merged in v2.4.0
 function cerrarModoMoto(){
   document.getElementById('modoMotoOverlay').classList.remove('open');
   document.body.style.overflow = '';
@@ -4397,7 +4392,8 @@ function updateMmResult(){
   const el = document.getElementById('mmResult');
   if(el) el.textContent = 'Q '+total.toFixed(2);
   const tot = document.getElementById('mmTotal');
-  const earned = orders.reduce((s,o)=>s+o.total,0)+(cfg.base||0);
+  // Only show orders total, no base (base is already in main header)
+  const earned = orders.reduce((s,o)=>s+o.total,0);
   if(tot) tot.textContent = 'Q '+earned.toFixed(2);
 }
 
@@ -4500,7 +4496,7 @@ function toggleRain(){
 
 
 // ============================================================
-// v2.3.0 BUG FIXES
+// v2.4.0 BUG FIXES
 // ============================================================
 
 // ── FIX GPS BACKGROUND - GeolocationAPI keepalive ─────────
@@ -4526,19 +4522,8 @@ function stopGpsKeepalive(){
 }
 
 // Override startGPSBase to add keepalive
-function startGPSBase(phase){
-  startGPSBase_orig(phase);
-  startGpsKeepalive();
-  requestWakeLock();
-}
-
-// Override stopGPSBase to stop keepalive
-function stopGPSBase(){
-  stopGPSBase_orig();
-  stopGpsKeepalive();
-}
-
-// ── RESTAURANTE EN MODO MOTO ──────────────────────────────
+// startGPSBase_orig already defined above
+// stopGPSBase_orig already defined above
 function handleMmRestaurantInput(){
   const val = document.getElementById('mmRestInput')?.value?.toLowerCase().trim();
   const list = document.getElementById('mmAutocompleteList');
@@ -4619,7 +4604,138 @@ function mmRegistrarViaje(){
 }
 
 // ── RESET MM RESTAURANT ON RESET VIAJE ───────────────────
-// ejecutarResetViaje v2.3.0 - merged inline
+// ejecutarResetViaje v2.4.0 - merged inline
+
+// ============================================================
+// v2.4.0 — GPS BACKGROUND + FIXES
+// ============================================================
+
+// ── GPS BACKGROUND SOLUTION ──────────────────────────────
+// Android pausa WebViews en background. Solución multicapa:
+// 1. Wake Lock (ya existe)
+// 2. Visibility change handler mejorado
+// 3. watchPosition con opciones agresivas
+// 4. Fallback con getCurrentPosition cada 4s
+// 5. NoSleep pattern con AudioContext
+
+let noSleepAudio = null;
+let gpsBackgroundTimer = null;
+let gpsRestartCount = 0;
+
+function initNoSleep(){
+  // AudioContext trick para evitar que Android pause la app
+  try{
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if(!AudioContext) return;
+    noSleepAudio = new AudioContext();
+    const oscillator = noSleepAudio.createOscillator();
+    const gainNode = noSleepAudio.createGain();
+    gainNode.gain.value = 0.001; // Silencioso pero activo
+    oscillator.connect(gainNode);
+    gainNode.connect(noSleepAudio.destination);
+    oscillator.frequency.value = 1;
+    oscillator.start();
+  }catch(e){}
+}
+
+function startGpsBackground(){
+  if(!gpsActive) return;
+  // Aggressive GPS poll every 4 seconds
+  if(gpsBackgroundTimer) clearInterval(gpsBackgroundTimer);
+  gpsBackgroundTimer = setInterval(()=>{
+    if(!gpsActive) return;
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        if(gpsActive && gpsPhase){
+          onGpsUpdate(pos, gpsPhase);
+        }
+      },
+      err => {
+        // GPS error - try to restart watchPosition
+        if(gpsActive && gpsRestartCount < 5){
+          gpsRestartCount++;
+          restartGpsWatch();
+        }
+      },
+      {enableHighAccuracy:true, timeout:5000, maximumAge:0}
+    );
+  }, 4000);
+}
+
+function stopGpsBackground(){
+  if(gpsBackgroundTimer){ clearInterval(gpsBackgroundTimer); gpsBackgroundTimer=null; }
+  gpsRestartCount = 0;
+}
+
+function restartGpsWatch(){
+  if(!gpsActive || !gpsPhase) return;
+  if(gpsWatchId !== null){ navigator.geolocation.clearWatch(gpsWatchId); gpsWatchId=null; }
+  gpsWatchId = navigator.geolocation.watchPosition(
+    pos => onGpsUpdate(pos, gpsPhase),
+    err => console.warn('GPS restart error:', err.message),
+    {enableHighAccuracy:true, maximumAge:0, timeout:10000}
+  );
+}
+
+// ── VISIBILITY CHANGE - Reactivar GPS al volver ───────────
+document.addEventListener('visibilitychange', async ()=>{
+  if(document.visibilityState === 'visible'){
+    // App volvió al primer plano
+    await requestWakeLock();
+    if(gpsActive){
+      // Reiniciar watchPosition por si se pausó
+      restartGpsWatch();
+      startGpsBackground();
+      // Sync maps
+      syncMapaFull();
+      syncMmMap();
+      updateMmResult();
+    }
+  } else {
+    // App fue al background - mantener GPS activo
+    if(gpsActive){
+      startGpsBackground();
+    }
+  }
+});
+
+// ── PAGE SHOW (after freeze/resume on Android) ───────────
+window.addEventListener('pageshow', (e)=>{
+  if(gpsActive){
+    restartGpsWatch();
+    startGpsBackground();
+    requestWakeLock();
+  }
+});
+
+// ── OVERRIDE startGPSBase to add background support ──────
+function startGPSBase(phase){
+  stopGPSBase_orig(phase);
+  gpsRestartCount = 0;
+  startGpsBackground();
+  initNoSleep();
+  requestWakeLock();
+}
+
+// ── OVERRIDE stopGPSBase to clean up ─────────────────────
+function stopGPSBase(){
+  stopGPSBase_orig();
+  stopGpsBackground();
+}
+
+// ── FIX: Hide "AGREGAR AL HISTORIAL" when in Modo Moto ───
+// The calc tab add button should not show in modo moto
+function abrirModoMoto(){
+  document.getElementById('modoMotoOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  requestWakeLock();
+  initNoSleep();
+  initMmMap();
+  syncMmMult();
+  syncMmTimes();
+  updateMmResult();
+}
+
 init();
 </script>
 </body>
