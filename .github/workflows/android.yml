@@ -7,43 +7,42 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v3
 
-  steps:
-    - name: Checkout Source Code
-      uses: actions/checkout@v3
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
-    - name: Setup Node.js Environment
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18
+      - name: Install Dependencies
+        run: npm install
 
-    - name: Install Dependencies
-      run: npm install
+      - name: Create Temporary Web Directory
+        run: |
+          mkdir -p www
+          cp index.html style.css app.js manifest.json sw.js www/ || true
 
-    - name: Create Temporary Web Directory
-      run: |
-        mkdir -p www
-        cp index.html style.css app.js manifest.json sw.js www/ || true
+      - name: Initialize Capacitor Android
+        run: |
+          npx cap add android
+          npx cap sync android
 
-    - name: Initialize Capacitor Android
-      run: |
-        npx cap add android
-        npx cap sync android
+      - name: Set up Java Development Kit (JDK 17)
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
 
-    - name: Set up Java Development Kit (JDK 17)
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'zulu'
-        java-version: '17'
+      - name: Compile Native Android APK (Gradle)
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
 
-    - name: Compile Native Android APK (Gradle)
-      run: |
-        cd android
-        chmod +x gradlew
-        ./gradlew assembleDebug
-
-    - name: Upload Compiled APK to GitHub
-      uses: actions/upload-artifact@v3
-      with:
-        name: RiderCalcPro-Debug-APK
-        path: android/app/build/outputs/apk/debug/app-debug.apk
+      - name: Upload Compiled APK to GitHub
+        uses: actions/upload-artifact@v3
+        with:
+          name: RiderCalcPro-Debug-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
