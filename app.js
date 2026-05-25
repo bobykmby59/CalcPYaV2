@@ -584,6 +584,7 @@ function toggleMotoMapVisibility() {
   if (isChecked) { wrapper.classList.remove('hidden'); initMotoMapInstance(); } else { wrapper.classList.add('hidden'); }
 }
 
+// Dibuja el trazado de ruta activa si existiese un viaje activo
 function drawLiveTrackingPathOnMap(points) {
   const pathCoordinates = points.map(p => [p[0], p[1]]); const lastPos = pathCoordinates[pathCoordinates.length - 1];
   if (leafMapInstance) {
@@ -1097,4 +1098,30 @@ function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
     Math.sin(dLon/2) * Math.sin(dLon/2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   return R * c;
+}
+
+// NUEVA CAPACIDAD: FUNCIÓN DE LIMPIEZA DE CALCULADORA CON CONFIRMACIÓN
+function clearCalculatorInputs() {
+  const isConfirmed = confirm("¿Seguro que deseas limpiar todos los campos ingresados de la calculadora activa?");
+  if (isConfirmed) {
+    document.getElementById('kmRetiro').value = '';
+    document.getElementById('propinaValue').value = '';
+    document.getElementById('restaurantInput').value = '';
+    document.getElementById('restaurantInputMoto').value = '';
+    
+    // Clear delivery segments
+    const container = document.getElementById('deliveryPointsList');
+    container.innerHTML = '';
+    deliverySegments = [];
+    addDeliverySegment(true);
+    
+    isRainActive = false;
+    isDobleOrder = false;
+    document.getElementById('rainSwitch').checked = false;
+    
+    updateDobleOrderBadge();
+    resetClockTracking();
+    calculateRealtimeEarnings();
+    triggerAlert('Calculadora Limpia', 'Se han restablecido los campos de entrada.');
+  }
 }
