@@ -9,10 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js Environment
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 18
 
@@ -29,8 +29,39 @@ jobs:
           npx cap add android
           npx cap sync android
 
+      - name: Inject GPS, Background & WakeLock Permissions
+        run: |
+          node -e "
+          const fs = require('fs');
+          const path = 'android/app/src/main/AndroidManifest.xml';
+          if (!fs.existsSync(path)) {
+            console.error('¡AndroidManifest.xml no encontrado!');
+            process.exit(1);
+          }
+          let xml = fs.readFileSync(path, 'utf8');
+          const permissions = \`
+              <!-- Permisos avanzados para GPS de Alta Precisión y Segundo Plano sin interrupciones -->
+              <uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\" />
+              <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />
+              <uses-permission android:name=\"android.permission.ACCESS_BACKGROUND_LOCATION\" />
+              <uses-permission android:name=\"android.permission.WAKE_LOCK\" />
+              <uses-permission android:name=\"android.permission.FOREGROUND_SERVICE\" />
+              <uses-permission android:name=\"android.permission.FOREGROUND_SERVICE_LOCATION\" />
+              <uses-feature android:name=\"android.hardware.location.gps\" />
+          \`;
+          
+          if (xml.includes('<application')) {
+            xml = xml.replace('<application', permissions + '\\n    <application');
+            fs.writeFileSync(path, xml, 'utf8');
+            console.log('Permisos avanzados de localización inyectados con éxito.');
+          } else {
+            console.error('No se pudo encontrar el nodo <application para inyectar.');
+            process.exit(1);
+          }
+          "
+
       - name: Set up Java Development Kit (JDK 17)
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
           java-version: '17'
@@ -42,7 +73,7 @@ jobs:
           ./gradlew assembleDebug
 
       - name: Upload Compiled APK to GitHub
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: RiderCalcPro-Debug-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
