@@ -1,0 +1,9 @@
+{
+  "appId": "com.kmby.ridercalcpro",
+  "appName": "Rider Calc Pro",
+  "webDir": "dist",
+  "server": {
+    "url": "https://tu-proyecto.vercel.app",
+    "cleartext": true
+  }
+}
