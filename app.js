@@ -53,6 +53,7 @@ let activeMultipliers = [1.00, 1.10, 1.20, 1.25, 1.30, 1.50, 2.00];
 let isRainActive = false; 
 let isDobleOrder = false;
 let earningsHidden = false; // Estado del ojo de privacidad
+let hasCenteredOnFirstFix = false; // Bandera de centrado automático
 
 let trackState = {
   active: false, phase: null,
@@ -687,12 +688,31 @@ function navigateHotspot(lat, lng, name) {
   }
 }
 
+// FILTRO DE ODOMETRO MILIMÉTRICO (v3.8.0)
 function processLiveGpsPositionUpdate(pos) {
-  const lat = pos.coords.latitude; const lng = pos.coords.longitude; const speed = pos.coords.speed || 0.0; const accuracy = pos.coords.accuracy;
-  if (accuracy > 30) return; gpsSmoothBuffer.push([lat, lng]); if (gpsSmoothBuffer.length > 3) gpsSmoothBuffer.shift();
+  const lat = pos.coords.latitude; 
+  const lng = pos.coords.longitude; 
+  const speed = pos.coords.speed || 0.0; 
+  const accuracy = pos.coords.accuracy;
+  
+  if (accuracy > 120) return; 
+  
+  gpsSmoothBuffer.push([lat, lng]); 
+  if (gpsSmoothBuffer.length > 3) gpsSmoothBuffer.shift();
+  
   const avgLat = gpsSmoothBuffer.reduce((acc, curr) => acc + curr[0], 0) / gpsSmoothBuffer.length;
   const avgLng = gpsSmoothBuffer.reduce((acc, curr) => acc + curr[1], 0) / gpsSmoothBuffer.length;
-  latestCoords = [avgLat, avgLng]; updateHelmetMarkerOnMap(avgLat, avgLng); updateHotspotsUi(avgLat, avgLng); checkInactivity(avgLat, avgLng);
+  latestCoords = [avgLat, avgLng]; 
+  
+  updateHelmetMarkerOnMap(avgLat, avgLng); 
+  updateHotspotsUi(avgLat, avgLng); 
+  checkInactivity(avgLat, avgLng);
+  
+  if (!hasCenteredOnFirstFix) {
+    if (leafMapInstance) leafMapInstance.setView(latestCoords, 16);
+    if (motoMapInstance) motoMapInstance.setView(latestCoords, 16);
+    hasCenteredOnFirstFix = true;
+  }
   
   if (!trackState.active) {
     updateScheduledMultiplierOnCalcTab();
@@ -712,10 +732,10 @@ function processLiveGpsPositionUpdate(pos) {
       
       if (lastPoint) {
         const stepDist = calculateHaversineDistance(lastPoint[0], lastPoint[1], avgLat, avgLng);
-        if (stepDist > 0.008) {
-          if (trackState.phase === 'retiro' || trackState.phase === 'entrega') { 
-            trackState.currentDistance += stepDist; 
-          }
+        
+        // FILTRO DE ALTA PRECISIÓN:
+        if (accuracy <= 25 && speed > 0.5 && stepDist > 0.003) {
+          trackState.currentDistance += stepDist; 
           
           if (trackState.phase === 'retiro') {
             trackState.routeRetiro.push(latestCoords);
@@ -738,7 +758,8 @@ function processLiveGpsPositionUpdate(pos) {
     document.getElementById('motoGpsDistance').textContent = trackState.currentDistance.toFixed(3);
     updateMotoBreakdownUI();
   }
-  document.getElementById('gpsStateText').textContent = '🛰️ GPS Conectado'; document.getElementById('gpsStateText').style.color = 'var(--green)';
+  document.getElementById('gpsStateText').textContent = '🛰️ GPS Conectado'; 
+  document.getElementById('gpsStateText').style.color = 'var(--green)';
 }
 
 function handleGpsTrackingError() {
@@ -766,11 +787,8 @@ function initLeafletMapInstance() {
   try {
     leafMapInstance = L.map('liveMapDiv', { zoomControl: false, attributionControl: false }).setView(latestCoords || [14.6349, -90.5069], 14);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(leafMapInstance);
-    
-    // Naranja Eléctrico (#ff9500) para el trayecto al restaurante
     mapPolylineRetiro = L.polyline([], { color: '#ff9500', weight: 6, opacity: 0.9 }).addTo(leafMapInstance);
     mapPolylinesEntrega = [];
-    
     if (latestCoords) updateHelmetMarkerOnMap(latestCoords[0], latestCoords[1]);
   } catch(e) { console.error('Map initialization failed', e); }
 }
@@ -785,11 +803,8 @@ function initMotoMapInstance() {
   try {
     motoMapInstance = L.map('motoMapDiv', { zoomControl: false, attributionControl: false }).setView(latestCoords || [14.6349, -90.5069], 14);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(motoMapInstance);
-    
-    // Naranja Eléctrico (#ff9500) para el trayecto al restaurante en el modo moto
     motoPolylineRetiro = L.polyline([], { color: '#ff9500', weight: 6, opacity: 0.9 }).addTo(motoMapInstance);
     motoPolylinesEntrega = [];
-    
     if (latestCoords) updateHelmetMarkerOnMap(latestCoords[0], latestCoords[1]);
   } catch(e) { console.error('Moto map initialization failed', e); }
 }
@@ -821,7 +836,7 @@ function drawLiveTrackingPathOnMap() {
   
   if (motoMapInstance && !document.getElementById('motoMapWrapper').classList.contains('hidden')) {
     if (trackState.phase === 'retiro' && trackState.routeRetiro.length > 0) {
-      motoPolylineRetiro.setLatLngs(trackState.routeRetiro); // CORREGIDO: Trazado dinámico en Android
+      motoPolylineRetiro.setLatLngs(trackState.routeRetiro);
       if (!motoStartMarker) { 
         motoStartMarker = L.circleMarker(trackState.routeRetiro[0], { radius: 8, color: '#ff9500', fillColor: '#ff9500', fillOpacity: 0.8 }).addTo(motoMapInstance); 
       }
