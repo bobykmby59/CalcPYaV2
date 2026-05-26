@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ main, master ]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
 jobs:
   build:
     name: Compilar Android APK
@@ -18,8 +21,7 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'
+          node-version: 24 # Actualizado a Node.js 24 para cumplir con las directivas de GitHub
 
       - name: Configurar Java JDK (Android)
         uses: actions/setup-java@v4
@@ -31,14 +33,11 @@ jobs:
         run: npm install
 
       - name: Crear Estructura de Directorios si no existe
-        run: |
-          mkdir -p www
-          # Asegura que Capacitor reconozca la carpeta web de origen antes de sincronizar
+        run: mkdir -p www
 
       - name: Inicializar y Sincronizar Plataforma Android
         run: |
           npx cap sync
-          # Si no tienes la carpeta 'android' en el repositorio, la agrega de forma automática:
           if [ ! -d "android" ]; then
             npx cap add android
           fi
