@@ -1,12 +1,9 @@
 {
-  "appId": "com.motocalc.delivery",
-  "appName": "Moto Calculadora",
-  "webDir": "www",
-  "plugins": {
-    "Keyboard": {
-      "resize": "body",
-      "style": "dark"
-    },
-    "App": {}
+  "appId": "com.kmby.ridercalcpro",
+  "appName": "Rider Calc Pro",
+  "webDir": ".",
+  "server": {
+    "url": "https://calc-p-ya-v2.vercel.app",
+    "cleartext": true
   }
 }

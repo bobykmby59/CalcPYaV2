@@ -1,21 +1,18 @@
 {
-  "name": "moto-calculadora-delivery",
-  "version": "1.1.0",
-  "description": "Calculadora de rutas consecutivas y optimización para repartidores",
-  "main": "index.js",
+  "name": "rider-calc-pro-gt",
+  "version": "3.6.0",
+  "description": "App Nativa de Cálculo y GPS para Riders en Guatemala",
+  "main": "index.html",
   "scripts": {
     "build": "echo 'No build step required'",
-    "sync": "npx cap sync"
+    "cap:sync": "npx cap sync",
+    "cap:open:android": "npx cap open android"
   },
   "dependencies": {
-    "@capacitor/android": "^6.0.0",
-    "@capacitor/app": "^6.0.0",
-    "@capacitor/core": "^6.0.0",
-    "@capacitor/keyboard": "^6.0.0"
+    "@capacitor/core": "^5.0.0",
+    "@capacitor/android": "^5.0.0"
   },
   "devDependencies": {
-    "@capacitor/cli": "^6.0.0"
-  },
-  "author": "Repartidor Pro",
-  "license": "MIT"
+    "@capacitor/cli": "^5.0.0"
+  }
 }

@@ -1,454 +1,1089 @@
-// --- Variables de Estado Global ---
-let currentTab = 'calc';
-let isShiftActive = false;
-let currentMultiplier = 1.0;
-let selectedDeliveriesCount = 1;
-let completedTrips = [];
-let dailyGoal = 100.00;
+// ==========================================
+// BUSINESS & STATE ENGINE - RIDER CALC PRO v3.6.1 (CORREGIDO)
+// ==========================================
+const COMPONENTE_FIJO = 2.50; 
+const PAGO_RETIRO = 1.00;     
+const PAGO_ENTREGA = 2.50;    
+const PRECIO_KM = 1.50;       
+const PAGO_PUBLICIDAD = 0.50;  
 
-// Configuración persistente (Local Storage)
-let fuelCostPerKm = parseFloat(localStorage.getItem('fuelCost')) || 1.20;
-let maintCostPerKm = parseFloat(localStorage.getItem('maintCost')) || 0.15;
-let otherCostPerKm = parseFloat(localStorage.getItem('otherCost')) || 0.10;
+// Hotspots de alta demanda en Ciudad de Guatemala
+const gtHotspots = [
+  { name: "CC Miraflores (Zona 11)", lat: 14.6212, lng: -90.5526 },
+  { name: "Oakland Place (Zona 10)", lat: 14.5985, lng: -90.5072 },
+  { name: "CC Naranjo Mall (Condado Naranjo)", lat: 14.6436, lng: -90.5574 },
+  { name: "Plaza Cayalá (Zona 16)", lat: 14.6121, lng: -90.4891 },
+  { name: "CC Pradera Concepción (Carretera SV)", lat: 14.5492, lng: -90.4431 },
+  { name: "CC Portales (Zona 17)", lat: 14.6548, lng: -90.4851 },
+  { name: "CC Fontabella (Zona 10)", lat: 14.6006, lng: -90.5085 },
+  { name: "CC Pradera (Zona 10)", lat: 14.5921, lng: -90.5015 }
+];
 
-let mainLeafletMap = null;
+// Base de datos de consejos útiles para Riders en Guatemala
+const riderTips = [
+  "¡Buen viaje! Revisa siempre la dirección en el mapa antes de arrancar.",
+  "Guarda tu distancia. En asfalto mojado frena suavemente.",
+  "¡Excelente trabajo! Recuerda tomar agua para mantenerte hidratado.",
+  "Ojo al filtro de aceite de tu moto. Un motor bien cuidado rinde más.",
+  "Si vas por Carretera a El Salvador, ten cuidado con las curvas.",
+  "Mantén tu casco bien abrochado. ¡Tu seguridad es lo primero, Rider!",
+  "Evita zonas solitarias de noche. Mejor espera en centros comerciales.",
+  "¿Revisaste la presión de tus llantas hoy? Ahorrarás gasolina.",
+  "Una sonrisa al cliente puede ganarte una propina en efectivo.",
+  "Desinfecta tu mochila de reparto al final del día. Higiene ante todo.",
+  "Retrovisores bien alineados reducen puntos ciegos peligrosos.",
+  "Lleva impermeable en la mochila, las lluvias de Guate no avisan.",
+  "Planificar tus rutas te ahorra valioso tiempo y combustible.",
+  "Si el cliente se tarda en salir, respira hondo. Paciencia trae recompensa."
+];
 
-document.addEventListener('DOMContentLoaded', () => {
-  initApp();
+// Colores para el trazado diferencial de los mapas (Foto 2)
+const deliveryColors = ['#00ff66', '#bf5fff', '#ffaa00', '#ff2d55'];
+
+// Almacenamiento local del Rider
+let db = {
+  orders: [],
+  restaurants: ["McDonald's", "Burger King", "Pollo Campero", "Pizza Hut", "Taco Bell", "Subway", "Little Caesars", "Wendy's"],
+  config: { 
+    riderName: '', dailyGoal: 500, gasPrice: 32, gasRend: 120, dailyMaint: 15,
+    autoMultiplierEnabled: false, multiplierSchedule: [], satRegime: "pequeno"
+  }
+};
+
+let currentTab = 'calc'; 
+let activeMultipliers = [1.00, 1.10, 1.20, 1.25, 1.30, 1.50, 2.00]; 
+let isRainActive = false; 
+let isDobleOrder = false;
+
+// Seguimiento mejorado del GPS (Ruta segmentada por fases)
+let trackState = {
+  active: false, phase: null,
+  times: { aceptar: null, llegue: null, recogi: null, entregu: null, aceptarRaw: null, llegueRaw: null, recogiRaw: null, entreguRaw: null },
+  distances: { alRestaurante: 0, alCliente: 0 }, 
+  routeRetiro: [],      // Coordenadas Yo -> Restaurante
+  routeEntrega: [],     // Coordenadas Restaurante -> Cliente(s) (Arreglo multidimensional)
+  currentDistance: 0, currentDeliveryIndex: 0
+};
+
+// Control de persistencia GPS, WakeLock y Antirreproducción suspendida
+let wakeLockInstance = null; 
+let watchPositionId = null; 
+let gpsSmoothBuffer = []; 
+let lastMovedTime = Date.now(); 
+let lastMovedCoords = null; 
+let latestCoords = null; 
+let audioContextInstance = null; 
+let bgGpsIntervalId = null;
+let glovesModeActive = false;
+
+// Instancias de Mapas Interactivos Leaflet
+let redHelmetIcon = null;
+let leafMapInstance = null; 
+let mapPolylineRetiro = null; 
+let mapPolylinesEntrega = []; 
+let mapStartMarker = null; 
+let globalUserMarker = null;
+
+let motoMapInstance = null; 
+let motoPolylineRetiro = null; 
+let motoPolylinesEntrega = []; 
+let motoStartMarker = null; 
+let globalUserMarkerMoto = null;
+
+const historyMapInstances = {}; 
+let deliverySegments = [];
+
+// Inicialización de la aplicación
+document.addEventListener("DOMContentLoaded", () => {
+  hydrateDataStorage(); 
+  checkMidnightReset(); // Verificación automática de cambio de día a las 00:00 (Foto 1)
+  initializeCoreEvents(); 
+  renderPresetsChips(); 
+  initDateDisplay(); 
+  calculateRealtimeEarnings(); 
+  initAutoTheme(); 
+  fetchWeather();
+  startLiveLocationKeepalive();
 });
 
-function initApp() {
-  loadSavedData();
-  setupTabSystem();
-  setupEventListeners();
-  setupNumSelector();
-  calculateLivePreview();
-  toggleStatsHeader();
+function hydrateDataStorage() {
+  try {
+    const rawAll = localStorage.getItem('rider_db');
+    if (rawAll) { 
+      db = JSON.parse(rawAll); 
+      if (!db.config) db.config = {};
+      if (db.config.autoMultiplierEnabled === undefined) db.config.autoMultiplierEnabled = false;
+      if (!db.config.multiplierSchedule) db.config.multiplierSchedule = [];
+      if (db.config.satRegime === undefined) db.config.satRegime = "pequeno";
+      if (db.config.gasPrice === undefined) db.config.gasPrice = 32;
+      if (db.config.gasRend === undefined) db.config.gasRend = 120;
+      if (db.config.dailyMaint === undefined) db.config.dailyMaint = 15;
+    } else { 
+      localStorage.setItem('rider_db', JSON.stringify(db)); 
+    }
+  } catch(e) { console.error('Error hydrating store', e); }
+  addDeliverySegment(true);
 }
 
-// Carga información guardada
-function loadSavedData() {
-  const savedGoal = localStorage.getItem('dailyGoal');
-  if (savedGoal) {
-    dailyGoal = parseFloat(savedGoal);
-    document.getElementById('daily-goal-input').value = dailyGoal.toFixed(2);
-  }
-
-  const savedTrips = localStorage.getItem('tripsHistory');
-  if (savedTrips) {
-    completedTrips = JSON.parse(savedTrips);
-  }
-
-  document.getElementById('cfg-fuel').value = fuelCostPerKm;
-  document.getElementById('cfg-maint').value = maintCostPerKm;
-  document.getElementById('cfg-other').value = otherCostPerKm;
-
-  updateGlobalUI();
+function commitDataStorage() {
+  try { 
+    localStorage.setItem('rider_db', JSON.stringify(db)); 
+    syncDashboardValues(); 
+    renderTimelineRoutes(); // Actualiza el timeline del mapa en tiempo real
+  } catch(e) { console.error('Failed writing states', e); }
 }
 
-// Control de Visibilidad del Stats Header
-function toggleStatsHeader() {
-  const header = document.getElementById('global-stats-header');
-  const banner = document.getElementById('meta-banner');
-  if (currentTab === 'calc' || currentTab === 'historial') {
-    header.style.display = 'flex';
-    banner.style.display = 'block';
-  } else {
-    header.style.display = 'none';
-    banner.style.display = 'none';
-  }
-}
-
-// Seteo del sistema de pestañas
-function setupTabSystem() {
-  const footerTabs = [
-    { id: 'tab-calc', label: 'Calc' },
-    { id: 'tab-map', label: 'Mapa' },
-    { id: 'tab-historial', label: 'Historial' },
-    { id: 'tab-stats', label: 'Stats' },
-    { id: 'tab-ajustes', label: 'Ajustes' }
-  ];
-
-  // Crear la barra de navegación dinámica en base al DOM de Capacitor
-  const body = document.body;
-  const navBar = document.createElement('div');
-  navBar.className = 'tab-bar';
-  navBar.style.position = 'fixed';
-  navBar.style.bottom = '0';
-  navBar.style.left = '0';
-  navBar.style.right = '0';
-  navBar.style.height = '60px';
-  navBar.style.backgroundColor = '#FFFFFF';
-  navBar.style.borderTop = '1px solid #E5E7EB';
-  navBar.style.display = 'flex';
-  navBar.style.justifyContent = 'space-around';
-  navBar.style.alignItems = 'center';
-  navBar.style.zIndex = '1000';
-
-  footerTabs.forEach(tab => {
-    const tabItem = document.createElement('div');
-    tabItem.className = `tab-item ${tab.id === 'tab-calc' ? 'active-tab' : ''}`;
-    tabItem.style.textAlign = 'center';
-    tabItem.style.flex = '1';
-    tabItem.style.cursor = 'pointer';
-
-    let iconName = 'calculator-outline';
-    if (tab.id === 'tab-map') iconName = 'map-outline';
-    if (tab.id === 'tab-historial') iconName = 'list-outline';
-    if (tab.id === 'tab-stats') iconName = 'stats-chart-outline';
-    if (tab.id === 'tab-ajustes') iconName = 'settings-outline';
-
-    tabItem.innerHTML = `
-      <ion-icon name="${iconName}" style="font-size: 20px; color: ${tab.id === 'tab-calc' ? '#2563EB' : '#6B7280'}"></ion-icon>
-      <div style="font-size: 10px; color: ${tab.id === 'tab-calc' ? '#2563EB' : '#6B7280'}; font-weight: 600;">${tab.label}</div>
-    `;
-
-    tabItem.addEventListener('click', () => {
-      document.querySelectorAll('.tab-view').forEach(view => view.classList.remove('active'));
-      document.getElementById(tab.id).classList.add('active');
+// Control automático de Cierre de Día a las 00:00 (Foto 1)
+function checkMidnightReset() {
+  const todayStr = new Date().toLocaleDateString('es-GT', { day: 'numeric', month: 'numeric', year: 'numeric' });
+  const lastResetDate = localStorage.getItem('last_midnight_reset_date');
+  
+  if (lastResetDate && lastResetDate !== todayStr) {
+    if (db.orders.length > 0) {
+      // Guardar respaldo permanente en la memoria interna (histórico acumulado)
+      let globalArchive = JSON.parse(localStorage.getItem('rider_global_archive') || '[]');
+      globalArchive.push(...db.orders);
+      localStorage.setItem('rider_global_archive', JSON.stringify(globalArchive));
       
-      document.querySelectorAll('.tab-item').forEach(item => {
-        item.querySelector('ion-icon').style.color = '#6B7280';
-        item.querySelector('div').style.color = '#6B7280';
-      });
-      tabItem.querySelector('ion-icon').style.color = '#2563EB';
-      tabItem.querySelector('div').style.color = '#2563EB';
-
-      currentTab = tab.id.replace('tab-', '');
-      toggleStatsHeader();
-
-      if (tab.id === 'tab-map') {
-        setTimeout(initLeafletMap, 100);
-      }
-      if (tab.id === 'tab-historial') {
-        renderHistoryList();
-      }
-      if (tab.id === 'tab-stats') {
-        renderStats();
-      }
-    });
-
-    navBar.appendChild(tabItem);
-  });
-  body.appendChild(navBar);
+      // Limpiar datos del día anterior de forma automática
+      db.orders = [];
+      commitDataStorage();
+      triggerAlert('🌅 Nuevo Día Iniciado', 'Los repartos del día anterior se han archivado automáticamente.');
+    }
+  }
+  localStorage.setItem('last_midnight_reset_date', todayStr);
 }
 
-// Configuración de listeners en Calc y Ajustes
-function setupEventListeners() {
-  const shiftToggle = document.getElementById('shift-toggle');
-  const shiftModal = document.getElementById('shift-modal');
+// Botón de Cierre de Día manual en la pestaña de historial (Foto 1)
+function manualMidnightReset() {
+  if (confirm('¿Seguro que deseas realizar el Cierre de Día? Los datos de hoy se guardarán en tu archivo histórico general y la consola diaria comenzará en cero.')) {
+    let globalArchive = JSON.parse(localStorage.getItem('rider_global_archive') || '[]');
+    globalArchive.push(...db.orders);
+    localStorage.setItem('rider_global_archive', JSON.stringify(globalArchive));
+    
+    db.orders = [];
+    commitDataStorage();
+    renderHistoryTrips();
+    triggerAlert('Cierre Completado', 'Consola del día restablecida. ¡Buen camino en tu nueva jornada!');
+  }
+}
 
-  shiftToggle.addEventListener('change', (e) => {
-    if (e.target.checked) {
-      shiftModal.classList.remove('hidden');
+function initializeCoreEvents() {
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.addEventListener('click', (e) => {
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      e.currentTarget.classList.add('active');
+    });
+  });
+  
+  // Carga correcta y persistente de valores de configuración (Foto 6)
+  document.getElementById('cfgRiderName').value = db.config.riderName || '';
+  document.getElementById('cfgDailyGoal').value = db.config.dailyGoal || 500;
+  document.getElementById('cfgGasPrice').value = db.config.gasPrice || 32;
+  document.getElementById('cfgGasRend').value = db.config.gasRend || 120;
+  document.getElementById('cfgDailyMaint').value = db.config.dailyMaint !== undefined ? db.config.dailyMaint : 15;
+  document.getElementById('cfgSatRegime').value = db.config.satRegime || 'pequeno';
+  
+  document.getElementById('cfgAutoMultSwitch').checked = db.config.autoMultiplierEnabled;
+  if (db.config.autoMultiplierEnabled) {
+    document.getElementById('cfgScheduleContainer').style.display = 'flex';
+  }
+  renderScheduleSlots();
+  updateScheduledMultiplierOnCalcTab();
+  
+  syncDashboardValues();
+}
+
+function initDateDisplay() {
+  const now = new Date();
+  document.getElementById('headerDateStr').textContent = now.toLocaleDateString('es-GT', { weekday: 'short', day: 'numeric', month: 'short' }).toUpperCase() + " GT";
+}
+
+function initAutoTheme() {
+  const hour = new Date().getHours(); 
+  const shouldBeDark = hour >= 18 || hour < 6;
+  if (shouldBeDark) { 
+    document.body.classList.remove('light-mode'); 
+  } else { 
+    document.body.classList.add('light-mode'); 
+  }
+}
+
+function toggleTheme() {
+  document.body.classList.toggle('light-mode');
+  document.getElementById('themeToggleBtn').textContent = document.body.classList.contains('light-mode') ? '🌙' : '☀️';
+  drawAnalyticsChart();
+}
+
+function adjustMult(amount) {
+  if (db.config.autoMultiplierEnabled) return;
+  const multInput = document.getElementById('multValue'); 
+  let currentVal = parseFloat(multInput.value) || 1.30;
+  currentVal = parseFloat((currentVal + amount).toFixed(2)); 
+  if (currentVal < 1.0) currentVal = 1.0;
+  multInput.value = currentVal.toFixed(2); 
+  renderPresetsChips(); 
+  calculateRealtimeEarnings();
+}
+
+function selectMultPreset(val) { 
+  if (db.config.autoMultiplierEnabled) return;
+  document.getElementById('multValue').value = val.toFixed(2); 
+  renderPresetsChips(); 
+  calculateRealtimeEarnings(); 
+}
+
+function renderPresetsChips() {
+  const currentVal = parseFloat(document.getElementById('multValue').value) || 1.30;
+  const container = document.getElementById('presetChipsList'); 
+  container.innerHTML = '';
+  activeMultipliers.forEach(m => {
+    const chip = document.createElement('div'); 
+    chip.className = `preset-chip ${m === currentVal ? 'active' : ''}`;
+    chip.textContent = `${m.toFixed(2)}x`; 
+    chip.onclick = () => selectMultPreset(m); 
+    container.appendChild(chip);
+  });
+}
+
+function stepSegment(targetId, step) {
+  const input = document.getElementById(targetId); 
+  let val = parseFloat(input.value) || 0.0;
+  val = parseFloat((val + step).toFixed(3)); 
+  if (val < 0.0) val = 0.0; 
+  input.value = val === 0.0 ? '' : val.toFixed(3); 
+  calculateRealtimeEarnings();
+}
+
+function addDeliverySegment(isInitial = false) {
+  if (deliverySegments.length >= 4) return; // Máximo 4 entregas del mismo restaurante
+  const id = Date.now() + Math.random(); 
+  const index = deliverySegments.length + 1;
+  const container = document.getElementById('deliveryPointsList'); 
+  const div = document.createElement('div');
+  div.className = 'segment-box'; 
+  div.id = `delivery-seg-${id}`;
+  div.innerHTML = `
+    <div class="segment-header"><span class="segment-title">🏠 Entrega ${index}</span><div class="km-input-wrap"><input type="number" class="km-input" id="kmE_${id}" placeholder="0.000" step="0.1" oninput="calculateRealtimeEarnings()"><span class="km-unit">km</span></div></div>
+    <div class="segment-stepper"><button class="step-btn" onclick="stepSegment('kmE_${id}', -0.1)">− 0.1</button><button class="step-btn" onclick="stepSegment('kmE_${id}', 0.1)">+ 0.1</button></div>
+    ${!isInitial ? `<button class="h-btn" onclick="removeDeliverySegment('${id}')" style="margin-top:12px; border-color: var(--accent); color: var(--accent); background:none; padding:6px;">✕ Eliminar Entrega</button>` : ''}
+  `;
+  container.appendChild(div); 
+  deliverySegments.push({ id, elementId: `kmE_${id}` });
+  if (!isInitial) { 
+    calculateRealtimeEarnings(); 
+    updateDobleOrderBadge(); 
+  }
+}
+
+// Corrección de tipos de datos al eliminar segmentos (Solución Auditada)
+function removeDeliverySegment(id) {
+  const div = document.getElementById(`delivery-seg-${id}`);
+  if (div) { 
+    div.remove(); 
+    deliverySegments = deliverySegments.filter(s => String(s.id) !== String(id)); 
+    calculateRealtimeEarnings(); 
+    updateDobleOrderBadge(); 
+  }
+}
+
+function toggleRain(event) {
+  if (event && event.target && event.target.id === 'rainValue') return;
+  isRainActive = !isRainActive; 
+  document.getElementById('rainSwitch').checked = isRainActive; 
+  calculateRealtimeEarnings();
+}
+
+function toggleDobleOrder() { 
+  isDobleOrder = !isDobleOrder; 
+  updateDobleOrderBadge(); 
+  calculateRealtimeEarnings(); 
+}
+
+function updateDobleOrderBadge() {
+  const badge = document.getElementById('dobleBadge'); 
+  const size = deliverySegments.length;
+  badge.textContent = isDobleOrder ? `ACTIVO (x${size})` : 'OFF'; 
+  badge.style.color = isDobleOrder ? 'var(--green)' : 'var(--accent)';
+}
+
+function resetClockTracking() {
+  trackState = {
+    active: false, phase: null,
+    times: { aceptar: null, llegue: null, recogi: null, entregu: null, aceptarRaw: null, llegueRaw: null, recogiRaw: null, entreguRaw: null },
+    distances: { alRestaurante: 0, alCliente: 0 }, 
+    routeRetiro: [], 
+    routeEntrega: [], 
+    currentDistance: 0, currentDeliveryIndex: 0
+  };
+  const steps = ['Acepted', 'Arrived', 'Picked', 'Delivered'];
+  steps.forEach(s => {
+    const btn = document.getElementById(`t${s}`); if (btn) btn.classList.remove('active');
+    const timeSpan = document.getElementById(`trackTime${s}`); if (timeSpan) timeSpan.textContent = '--:--';
+    const mBtn = document.getElementById(`m_t${s}`); if (mBtn) mBtn.classList.remove('active');
+    const mTimeSpan = document.getElementById(`m_trackTime${s}`); if (mTimeSpan) mTimeSpan.textContent = '--:--';
+  });
+  document.getElementById('gpsDistanceLive').textContent = '0.000 km';
+  
+  const dBtn = document.getElementById('tDelivered'); if (dBtn) { const s = dBtn.querySelector('.title'); if (s) s.textContent = "Entregué"; }
+  const mdBtn = document.getElementById('m_tDelivered'); if (mdBtn) { const s = mdBtn.querySelector('.title'); if (s) s.textContent = "Entregué"; }
+  updateMotoBreakdownUI();
+  updateScheduledMultiplierOnCalcTab();
+}
+
+function updateDeliveryButtonLabels() {
+  const btn = document.getElementById('tDelivered'); 
+  const mBtn = document.getElementById('m_tDelivered');
+  const total = deliverySegments.length; 
+  const currentIdx = trackState.currentDeliveryIndex;
+  const label = total > 1 ? `Entregué ${currentIdx + 1}/${total}` : "Entregué";
+  if (btn) { const t = btn.querySelector('.title'); if (t) t.textContent = label; }
+  if (mBtn) { const t = mBtn.querySelector('.title'); if (t) t.textContent = label; }
+}
+
+function saveTripToHistory() {
+  const kmR = parseFloat(document.getElementById('kmRetiro').value) || 0.0; 
+  let kmETotal = 0.0;
+  deliverySegments.forEach(seg => { const el = document.getElementById(seg.elementId); if (el) kmETotal += parseFloat(el.value) || 0.0; });
+  if (kmR === 0.0 && kmETotal === 0.0) { triggerAlert('Ingresa Distancia', 'Coloca distancia en retiro o entrega.'); return; }
+  const finalVal = calculateRealtimeEarnings(); 
+  const restName = document.getElementById('restaurantInput').value || 'Sin Nombre';
+  
+  const orderObj = {
+    id: Date.now(), restaurant: restName, kmR, kmE: kmETotal, deliveriesCount: deliverySegments.length, doble: isDobleOrder, rain: isRainActive,
+    rainVal: isRainActive ? (parseFloat(document.getElementById('rainValue').value) || 0.25) : 0.00,
+    multiplier: parseFloat(document.getElementById('multValue').value) || 1.30, propina: parseFloat(document.getElementById('propinaValue').value) || 0.0,
+    earnings: finalVal, timestamp: new Date().toISOString(), timings: { ...trackState.times }, 
+    routeRetiro: [...trackState.routeRetiro], 
+    routeEntrega: JSON.parse(JSON.stringify(trackState.routeEntrega))
+  };
+  
+  db.orders.push(orderObj); 
+  if (restName !== 'Sin Nombre' && !db.restaurants.includes(restName)) { 
+    db.restaurants.push(restName); 
+  }
+  commitDataStorage();
+  
+  const randomTip = riderTips[Math.floor(Math.random() * riderTips.length)];
+  triggerBannerNotification(`Pedido Guardado · Q ${finalVal.toFixed(2)}`, `💡 Tip: ${randomTip}`);
+  
+  document.getElementById('kmRetiro').value = ''; 
+  document.getElementById('propinaValue').value = '';
+  document.getElementById('restaurantInput').value = ''; 
+  document.getElementById('restaurantInputMoto').value = '';
+  const container = document.getElementById('deliveryPointsList'); 
+  container.innerHTML = ''; 
+  deliverySegments = [];
+  addDeliverySegment(true); 
+  isRainActive = false; 
+  isDobleOrder = false; 
+  document.getElementById('rainSwitch').checked = false;
+  updateDobleOrderBadge(); 
+  resetClockTracking(); 
+  calculateRealtimeEarnings();
+}
+
+function trackStep(phase) {
+  if (glovesModeActive) {
+    if (!confirm(`¿Confirmar acción: ${phase.toUpperCase()}?`)) return;
+  }
+  const now = new Date(); 
+  const timeStr = now.toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit' }); 
+  const rawNow = now.getTime();
+  
+  if (phase === 'aceptar') {
+    resetClockTracking(); 
+    trackState.active = true; 
+    trackState.phase = 'retiro'; 
+    trackState.times.aceptar = timeStr; 
+    trackState.times.aceptarRaw = rawNow;
+    
+    document.getElementById('tAcepted').classList.add('active'); 
+    document.getElementById('trackTimeAcepted').textContent = timeStr;
+    const mBtn = document.getElementById('m_tAcepted'); if (mBtn) mBtn.classList.add('active');
+    const mTime = document.getElementById('m_trackTimeAcepted'); if (mTime) mTime.textContent = timeStr;
+    
+    updateScheduledMultiplierOnCalcTab();
+    triggerAlert('GPS de Ruta Activado', 'El trayecto se está grabando.');
+    
+  } else if (phase === 'llegue') {
+    if (!trackState.active) return; 
+    trackState.times.llegue = timeStr; 
+    trackState.times.llegueRaw = rawNow;
+    
+    document.getElementById('tArrived').classList.add('active'); 
+    document.getElementById('trackTimeArrived').textContent = timeStr;
+    const mBtn = document.getElementById('m_tArrived'); if (mBtn) mBtn.classList.add('active');
+    const mTime = document.getElementById('m_trackTimeArrived'); if (mTime) mTime.textContent = timeStr;
+    
+    const capturedRetiro = trackState.currentDistance; 
+    trackState.distances.alRestaurante = capturedRetiro;
+    document.getElementById('kmRetiro').value = capturedRetiro.toFixed(3); 
+    calculateRealtimeEarnings();
+    
+    trackState.phase = 'espera'; 
+    trackState.currentDistance = 0; 
+    triggerAlert('Llegaste al Rest.', `Retiro fijado a ${capturedRetiro.toFixed(3)} km.`);
+    
+  } else if (phase === 'recogi') {
+    if (!trackState.active) return; 
+    trackState.times.recogi = timeStr; 
+    trackState.times.recogiRaw = rawNow;
+    
+    document.getElementById('tPicked').classList.add('active'); 
+    document.getElementById('trackTimePicked').textContent = timeStr;
+    const mBtn = document.getElementById('m_tPicked'); if (mBtn) mBtn.classList.add('active');
+    const mTime = document.getElementById('m_trackTimePicked'); if (mTime) mTime.textContent = timeStr;
+    
+    trackState.phase = 'entrega'; 
+    trackState.currentDistance = 0; 
+    trackState.currentDeliveryIndex = 0;
+    trackState.routeEntrega[0] = []; // Inicializa el primer tramo de entrega
+    
+    updateDeliveryButtonLabels(); 
+    triggerAlert('Pedido Recogido', 'Trayecto de entregas iniciado.');
+    
+  } else if (phase === 'entregu') {
+    if (!trackState.active) return;
+    const totalDeliveries = deliverySegments.length; 
+    const currentIdx = trackState.currentDeliveryIndex;
+    const capturedDelivery = trackState.currentDistance; 
+    const currentSeg = deliverySegments[currentIdx];
+    
+    if (currentSeg) { 
+      const inputEl = document.getElementById(currentSeg.elementId); 
+      if (inputEl) { inputEl.value = capturedDelivery.toFixed(3); } 
+    }
+    calculateRealtimeEarnings();
+    
+    if (currentIdx < totalDeliveries - 1) {
+      trackState.currentDeliveryIndex++; 
+      trackState.currentDistance = 0;
+      trackState.routeEntrega[trackState.currentDeliveryIndex] = []; // Inicializa el siguiente tramo de entrega
+      updateDeliveryButtonLabels(); 
+      triggerAlert(`Entrega ${currentIdx + 1} Completada`, `Distancia: ${capturedDelivery.toFixed(3)} km. Ruta a Entrega ${trackState.currentDeliveryIndex + 1}.`);
     } else {
-      isShiftActive = false;
-      currentMultiplier = 1.0;
-      document.getElementById('shift-status-text').innerText = "Jornada laboral inactiva.";
+      trackState.times.entregu = timeStr; 
+      trackState.times.entreguRaw = rawNow;
+      
+      document.getElementById('tDelivered').classList.add('active'); 
+      document.getElementById('trackTimeDelivered').textContent = timeStr;
+      const mBtn = document.getElementById('m_tDelivered'); if (mBtn) mBtn.classList.add('active');
+      const mTime = document.getElementById('m_trackTimeDelivered'); if (mTime) mTime.textContent = timeStr;
+      
+      stopTripTracking(); 
+      triggerAlert('Ruta Completada', 'Todas las entregas registradas.');
+      setTimeout(() => { saveTripToHistory(); if (document.getElementById('motoModeOverlay').classList.contains('active')) { exitMotoMode(); } }, 1200);
     }
-  });
-
-  // Cancelar Jornada
-  document.getElementById('btn-modal-cancel').addEventListener('click', () => {
-    shiftModal.classList.add('hidden');
-    shiftToggle.checked = false;
-  });
-
-  // Opciones predefinidas del Modal
-  document.querySelectorAll('.mult-opt-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.mult-opt-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentMultiplier = parseFloat(btn.getAttribute('data-mult'));
-    });
-  });
-
-  // Confirmar Jornada
-  document.getElementById('btn-modal-start').addEventListener('click', () => {
-    const custom = parseFloat(document.getElementById('custom-multiplier').value);
-    if (!isNaN(custom) && custom > 0) {
-      currentMultiplier = custom;
-    }
-    isShiftActive = true;
-    document.getElementById('shift-status-text').innerText = `Jornada Activa con Multiplicador: x${currentMultiplier.toFixed(2)}`;
-    shiftModal.classList.add('hidden');
-  });
-
-  // Cambios dinámicos en los campos de entrada
-  document.querySelectorAll('.dist-input').forEach(input => {
-    input.addEventListener('input', calculateLivePreview);
-  });
-
-  // Botón Reiniciar
-  document.getElementById('btn-reset').addEventListener('click', resetCalcForm);
-
-  // Guardar Ajustes Operativos
-  document.getElementById('btn-save-settings').addEventListener('click', () => {
-    fuelCostPerKm = parseFloat(document.getElementById('cfg-fuel').value) || 0;
-    maintCostPerKm = parseFloat(document.getElementById('cfg-maint').value) || 0;
-    otherCostPerKm = parseFloat(document.getElementById('cfg-other').value) || 0;
-
-    localStorage.setItem('fuelCost', fuelCostPerKm);
-    localStorage.setItem('maintCost', maintCostPerKm);
-    localStorage.setItem('otherCost', otherCostPerKm);
-
-    alert('Costos operativos de mantenimiento guardados correctamente de forma permanente.');
-  });
-
-  // Entrada de Meta del Día
-  document.getElementById('daily-goal-input').addEventListener('input', (e) => {
-    dailyGoal = parseFloat(e.target.value) || 0;
-    localStorage.setItem('dailyGoal', dailyGoal);
-    updateGlobalUI();
-  });
-
-  // Aceptar Viaje
-  document.getElementById('btn-accept').addEventListener('click', acceptTripRecord);
+  }
+  updateMotoBreakdownUI();
 }
 
-// Selector de número de entregas (Máx 4)
-function setupNumSelector() {
-  document.querySelectorAll('.num-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.num-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      selectedDeliveriesCount = parseInt(btn.getAttribute('data-val'));
+function updateMotoBreakdownUI() {
+  const rowRetiro = document.getElementById('motoSegmentRetiro'); 
+  const rowEspera = document.getElementById('motoSegmentEspera'); 
+  const rowEntrega = document.getElementById('motoSegmentEntrega');
+  if (!rowRetiro || !rowEspera || !rowEntrega) return;
+  
+  if (trackState.times.aceptarRaw && trackState.times.llegueRaw) {
+    rowRetiro.textContent = `${Math.round((trackState.times.llegueRaw - trackState.times.aceptarRaw) / 60000)} min | ${trackState.distances.alRestaurante.toFixed(2)} km`;
+  } else if (trackState.times.aceptarRaw && trackState.phase === 'retiro') {
+    rowRetiro.textContent = `Viajando... (${Math.round((Date.now() - trackState.times.aceptarRaw) / 60000)} min) | ${trackState.currentDistance.toFixed(2)} km`;
+  } else { rowRetiro.textContent = '--:-- | 0.00 km'; }
+  
+  if (trackState.times.llegueRaw && trackState.times.recogiRaw) {
+    rowEspera.textContent = `${Math.round((trackState.times.recogiRaw - trackState.times.llegueRaw) / 60000)} min`;
+  } else if (trackState.times.llegueRaw && trackState.phase === 'espera') {
+    rowEspera.textContent = `Esperando... (${Math.round((Date.now() - trackState.times.llegueRaw) / 60000)} min)`;
+  } else { rowEspera.textContent = '--:--'; }
+  
+  if (trackState.times.recogiRaw && trackState.times.entreguRaw) {
+    rowEntrega.textContent = `${Math.round((trackState.times.entreguRaw - trackState.times.recogiRaw) / 60000)} min | ${trackState.distances.alCliente.toFixed(2)} km`;
+  } else if (trackState.times.recogiRaw && trackState.phase === 'entrega') {
+    rowEntrega.textContent = `Viajando... (${Math.round((Date.now() - trackState.times.recogiRaw) / 60000)} min) | ${trackState.currentDistance.toFixed(2)} km`;
+  } else { rowEntrega.textContent = '--:-- | 0.00 km'; }
+}
 
-      // Ocultar / Mostrar inputs correspondientes de forma consecutiva
-      for (let i = 2; i <= 4; i++) {
-        const inputGroup = document.getElementById(`input-group-c${i}`);
-        if (selectedDeliveriesCount >= i) {
-          inputGroup.classList.remove('hidden');
-        } else {
-          inputGroup.classList.add('hidden');
-          const inp = document.getElementById(`dist-c${i-1}-c${i}`);
-          if (inp) inp.value = ''; // Limpiar campos no usados
+function startLiveLocationKeepalive() {
+  if (!navigator.geolocation) return; 
+  requestScreenWakeLock(); 
+  trackState.currentDistance = 0; 
+  gpsSmoothBuffer = []; 
+  lastMovedTime = Date.now(); 
+  lastMovedCoords = null;
+  
+  // Limpieza auditada del receptor de localización para evitar consumo y duplicidad
+  if (watchPositionId) {
+    navigator.geolocation.clearWatch(watchPositionId);
+  }
+  
+  const geoOpts = { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 };
+  watchPositionId = navigator.geolocation.watchPosition(processLiveGpsPositionUpdate, handleGpsTrackingError, geoOpts);
+  
+  try {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextClass) {
+      audioContextInstance = new AudioContextClass(); 
+      const osc = audioContextInstance.createOscillator(); 
+      const gain = audioContextInstance.createGain();
+      gain.gain.value = 0.0001; 
+      osc.connect(gain); 
+      gain.connect(audioContextInstance.destination); 
+      osc.start();
+    }
+  } catch(e) {}
+  
+  if (bgGpsIntervalId) clearInterval(bgGpsIntervalId);
+  bgGpsIntervalId = setInterval(() => { navigator.geolocation.getCurrentPosition(processLiveGpsPositionUpdate, () => {}, { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }); }, 4000);
+  
+  document.getElementById('gpsStateText').textContent = '🛰️ GPS Buscando...'; 
+  document.getElementById('gpsStateText').style.color = 'var(--accent2)';
+}
+
+function stopTripTracking() { 
+  trackState.active = false; 
+  document.getElementById('gpsStateText').textContent = '🛰️ GPS Listo'; 
+  document.getElementById('gpsStateText').style.color = 'var(--green)'; 
+}
+
+function checkInactivity(lat, lng) {
+  const now = Date.now(); 
+  if (!lastMovedCoords) { lastMovedCoords = [lat, lng]; lastMovedTime = now; return; }
+  const dist = calculateHaversineDistance(lastMovedCoords[0], lastMovedCoords[1], lat, lng);
+  if (dist > 0.03) { lastMovedCoords = [lat, lng]; lastMovedTime = now; } else if (now - lastMovedTime >= 600000) {
+    lastMovedTime = now; 
+    triggerBannerNotification('💡 Sugerencia de Ruta', 'Llevas 10 minutos sin moverte. Deberías moverte a alguna zona de alta demanda para obtener un nuevo pedido.');
+  }
+}
+
+function updateHotspotsUi(lat, lng) {
+  const container = document.getElementById('hotspotsList'); if (!container) return;
+  const calculated = gtHotspots.map(h => { const dist = calculateHaversineDistance(lat, lng, h.lat, h.lng); return { ...h, dist }; });
+  calculated.sort((a, b) => a.dist - b.dist); container.innerHTML = '';
+  calculated.forEach(h => {
+    const item = document.createElement('div'); item.style.display = 'flex'; item.style.justifyContent = 'space-between'; item.style.alignItems = 'center'; item.style.padding = '10px 12px'; item.style.background = 'var(--card2)'; item.style.borderRadius = '12px'; item.style.border = '1.5px solid var(--border)';
+    item.innerHTML = `<div><div style="font-size: 13px; font-weight: 700;">${h.name}</div><div style="font-size: 11px; color: var(--muted);">Distancia: <span style="color: var(--blue); font-weight: 700;">${h.dist.toFixed(2)} km</span></div></div><div style="display: flex; gap: 6px;"><button class="step-btn" onclick="navigateHotspot(${h.lat}, ${h.lng}, '${h.name}')" style="font-size: 11px; padding: 6px 10px; background: var(--card); border-color: var(--accent);">Navegar</button></div>`;
+    container.appendChild(item);
+  });
+}
+
+// Navegación directa en Waze con fallback integrado (Foto 5)
+function navigateHotspot(lat, lng, name) {
+  if (confirm(`¿Navegar hacia ${name} usando Waze?`)) { 
+    window.open(`https://waze.com/ul?ll=${lat},${lng}&navigate=yes`, '_system'); 
+  } else { 
+    switchMainTab('mapa'); 
+    if (leafMapInstance) { leafMapInstance.setView([lat, lng], 15); } 
+  }
+}
+
+function processLiveGpsPositionUpdate(pos) {
+  const lat = pos.coords.latitude; const lng = pos.coords.longitude; const speed = pos.coords.speed || 0.0; const accuracy = pos.coords.accuracy;
+  if (accuracy > 25) return; gpsSmoothBuffer.push([lat, lng]); if (gpsSmoothBuffer.length > 3) gpsSmoothBuffer.shift();
+  const avgLat = gpsSmoothBuffer.reduce((acc, curr) => acc + curr[0], 0) / gpsSmoothBuffer.length;
+  const avgLng = gpsSmoothBuffer.reduce((acc, curr) => acc + curr[1], 0) / gpsSmoothBuffer.length;
+  latestCoords = [avgLat, avgLng]; updateHelmetMarkerOnMap(avgLat, avgLng); updateHotspotsUi(avgLat, avgLng); checkInactivity(avgLat, avgLng);
+  
+  if (!trackState.active) {
+    updateScheduledMultiplierOnCalcTab();
+  }
+  
+  if (trackState.active) {
+    if (trackState.routeRetiro.length > 0 || (trackState.routeEntrega[trackState.currentDeliveryIndex] && trackState.routeEntrega[trackState.currentDeliveryIndex].length > 0)) {
+      // Tomar último punto del tramo correspondiente
+      let lastPoint = null;
+      if (trackState.phase === 'retiro') {
+        lastPoint = trackState.routeRetiro[trackState.routeRetiro.length - 1];
+      } else if (trackState.phase === 'entrega') {
+        const currentArr = trackState.routeEntrega[trackState.currentDeliveryIndex];
+        if (currentArr && currentArr.length > 0) {
+          lastPoint = currentArr[currentArr.length - 1];
         }
       }
-      calculateLivePreview();
-    });
-  });
-}
-
-// --- Cálculos de la Ruta Consecutiva Sin Duplicados ---
-function runDistanceCalculation() {
-  const d1 = parseFloat(document.getElementById('dist-origin-rest').value) || 0;
-  const d2 = parseFloat(document.getElementById('dist-rest-c1').value) || 0;
-  const d3 = parseFloat(document.getElementById('dist-c1-c2').value) || 0;
-  const d4 = parseFloat(document.getElementById('dist-c2-c3').value) || 0;
-  const d5 = parseFloat(document.getElementById('dist-c3-c4').value) || 0;
-
-  // Suma de distancias lineal (Origen -> Restaurante -> Cliente 1 -> Cliente 2 -> Cliente 3 -> Cliente 4)
-  let totalKm = d1;
-  if (selectedDeliveriesCount >= 1) totalKm += d2;
-  if (selectedDeliveriesCount >= 2) totalKm += d3;
-  if (selectedDeliveriesCount >= 3) totalKm += d4;
-  if (selectedDeliveriesCount >= 4) totalKm += d5;
-
-  const ratePerKm = 8.00; // Tarifa base por km
-  let grossEarnings = totalKm * ratePerKm * currentMultiplier;
-
-  // Añadir un bono fijo de $5 por cada entrega extra consecutiva (stacked delivery)
-  if (selectedDeliveriesCount > 1) {
-    grossEarnings += (selectedDeliveriesCount - 1) * 5.00;
-  }
-
-  // Costos operativos basados en tus configuraciones guardadas
-  const costPerKm = fuelCostPerKm + maintCostPerKm + otherCostPerKm;
-  const totalCostOfRoute = totalKm * costPerKm;
-
-  // IVA Estimado exacto (5% del bruto, sin tasa retenida del 1.5%)
-  const ivaDeduction = grossEarnings * 0.05;
-
-  const netEarnings = grossEarnings - ivaDeduction - totalCostOfRoute;
-
-  return {
-    totalKm,
-    grossEarnings,
-    totalCostOfRoute,
-    ivaDeduction,
-    netEarnings
-  };
-}
-
-function calculateLivePreview() {
-  const results = runDistanceCalculation();
-  document.getElementById('prev-km').innerText = `${results.totalKm.toFixed(1)} km`;
-  document.getElementById('prev-gross').innerText = `$${results.grossEarnings.toFixed(2)}`;
-  document.getElementById('prev-costs').innerText = `-$${results.totalCostOfRoute.toFixed(2)}`;
-  document.getElementById('prev-iva').innerText = `-$${results.ivaDeduction.toFixed(2)}`;
-  document.getElementById('prev-net').innerText = `$${results.netEarnings.toFixed(2)}`;
-}
-
-// Botón Limpiar / Reiniciar
-function resetCalcForm() {
-  document.getElementById('input-restaurant').value = '';
-  document.getElementById('dist-origin-rest').value = '';
-  document.getElementById('dist-rest-c1').value = '';
-  document.getElementById('dist-c1-c2').value = '';
-  document.getElementById('dist-c2-c3').value = '';
-  document.getElementById('dist-c3-c4').value = '';
-  calculateLivePreview();
-}
-
-// Registrar Viaje Completado
-function acceptTripRecord() {
-  if (!isShiftActive) {
-    alert("Debes iniciar tu jornada para poder registrar viajes.");
-    document.getElementById('shift-modal').classList.remove('hidden');
-    return;
-  }
-
-  const results = runDistanceCalculation();
-  if (results.totalKm <= 0) {
-    alert("Por favor ingresa un kilometraje de ruta válido.");
-    return;
-  }
-
-  const restaurant = document.getElementById('input-restaurant').value || "Restaurante General";
-
-  const newTrip = {
-    id: Date.now().toString(),
-    date: new Date().toISOString(),
-    restaurant,
-    deliveriesCount: selectedDeliveriesCount,
-    totalKm: results.totalKm,
-    gross: results.grossEarnings,
-    net: results.netEarnings,
-    costs: results.totalCostOfRoute,
-    // Coordenadas consecutivas simuladas para graficar el trazado de colores en el mapa
-    pathCoords: [
-      { lat: 14.580, lng: -90.550, label: 'Inicio' },
-      { lat: 14.588, lng: -90.542, label: 'Restaurante' },
-      { lat: 14.595, lng: -90.530, label: 'C1' },
-      { lat: 14.601, lng: -90.520, label: 'C2' },
-      { lat: 14.610, lng: -90.510, label: 'C3' },
-      { lat: 14.620, lng: -90.500, label: 'C4' }
-    ].slice(0, selectedDeliveriesCount + 2)
-  };
-
-  completedTrips.unshift(newTrip);
-  localStorage.setItem('tripsHistory', JSON.stringify(completedTrips));
-
-  alert("Viaje guardado e ingresado al historial.");
-  resetCalcForm();
-  updateGlobalUI();
-}
-
-// Actualizar UI del Header Superior y Progreso de la Meta del Día
-function updateGlobalUI() {
-  const totalOrders = completedTrips.length;
-  const totalKm = completedTrips.reduce((sum, item) => sum + item.totalKm, 0);
-  const totalNet = completedTrips.reduce((sum, item) => sum + item.net, 0);
-
-  document.getElementById('header-orders').innerText = totalOrders;
-  document.getElementById('header-km').innerText = totalKm.toFixed(1);
-  document.getElementById('header-net').innerText = `$${totalNet.toFixed(2)}`;
-
-  // Actualizar Progreso Visual de la Meta del Día
-  const progressPercent = dailyGoal > 0 ? Math.min((totalNet / dailyGoal) * 100, 100) : 0;
-  document.getElementById('progress-bar-fill').style.width = `${progressPercent}%`;
-  document.getElementById('meta-progress-text').innerText = `Progreso: $${totalNet.toFixed(2)} / $${dailyGoal.toFixed(2)} (${progressPercent.toFixed(1)}%)`;
-}
-
-// --- Integración Externa de Waze ---
-function openWaze(lat, lon) {
-  const wazeUrl = `waze://?ll=${lat},${lon}&navigate=yes`;
-  window.open(wazeUrl, '_system');
-}
-
-// --- Renderizado del Mapa con Leaflet (Seguimiento Consolidado de Rutas) ---
-function initLeafletMap() {
-  if (mainLeafletMap) return;
-
-  mainLeafletMap = L.map('main-map').setView([14.580, -90.550], 13);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: 'Moto Calculadora Maps'
-  }).addTo(mainLeafletMap);
-
-  // Renderizar rutas consolidadas del día en el mapa general
-  completedTrips.forEach(trip => {
-    if (trip.pathCoords && trip.pathCoords.length > 1) {
-      const latLngs = trip.pathCoords.map(c => [c.lat, c.lng]);
-      L.polyline(latLngs, { color: '#10B981', weight: 4 }).addTo(mainLeafletMap);
-
-      trip.pathCoords.forEach(c => {
-        L.marker([c.lat, c.lng]).addTo(mainLeafletMap).bindPopup(c.label);
-      });
+      
+      if (lastPoint) {
+        const stepDist = calculateHaversineDistance(lastPoint[0], lastPoint[1], avgLat, avgLng);
+        if (stepDist > 0.008) {
+          if (trackState.phase === 'retiro' || trackState.phase === 'entrega') { 
+            trackState.currentDistance += stepDist; 
+          }
+          
+          if (trackState.phase === 'retiro') {
+            trackState.routeRetiro.push(latestCoords);
+          } else if (trackState.phase === 'entrega') {
+            trackState.routeEntrega[trackState.currentDeliveryIndex].push(latestCoords);
+          }
+          
+          document.getElementById('gpsDistanceLive').textContent = `${trackState.currentDistance.toFixed(3)} km`;
+          drawLiveTrackingPathOnMap();
+        }
+      }
+    } else { 
+      // Primer punto de ruta de tramo activo
+      if (trackState.phase === 'retiro') {
+        trackState.routeRetiro.push(latestCoords);
+      } else if (trackState.phase === 'entrega') {
+        trackState.routeEntrega[trackState.currentDeliveryIndex] = [latestCoords];
+      }
     }
+    document.getElementById('motoSpeed').textContent = Math.round(speed * 3.6); 
+    document.getElementById('motoGpsDistance').textContent = trackState.currentDistance.toFixed(3);
+    updateMotoBreakdownUI();
+  }
+  document.getElementById('gpsStateText').textContent = '🛰️ GPS Conectado'; document.getElementById('gpsStateText').style.color = 'var(--green)';
+}
+
+function handleGpsTrackingError() {
+  document.getElementById('gpsStateText').textContent = '🛰️ GPS Señal Débil'; document.getElementById('gpsStateText').style.color = 'var(--accent)';
+}
+
+async function requestScreenWakeLock() {
+  try { if ('wakeLock' in navigator) { wakeLockInstance = await navigator.wakeLock.request('screen'); document.getElementById('wakeLockStatus').style.display = 'inline-block'; } } catch(e) {}
+}
+
+function releaseScreenWakeLock() { if (wakeLockInstance) { wakeLockInstance.release(); wakeLockInstance = null; } document.getElementById('wakeLockStatus').style.display = 'none'; }
+
+function initLeafletAssets() {
+  if (redHelmetIcon || typeof L === 'undefined') return;
+  redHelmetIcon = L.divIcon({
+    html: `<div style="position: relative; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;"><div style="position: absolute; width: 42px; height: 42px; background: rgba(255, 45, 85, 0.25); border-radius: 50%; animation: pulse 1.8s infinite;"></div><div style="width: 32px; height: 32px; background: #ff2d55; border: 2.5px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 8px rgba(0,0,0,0.4);"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="18" height="18" style="transform: scale(1.15);"><path fill="#ffffff" d="M256 32C132.3 32 32 132.3 32 256c0 47.9 15 92.4 40.7 129.2l12.8 18.3c15 21.4 39.5 34.5 65.8 35.1l32.3.7c11.9.3 22-8 24.3-19.7l9-44.8c2.9-14.7 15.9-25.3 30.9-25.3h16.3c15 0 28 10.6 30.9 25.3l9 44.8c2.3 11.7 12.4 20 24.3 19.7l32.3-.7c26.3-.6 50.8-13.7 65.8-35.1l12.8-18.3C465 348.4 480 303.9 480 256 480 132.3 379.7 32 256 32zm0 64c88.4 0 160 71.6 160 160v16H96v-16C96 167.6 167.6 96 256 96z"/><path fill="#ff2d55" d="M128 256h256v32H128z"/></svg></div></div>`,
+    className: 'helmet-marker-icon', iconSize: [42, 42], iconAnchor: [21, 21]
   });
 }
 
-// --- Render del Historial con Trazado Diferenciado ---
-function renderHistoryList() {
-  const container = document.getElementById('history-list');
-  container.innerHTML = '';
-
-  if (completedTrips.length === 0) {
-    container.innerHTML = `<p style="text-align: center; color: #6B7280; margin-top: 15px;">Aún no tienes viajes registrados hoy.</p>`;
-    return;
-  }
-
-  const segmentColors = ['#2563EB', '#10B981', '#F59E0B', '#8B5CF6', '#EF4444'];
-
-  completedTrips.forEach((trip, idx) => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.style.borderLeft = `5px solid ${segmentColors[idx % 5]}`;
-
-    let segmentsMarkup = `<div style="font-size: 10px; font-weight: bold; margin-top: 8px;">Trazado por color:</div>`;
-    segmentsMarkup += `<div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px;">`;
-    segmentsMarkup += `<span style="background: #2563EB; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px;">Origen ➔ Rest</span>`;
+function initLeafletMapInstance() {
+  if (typeof L === 'undefined' || leafMapInstance) return;
+  try {
+    leafMapInstance = L.map('liveMapDiv', { zoomControl: false, attributionControl: false }).setView(latestCoords || [14.6349, -90.5069], 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(leafMapInstance);
     
-    if (trip.deliveriesCount >= 1) {
-      segmentsMarkup += `<span style="background: #10B981; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px;">Rest ➔ C1</span>`;
-    }
-    if (trip.deliveriesCount >= 2) {
-      segmentsMarkup += `<span style="background: #F59E0B; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px;">C1 ➔ C2</span>`;
-    }
-    if (trip.deliveriesCount >= 3) {
-      segmentsMarkup += `<span style="background: #8B5CF6; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px;">C2 ➔ C3</span>`;
-    }
-    if (trip.deliveriesCount >= 4) {
-      segmentsMarkup += `<span style="background: #EF4444; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px;">C3 ➔ C4</span>`;
-    }
-    segmentsMarkup += `</div>`;
+    // Inicialización de polylines vacías
+    mapPolylineRetiro = L.polyline([], { color: '#00bfff', weight: 6, opacity: 0.9 }).addTo(leafMapInstance);
+    mapPolylinesEntrega = [];
+    
+    if (latestCoords) updateHelmetMarkerOnMap(latestCoords[0], latestCoords[1]);
+  } catch(e) { console.error('Map failed', e); }
+}
 
-    card.innerHTML = `
-      <div class="row-between">
-        <strong>${trip.restaurant}</strong>
-        <span style="font-size: 11px; color: #9CA3AF;">${new Date(trip.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-      </div>
-      <p style="font-size: 11px; margin-top: 4px; color: #4B5563;">Distancia: ${trip.totalKm.toFixed(1)} Km | Entregas: ${trip.deliveriesCount}</p>
-      ${segmentsMarkup}
-      <div class="row-between divider" style="margin-top: 10px; padding-top: 6px;">
-        <span style="font-size: 11px; color: var(--text-light);">Bruto: $${trip.gross.toFixed(2)}</span>
-        <strong style="color: var(--success); font-size: 13px;">Neto: $${trip.net.toFixed(2)}</strong>
-      </div>
-    `;
-    container.appendChild(card);
+function initMotoMapInstance() {
+  if (typeof L === 'undefined') return; if (motoMapInstance) { setTimeout(() => { motoMapInstance.invalidateSize(); }, 300); return; }
+  try {
+    motoMapInstance = L.map('motoMapDiv', { zoomControl: false, attributionControl: false }).setView(latestCoords || [14.6349, -90.5069], 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(motoMapInstance);
+    
+    motoPolylineRetiro = L.polyline([], { color: '#00bfff', weight: 6, opacity: 0.9 }).addTo(motoMapInstance);
+    motoPolylinesEntrega = [];
+    
+    if (latestCoords) updateHelmetMarkerOnMap(latestCoords[0], latestCoords[1]);
+  } catch(e) { console.error('Moto map failed', e); }
+}
+
+function toggleMotoMapVisibility() {
+  const isChecked = document.getElementById('motoMapToggle').checked; const wrapper = document.getElementById('motoMapWrapper');
+  if (isChecked) { wrapper.classList.remove('hidden'); initMotoMapInstance(); } else { wrapper.classList.add('hidden'); }
+}
+
+// Trazado dinámico diferenciado en mapas (Foto 2)
+function drawLiveTrackingPathOnMap() {
+  if (leafMapInstance) {
+    if (trackState.phase === 'retiro' && trackState.routeRetiro.length > 0) {
+      mapPolylineRetiro.setLatLngs(trackState.routeRetiro);
+      if (!mapStartMarker) { 
+        mapStartMarker = L.circleMarker(trackState.routeRetiro[0], { radius: 8, color: '#00bfff', fillColor: '#00bfff', fillOpacity: 0.8 }).addTo(leafMapInstance); 
+      }
+    } else if (trackState.phase === 'entrega') {
+      const idx = trackState.currentDeliveryIndex;
+      const pathPts = trackState.routeEntrega[idx] || [];
+      if (pathPts.length > 0) {
+        if (!mapPolylinesEntrega[idx]) {
+          const pathColor = deliveryColors[idx % deliveryColors.length];
+          mapPolylinesEntrega[idx] = L.polyline([], { color: pathColor, weight: 6, opacity: 0.9 }).addTo(leafMapInstance);
+        }
+        mapPolylinesEntrega[idx].setLatLngs(pathPts);
+      }
+    }
+  }
+  
+  if (motoMapInstance && !document.getElementById('motoMapWrapper').classList.contains('hidden')) {
+    if (trackState.phase === 'retiro' && trackState.routeRetiro.length > 0) {
+      motoPolylineRetiro.setLatLngs(trackState.routeRetiro);
+      if (!motoStartMarker) { 
+        motoStartMarker = L.circleMarker(trackState.routeRetiro[0], { radius: 8, color: '#00bfff', fillColor: '#00bfff', fillOpacity: 0.8 }).addTo(motoMapInstance); 
+      }
+    } else if (trackState.phase === 'entrega') {
+      const idx = trackState.currentDeliveryIndex;
+      const pathPts = trackState.routeEntrega[idx] || [];
+      if (pathPts.length > 0) {
+        if (!motoPolylinesEntrega[idx]) {
+          const pathColor = deliveryColors[idx % deliveryColors.length];
+          motoPolylinesEntrega[idx] = L.polyline([], { color: pathColor, weight: 6, opacity: 0.9 }).addTo(motoMapInstance);
+        }
+        motoPolylinesEntrega[idx].setLatLngs(pathPts);
+      }
+    }
+  }
+}
+
+function updateHelmetMarkerOnMap(lat, lng) {
+  if (typeof L === 'undefined') return; initLeafletAssets();
+  if (leafMapInstance) { if (globalUserMarker) { globalUserMarker.setLatLng([lat, lng]); } else { globalUserMarker = L.marker([lat, lng], { icon: redHelmetIcon }).addTo(leafMapInstance); } }
+  if (motoMapInstance) { if (globalUserMarkerMoto) { globalUserMarkerMoto.setLatLng([lat, lng]); } else { globalUserMarkerMoto = L.marker([lat, lng], { icon: redHelmetIcon }).addTo(motoMapInstance); } }
+}
+
+function recenterLiveMap() { if (latestCoords && leafMapInstance) { leafMapInstance.setView(latestCoords, 16); } }
+function recenterMotoMap() { if (latestCoords && motoMapInstance) { motoMapInstance.setView(latestCoords, 16); } }
+function triggerAlert(title, message) { triggerBannerNotification(title, message); }
+
+function triggerBannerNotification(title, desc) {
+  const banner = document.getElementById('notifBanner'); 
+  document.getElementById('notifBannerTitle').textContent = title; 
+  document.getElementById('notifBannerDesc').textContent = desc;
+  banner.classList.add('active'); 
+  triggerHapticFeedback([100]); 
+  setTimeout(() => { banner.classList.remove('active'); }, 5000);
+}
+
+function triggerHapticFeedback(pattern) {
+  if (navigator.vibrate) {
+    try { navigator.vibrate(pattern); } catch(e) {}
+  }
+}
+
+async function fetchWeather() {
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    try {
+      const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude.toFixed(4)}&longitude=${pos.coords.longitude.toFixed(4)}&current=temperature_2m,weather_code&timezone=auto`);
+      const data = await res.json(); const temp = Math.round(data.current.temperature_2m); const code = data.current.weather_code;
+      let icon = '☀️'; if (code >= 51 && code <= 67) icon = '🌧️'; else if (code >= 1 && code <= 3) icon = '⛅'; else if (code >= 71 && code <= 86) icon = '❄️'; else if (code >= 95) icon = '⛈️';
+      document.getElementById('weatherIcon').textContent = icon; document.getElementById('weatherTemp').textContent = `${temp}°C`;
+    } catch(e) {}
   });
 }
 
-// --- Render y Métricas Inteligentes (Tab Stats) ---
-function renderStats() {
-  const totalKm = completedTrips.reduce((sum, item) => sum + item.totalKm, 0);
-  const totalNet = completedTrips.reduce((sum, item) => sum + item.net, 0);
-  const totalGross = completedTrips.reduce((sum, item) => sum + item.gross, 0);
-  const totalOrders = completedTrips.length;
+// Pintado Premium de Estadísticas Gráficas Reales (Foto 3 y 4)
+function drawAnalyticsChart() {
+  const canvas = document.getElementById('chartGains'); if (!canvas) return; const ctx = canvas.getContext('2d');
+  const width = canvas.offsetWidth || 300; const height = canvas.offsetHeight || 160; canvas.width = width; canvas.height = height;
+  const isLight = document.body.classList.contains('light-mode'); const gridColor = isLight ? '#e5e5ea' : '#26262b'; const labelColor = isLight ? '#6e6e73' : '#8e8e93';
+  
+  // Nombres de los últimos 7 días terminando en el día de hoy
+  const daysArray = ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'];
+  const todayIndex = new Date().getDay();
+  let daysLabels = [];
+  for (let i = 6; i >= 0; i--) {
+    let idx = (todayIndex - i + 7) % 7;
+    daysLabels.push(daysArray[idx]);
+  }
 
-  // 1. Ganancia Neta por Kilómetro Real
-  const netPerKm = totalKm > 0 ? (totalNet / totalKm) : 0;
-  document.getElementById('stat-net-per-km').innerText = `$${netPerKm.toFixed(2)}`;
+  // Distribución de cálculos financieros dinámicos reales basados en la base local (Foto 3 y 4)
+  let realBrutoGains = [0, 0, 0, 0, 0, 0, 0];
+  let realNetoGains = [0, 0, 0, 0, 0, 0, 0];
+  
+  const now = new Date();
+  const gasPrice = parseFloat(db.config.gasPrice) || 32;
+  const gasRend = parseFloat(db.config.gasRend) || 120;
+  const dailyMaint = parseFloat(db.config.dailyMaint) !== undefined ? parseFloat(db.config.dailyMaint) : 15;
+  const costPerKm = gasPrice / gasRend;
 
-  // 2. Rendimiento promedio por pedido
-  const netPerOrder = totalOrders > 0 ? (totalNet / totalOrders) : 0;
-  document.getElementById('stat-net-per-order').innerText = `$${netPerOrder.toFixed(2)}`;
+  db.orders.forEach(order => {
+    const oDate = new Date(order.timestamp);
+    const diffTime = Math.abs(now - oDate);
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 7) {
+      const spotIndex = 6 - diffDays;
+      if (spotIndex >= 0 && spotIndex < 7) {
+        realBrutoGains[spotIndex] += order.earnings;
+        const oKm = order.kmR + order.kmE;
+        const fuelCost = oKm * costPerKm;
+        const orderNet = order.earnings - fuelCost - (dailyMaint / Math.max(1, db.orders.length));
+        realNetoGains[spotIndex] += Math.max(0, orderNet);
+      }
+    }
+  });
 
-  // 3. Gráfica Inteligente Coherente (Solo toma el Lunes o días activos de hoy)
-  const maxBarHeight = 90;
-  const scale = totalGross > 0 ? (maxBarHeight / totalGross) : 1;
+  // Si no hay datos, pintar líneas base con un mínimo estético de escala
+  let maxVal = Math.max(...realBrutoGains, 100);
+  maxVal = Math.ceil(maxVal / 50) * 50; // Redondea la escala para mejor apreciación visual
 
-  document.getElementById('bar-mon-gross').style.height = `${totalGross * scale}px`;
-  document.getElementById('bar-mon-net').style.height = `${totalNet * scale}px`;
+  ctx.clearRect(0,0,width,height); ctx.strokeStyle = gridColor; ctx.lineWidth = 1.5; const spacing = width / 7;
+  
+  // Dibujar cuadrícula de fondo premium
+  ctx.beginPath();
+  for(let j = 1; j <= 3; j++) {
+    const yGrid = ((height - 30) / 4) * j;
+    ctx.moveTo(0, yGrid);
+    ctx.lineTo(width, yGrid);
+  }
+  ctx.stroke();
+
+  daysLabels.forEach((day, idx) => {
+    const x = spacing * idx + (spacing / 2); 
+    
+    // Altura proporcional dinámica real de las barras
+    const hBruto = (realBrutoGains[idx] / maxVal) * (height - 40); 
+    const hNeto = (realNetoGains[idx] / maxVal) * (height - 40);
+    
+    // Barra de ganancias Brutas (Rojo Coral con gradiente)
+    const bGrad = ctx.createLinearGradient(x - 8, height - 20 - hBruto, x - 2, height - 20);
+    bGrad.addColorStop(0, '#ff2d55');
+    bGrad.addColorStop(1, '#ff6b35');
+    ctx.fillStyle = bGrad;
+    // Dibujo de barra con esquinas superiores redondeadas
+    drawRoundedRect(ctx, x - 8, height - 20 - hBruto, 6, hBruto, 3);
+    
+    // Barra de ganancias Netas (Verde Eléctrico con gradiente)
+    const nGrad = ctx.createLinearGradient(x, height - 20 - hNeto, x + 6, height - 20);
+    nGrad.addColorStop(0, '#00ff66');
+    nGrad.addColorStop(1, '#008f39');
+    ctx.fillStyle = nGrad;
+    drawRoundedRect(ctx, x, height - 20 - hNeto, 6, hNeto, 3);
+    
+    // Etiquetas de los días de la semana
+    ctx.fillStyle = labelColor; ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(day, x - 1, height - 4);
+  });
 }
+
+// Función auxiliar para dibujar barras redondeadas en el lienzo de estadísticas
+function drawRoundedRect(ctx, x, y, width, height, radius) {
+  if (height <= 0) return;
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  ctx.lineTo(x + width, y + height);
+  ctx.lineTo(x, y + height);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+  ctx.fill();
+}
+
+function switchMainTab(tab) {
+  currentTab = tab; document.querySelectorAll('.tab-view').forEach(view => view.classList.remove('active')); document.getElementById(`view-${tab}`).classList.add('active');
+  if (tab === 'mapa') {
+    initLeafletMapInstance();
+    setTimeout(() => { if (leafMapInstance) { leafMapInstance.invalidateSize(); if (latestCoords) { leafMapInstance.setView(latestCoords, 14); updateHelmetMarkerOnMap(latestCoords[0], latestCoords[1]); } } }, 300);
+  } else if (tab === 'stats') { drawAnalyticsChart(); } else if (tab === 'historial') { renderHistoryTrips(); }
+}
+
+// Guardado de configuraciones con consistencia de almacenamiento (Foto 6)
+function saveConfigData() {
+  db.config.riderName = document.getElementById('cfgRiderName').value || ''; 
+  db.config.dailyGoal = parseFloat(document.getElementById('cfgDailyGoal').value) || 500;
+  db.config.gasPrice = parseFloat(document.getElementById('cfgGasPrice').value) || 32; 
+  db.config.gasRend = parseFloat(document.getElementById('cfgGasRend').value) || 120;
+  
+  // Corrección directa sobre la retención del mantenimiento de motocicleta
+  const maintenanceVal = parseFloat(document.getElementById('cfgDailyMaint').value);
+  db.config.dailyMaint = !isNaN(maintenanceVal) ? maintenanceVal : 15;
+  
+  db.config.satRegime = document.getElementById('cfgSatRegime').value || 'pequeno';
+  
+  commitDataStorage();
+  triggerAlert('Ajustes Guardados', 'Tus parámetros y costos operativos se han actualizado.');
+}
+
+function exportBackupJSON() {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+  const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", `rider_backup_${Date.now()}.json`); dlAnchorElem.click();
+}
+
+function triggerImportBackup() { document.getElementById('importFileInput').click(); }
+
+function importBackupJSON(event) {
+  const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      if (parsed && parsed.orders) { db = parsed; commitDataStorage(); triggerAlert('Respaldo Cargado', 'Tus datos se han sincronizado con éxito.'); initializeCoreEvents(); } else { triggerAlert('Error', 'Archivo no compatible.'); }
+    } catch(err) { triggerAlert('Error de Lectura', 'No se pudo leer el archivo JSON.'); }
+  }; reader.readAsText(file);
+}
+
+function syncDashboardValues() {
+  const ordersTotal = db.orders.length; let totalGain = 0.0; let totalKm = 0.0; let totalSegments = 0;
+  db.orders.forEach(o => { totalGain += o.earnings; totalKm += o.kmR + o.kmE; totalSegments += o.deliveriesCount; });
+  const costPerKm = parseFloat(db.config.gasPrice) / parseFloat(db.config.gasRend); const totalFuelCost = totalKm * costPerKm;
+  const netEarnings = totalGain - totalFuelCost - parseFloat(db.config.dailyMaint);
+  
+  document.getElementById('statOrders').textContent = ordersTotal; document.getElementById('statKm').textContent = totalKm.toFixed(1);
+  document.getElementById('statDeliveries').textContent = totalSegments; document.getElementById('statNeta').textContent = `Q ${Math.max(0, netEarnings).toFixed(2)}`;
+  document.getElementById('headerTotalDay').textContent = `Q ${totalGain.toFixed(2)}`;
+  const defaultHeaderStr = db.config.riderName ? `Rider ${db.config.riderName}` : 'Acumulado Hoy'; document.getElementById('headerWelcomeName').textContent = defaultHeaderStr;
+  const dailyGoal = parseFloat(db.config.dailyGoal) || 500; const card = document.getElementById('goalProgressCard');
+  if (dailyGoal > 0) {
+    card.style.display = 'flex'; const progressPct = Math.min(100, Math.round((totalGain / dailyGoal) * 100));
+    document.getElementById('goalProgressPct').textContent = `${progressPct}%`; document.getElementById('goalCardSub').textContent = `Q ${totalGain.toFixed(2)} de Q ${dailyGoal.toFixed(0)}`;
+    const fill = document.getElementById('goalArcFill'); fill.style.width = `${progressPct}%`;
+  } else { card.style.display = 'none'; }
+  updateSystemStatsMetrics(totalGain, totalKm, netEarnings); calculateComplexAdvancedStats();
+}
+
+// Métricas de Impuestos de la SAT Corregidas (Sin retención de 1.5% - Foto 3 y 4)
+function updateSystemStatsMetrics(bruto, km, neto) {
+  let hoursCount = 1; if (db.orders.length > 1) {
+    const firstTime = new Date(db.orders[0].timestamp); const lastTime = new Date(db.orders[db.orders.length-1].timestamp);
+    const diffHours = Math.abs(lastTime - firstTime) / 3.6e6; if (diffHours > 0.1) hoursCount = diffHours;
+  }
+  const qHour = bruto / hoursCount; const qKm = km > 0 ? bruto / km : 0;
+  const netQKm = km > 0 ? neto / km : 0; // Métrica de alto valor agregada (Foto 3 y 4)
+  
+  document.getElementById('effQHour').textContent = `Q ${qHour.toFixed(2)}`; 
+  document.getElementById('effQKm').textContent = `Q ${qKm.toFixed(2)}`;
+  document.getElementById('effNetQKm').textContent = `Q ${netQKm.toFixed(2)}`;
+  document.getElementById('effAvgTime').textContent = `${Math.round(hoursCount * 60 / Math.max(1, db.orders.length))} mins`;
+  
+  const gallonsRend = parseFloat(db.config.gasRend) || 120;
+  const gallonsBurned = km / gallonsRend;
+  document.getElementById('statsGallonsBurned').textContent = `${gallonsBurned.toFixed(2)} Gal`;
+  
+  const regime = db.config.satRegime || 'pequeno';
+  let ivaValue = 0;
+  let labelIvaStr = "Impuesto IVA (5%)";
+  let titleTaxCardStr = "🧾 Estimación SAT (Peq. Contribuyente)";
+  
+  // Reestructuración de deducciones de la SAT (Foto 3 y 4)
+  if (regime === 'pequeno') {
+    ivaValue = bruto * 0.05;
+    labelIvaStr = "Impuesto Peq. Contribuyente (5%)";
+    titleTaxCardStr = "🧾 Estimación SAT (Peq. Contribuyente)";
+  } else if (regime === 'general') {
+    ivaValue = bruto * 0.12;
+    labelIvaStr = "Débito Fiscal IVA (12%)";
+    titleTaxCardStr = "🧾 Estimación SAT (Régimen General)";
+  } else {
+    labelIvaStr = "Impuesto Exento (0%)";
+    titleTaxCardStr = "🧾 Sin Obligaciones Tributarias";
+  }
+  
+  document.getElementById('statsIvaLabel').textContent = labelIvaStr;
+  document.getElementById('statsTaxCardTitle').textContent = titleTaxCardStr;
+  document.getElementById('taxIva').textContent = `- Q ${ivaValue.toFixed(2)}`;
+  
+  // El cobro único por uso de la plataforma es de Q18.50. Se calcula el Depósito Neto Real
+  const depositNet = bruto - ivaValue - 18.50;
+  document.getElementById('taxNetTotal').textContent = `Q ${Math.max(0, depositNet).toFixed(2)}`;
+}
+
+function calculateComplexAdvancedStats() {
+  if (db.orders.length === 0) return; const sorted = [...db.orders].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+  let totalDeadMins = 0;
+  for (let i = 0; i < sorted.length - 1; i++) {
+    const prevOrder = sorted[i]; const nextOrder = sorted[i+1];
+    if (prevOrder.timings && prevOrder.timings.entreguRaw && nextOrder.timings && nextOrder.timings.aceptarRaw) {
+      const diffMs = nextOrder.timings.aceptarRaw - prevOrder.timings.entreguRaw; if (diffMs > 0) { totalDeadMins += Math.round(diffMs / 60000); }
+    }
+  }
+  document.getElementById('statsDeadTime').textContent = `${totalDeadMins} min`;
+  let worstWaitMins = -1; let worstWaitRest = '--';
+  sorted.forEach(o => {
+    if (o.timings && o.timings.llegueRaw && o.timings.recogiRaw) {
+      const waitMs = o.timings.recogiRaw - o.timings.llegueRaw; const waitMins = Math.round(waitMs / 60000);
+      if (waitMins > worstWaitMins) { worstWaitMins = waitMins; worstWaitRest = `${waitMins} min (${o.restaurant})`; }
+    }
+  });
+  document.getElementById('statsWorstWait').textContent = worstWaitMins !== -1 ? worstWaitRest : '--';
+  let fastestMins = Infinity; let fastestRest = '--';
+  sorted.forEach(o => {
+    if (o.timings && o.timings.aceptarRaw && o.timings.entreguRaw) {
+      const tripMs = o.timings.entreguRaw - o.timings.aceptarRaw; const tripMins = Math.round(tripMs / 60000);
+      if (tripMins < fastestMins && tripMins > 0) { fastestMins = tripMins; fastestRest = `${tripMins} min (${o.restaurant})`; }
+    }
+  });
+  document.getElementById('statsFastestTrip').textContent = fastestMins !== Infinity ? fastestRest : '--';
+  let bestHourlyRate = -1; let bestHourlyRateStr = '--';
+  sorted.forEach(o => {
+    if (o.timings && o.timings.aceptarRaw && o.timings.entreguRaw) {
+      const tripMs = o.timings.entreguRaw - o.timings.aceptarRaw; const tripHours = tripMs / 3.6e6;
+      if (tripHours > 0.01) {
+        const rate = o.earnings / tripHours;
+        if (rate > bestHourlyRate) { bestHourlyRate = rate; bestHourlyRateStr = `Q${rate.toFixed(1)}/h (${o.restaurant} · Q${o.earnings.toFixed(0)} en ${Math.round(tripMs/60000)}m)`; }
+      }
+    }
+  });
+  document.getElementById('statsBestHourlyRate').textContent = bestHourlyRate !== -1 ? bestHourlyRateStr : '--';
+}
+
+// Corrección Matemática del Cálculo Multi-Pedido (Foto 1)
+function calculateOrderPriceWithParams(kmR, kmE, nEnt, mult, rain, rainVal, prop) {
+  let baseMult = mult; if (rain) baseMult += rainVal;
+  
+  // El componente base fijo (2.50) se multiplica por las entregas individuales realizadas
+  const totalBasePerOrder = COMPONENTE_FIJO * nEnt;
+  // El pago por retiro (1.00) se realiza una sola vez por toda la ruta agrupada
+  const totalPickup = PAGO_RETIRO;
+  
+  const totalDelivery = PAGO_ENTREGA * nEnt;
+  const totalPublicidad = PAGO_PUBLICIDAD * nEnt;
+  const totalDistance = (kmR + kmE) * PRECIO_KM;
+  
+  return parseFloat(((totalBasePerOrder + totalPickup + totalDelivery + totalPublicidad + totalDistance) * baseMult + prop).toFixed(2));
+}
+
+function confirmClearHistory() {
+  if (confirm('¿Seguro que deseas eliminar los datos de hoy?')) { db.orders = []; commitDataStorage(); renderHistoryTrips(); triggerAlert('Limpieza', 'Historial eliminado.'); }
+}
+
+function deleteSingleHistoryItem(id) {
+  if (confirm('¿Eliminar este registro?')) { db.orders = db.orders.filter(o => o.id !== id); commitDataStorage(); renderHistoryTrips(); }
+}
+
+function openOrderEditSheet(id) {
+  const orderObj = db.orders.find(o => o.id === id); if (!orderObj) return;
+  document.getElementById('editOrderId').value = id; document.getElementById('editRestaurantName').value = orderObj.restaurant || '';
+  document.getElementById('editKmRetiro').value = orderObj.kmR.toFixed(3); document.getElementById('editKmEntrega').value = orderObj.kmE.toFixed(3);
+  document.getElementById('editMultiplierVal').value = orderObj.multiplier.toFixed(2); document.getElementById('editPropinaVal').value = orderObj.propina.toFixed(2);
+  document.getElementById('editModalOverlay').classList.add('open');
+}
+
+function closeEditModal() { document.getElementById('editModalOverlay').classList.remove('open'); }
+
+function saveEditedOrderData() {
+  const id = parseInt(document.getElementById('editOrderId').value); const orderIndex = db.orders.findIndex(o => o.id === id); if (orderIndex === -1) return;
+  const newRest = document.getElementById('editRestaurantName').value || 'Sin Nombre';
+  const newKmR = parseFloat(document.getElementById('editKmRetiro').value) || 0.0; const newKmE = parseFloat(document.getElementById('editKmEntrega').value) || 0.0;
+  const newMult = parseFloat(document.getElementById('editMultiplierVal').value) || 1.30; const newProp = parseFloat(document.getElementById('editPropinaVal').value) || 0.0;
+  const originalOrder = db.orders[orderIndex];
+  const updatedEarnings = calculateOrderPriceWithParams(newKmR, newKmE, originalOrder.deliveriesCount, newMult, originalOrder.rain, originalOrder.rainVal, newProp);
+  db.orders[orderIndex] = { ...originalOrder, restaurant: newRest, kmR: newKmR, kmE: newKmE, multiplier: newMult, propina: newProp, earnings: updatedEarnings };
+  commitDataStorage(); closeEditModal(); renderHistoryTrips(); triggerAlert('Modificado', `Actualizado. Nueva ganancia: Q ${updatedEarnings.toFixed(2)}`);
+}
+
+function searchRestaurant() {
+  const query = document.getElementById('restaurantInput').value.toLowerCase().trim(); const drop = document.getElementById('restaurantSearchDropdown'); drop.innerHTML = '';
+  if (!query) { drop.style.display = 'none'; return; }
+  const matches = db.restaurants.filter(r => r.toLowerCase().includes(query)).slice(0, 5); if (matches.length === 0) { drop.style.display = 'none'; return; }
+  matches.forEach(m => {
+    const item = document.createElement('div'); item.className = 'search-item'; item.textContent = m;
+    item.onclick = () => { document.getElementById('restaurantInput').value = m; document.getElementById('restaurantInputMoto').value = m; drop.style.display = 'none'; };
+    drop.appendChild(item);
+  });
+  drop.style.display = 'block';
+}
+
+function searchRestaurantMoto() {
+  const query = document.getElementById('restaurantInputMoto').value.toLowerCase().trim(); const drop = document.getElementById('restaurantSearchDropdownMoto'); drop.innerHTML = '';
+  if (!query) { drop.style.display = 'none'; return; }
+  const matches = db.restaurants.filter(r => r.toLowerCase().includes(query)).slice(0, 5); if (matches.length === 0) { drop.style.display = 'none'; return; }
+  matches.forEach(m => {
+    const item = document.createElement('div'); item.className = 'search-item'; item.textContent = m;
+    item.onclick = () => { document.getElementById('restaurantInput').value = m; document.getElementById('restaurantInputMoto').value = m; drop.style.display = 'none'; };
+    drop.appendChild(item);
+  });
+  drop.style.display = 'block';
+}
+
+function syncRestaurantInput(origin) { if (origin === 'moto') { const val = document.getElementById('restaurantInputMoto').value; document.getElementById('restaurantInput').value = val; searchRestaurantMoto(); } else { const val = document.getElementById('restaurantInput').value; document.getElementById('restaurantInputMoto').value = val; searchRestaurant(); } }
+
+function enterMotoMode() {
+  const semScreen = document.getElementById('semaforoScreen'); const semText = document.getElementById('semaforoStatusText'); const overlay = document.getElementById('motoModeOverlay');
+  semScreen.classList.add('active'); const lights = [document.getElementById('light1'), document.getElementById('light2'), document.getElementById('light3')];
+  setTimeout(() => { lights[0].classList.add('red'); semText.textContent = 'ROJO... ¡PREPARA MOTOR!'; triggerHapticFeedback([100, 100]); }, 1000);
+  setTimeout(() => { lights[1].classList.add('yellow'); semText.textContent = 'AMARILLO... ¡ATENTO A RUTA!'; triggerHapticFeedback([150, 100]); }, 2200);
+  setTimeout(() => { lights[2].classList.add('green'); semText.textContent = '¡VERDE! ¡A CONDUCIR RIDER!'; triggerHapticFeedback([400, 100, 100, 100]); }, 3400);
+  setTimeout(() => { semScreen.classList.remove('active'); lights.forEach(l => l.className = 'light-bulb'); overlay.classList.add('active'); updateMotoBreakdownUI(); initMotoMapInstance(); }, 4500);
+}
+
+function exitMotoMode() { document.getElementById('motoModeOverlay').classList.remove('acti
