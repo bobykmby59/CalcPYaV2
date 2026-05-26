@@ -1,6 +1,6 @@
 {
   "name": "rider-calc-pro-gt",
-  "version": "3.6.1",
+  "version": "3.7.0",
   "description": "App Nativa de Cálculo y GPS para Riders en Guatemala",
   "main": "www/index.html",
   "scripts": {
