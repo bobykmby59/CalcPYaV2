@@ -1,5 +1,5 @@
 // ==========================================
-// BUSINESS & STATE ENGINE - RIDER CALC PRO v3.6.1 (CONSOLIDADO & HARDENED)
+// BUSINESS & STATE ENGINE - RIDER CALC PRO v3.7.0 (CONSOLIDADO & HARDENED)
 // ==========================================
 const COMPONENTE_FIJO = 2.50; 
 const PAGO_RETIRO = 1.00;     
@@ -36,7 +36,8 @@ const riderTips = [
   "Si el cliente se tarda en salir, respira hondo. Paciencia trae recompensa."
 ];
 
-const deliveryColors = ['#00ff66', '#bf5fff', '#ffaa00', '#ff2d55'];
+// Colores diferenciales de entregas consecutivas en mapas (v3.7.0)
+const deliveryColors = ['#00ff66', '#bf5fff', '#ff2d55', '#00bfff'];
 
 let db = {
   orders: [],
@@ -97,6 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initAutoTheme(); 
   fetchWeather();
   startLiveLocationKeepalive();
+  checkVersionModalOnLoad(); // Validación en vivo del pop-up de novedades v3.7.0
 });
 
 function hydrateDataStorage() {
@@ -162,6 +164,33 @@ function manualMidnightReset() {
   }
 }
 
+function confirmResetAllData() {
+  if (confirm('⚠️ ¿Seguro que deseas RESTABLECER COMPLETAMENTE LA CONSOLA DIARIA? Se borrarán todos los repartos de hoy del acumulado y el progreso volverá a cero.')) {
+    db.orders = [];
+    commitDataStorage();
+    renderHistoryTrips();
+    clearCalculatorInputs();
+    triggerAlert('Consola Restablecida', 'Los datos del día actual se han limpiado por completo.');
+  }
+}
+
+function checkVersionModalOnLoad() {
+  const currentVer = "v3.7.0";
+  const key = `rider_version_shown_${currentVer}`;
+  if (!localStorage.getItem(key)) {
+    const targetModal = document.getElementById('versionModalOverlay');
+    if (targetModal) targetModal.classList.add('open');
+  }
+}
+
+function closeVersionModal() {
+  const currentVer = "v3.7.0";
+  const key = `rider_version_shown_${currentVer}`;
+  localStorage.setItem(key, "true");
+  const targetModal = document.getElementById('versionModalOverlay');
+  if (targetModal) targetModal.classList.remove('open');
+}
+
 function initializeCoreEvents() {
   document.getElementById('cfgRiderName').value = db.config.riderName || '';
   document.getElementById('cfgDailyGoal').value = db.config.dailyGoal || 500;
@@ -190,6 +219,7 @@ function initDateDisplay() {
   document.getElementById('headerDateStr').textContent = now.toLocaleDateString('es-GT', { weekday: 'short', day: 'numeric', month: 'short' }).toUpperCase() + " GT";
 }
 
+// Control de Tema Automático
 function initAutoTheme() {
   const hour = new Date().getHours(); 
   const shouldBeDark = hour >= 18 || hour < 6;
@@ -679,7 +709,8 @@ function initLeafletMapInstance() {
     leafMapInstance = L.map('liveMapDiv', { zoomControl: false, attributionControl: false }).setView(latestCoords || [14.6349, -90.5069], 14);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(leafMapInstance);
     
-    mapPolylineRetiro = L.polyline([], { color: '#00bfff', weight: 6, opacity: 0.9 }).addTo(leafMapInstance);
+    // Naranja Eléctrico (#ff9500) para el trayecto al restaurante
+    mapPolylineRetiro = L.polyline([], { color: '#ff9500', weight: 6, opacity: 0.9 }).addTo(leafMapInstance);
     mapPolylinesEntrega = [];
     
     if (latestCoords) updateHelmetMarkerOnMap(latestCoords[0], latestCoords[1]);
@@ -697,7 +728,8 @@ function initMotoMapInstance() {
     motoMapInstance = L.map('motoMapDiv', { zoomControl: false, attributionControl: false }).setView(latestCoords || [14.6349, -90.5069], 14);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(motoMapInstance);
     
-    motoPolylineRetiro = L.polyline([], { color: '#00bfff', weight: 6, opacity: 0.9 }).addTo(motoMapInstance);
+    // Naranja Eléctrico (#ff9500) para el trayecto al restaurante en el modo moto
+    motoPolylineRetiro = L.polyline([], { color: '#ff9500', weight: 6, opacity: 0.9 }).addTo(motoMapInstance);
     motoPolylinesEntrega = [];
     
     if (latestCoords) updateHelmetMarkerOnMap(latestCoords[0], latestCoords[1]);
@@ -714,7 +746,7 @@ function drawLiveTrackingPathOnMap() {
     if (trackState.phase === 'retiro' && trackState.routeRetiro.length > 0) {
       mapPolylineRetiro.setLatLngs(trackState.routeRetiro);
       if (!mapStartMarker) { 
-        mapStartMarker = L.circleMarker(trackState.routeRetiro[0], { radius: 8, color: '#00bfff', fillColor: '#00bfff', fillOpacity: 0.8 }).addTo(leafMapInstance); 
+        mapStartMarker = L.circleMarker(trackState.routeRetiro[0], { radius: 8, color: '#ff9500', fillColor: '#ff9500', fillOpacity: 0.8 }).addTo(leafMapInstance); 
       }
     } else if (trackState.phase === 'entrega') {
       const idx = trackState.currentDeliveryIndex;
@@ -733,7 +765,7 @@ function drawLiveTrackingPathOnMap() {
     if (trackState.phase === 'retiro' && trackState.routeRetiro.length > 0) {
       motoPolylineRetiro.setLatLngs(trackState.routeRetiro);
       if (!motoStartMarker) { 
-        motoStartMarker = L.circleMarker(trackState.routeRetiro[0], { radius: 8, color: '#00bfff', fillColor: '#00bfff', fillOpacity: 0.8 }).addTo(motoMapInstance); 
+        motoStartMarker = L.circleMarker(trackState.routeRetiro[0], { radius: 8, color: '#ff9500', fillColor: '#ff9500', fillOpacity: 0.8 }).addTo(motoMapInstance); 
       }
     } else if (trackState.phase === 'entrega') {
       const idx = trackState.currentDeliveryIndex;
@@ -1048,6 +1080,7 @@ function calculateComplexAdvancedStats() {
 function calculateOrderPriceWithParams(kmR, kmE, nEnt, mult, rain, rainVal, prop) {
   let baseMult = mult; if (rain) baseMult += rainVal;
   
+  // El retiro (PAGO_RETIRO) se cobra una única vez, sin importar la cantidad de entregas agrupadas
   const totalBasePerOrder = COMPONENTE_FIJO * nEnt;
   const totalPickup = PAGO_RETIRO;
   const totalDelivery = PAGO_ENTREGA * nEnt;
@@ -1383,8 +1416,8 @@ function toggleHistoryMap(id) {
       let allPoints = [];
       
       if (order.routeRetiro && order.routeRetiro.length > 0) {
-        L.polyline(order.routeRetiro, { color: '#00bfff', weight: 4, opacity: 0.8 }).addTo(map);
-        L.circleMarker(order.routeRetiro[0], { radius: 6, color: '#00bfff', fillColor: '#00bfff', fillOpacity: 0.9 }).addTo(map);
+        L.polyline(order.routeRetiro, { color: '#ff9500', weight: 4, opacity: 0.8 }).addTo(map);
+        L.circleMarker(order.routeRetiro[0], { radius: 6, color: '#ff9500', fillColor: '#ff9500', fillOpacity: 0.9 }).addTo(map);
         allPoints.push(...order.routeRetiro);
       }
       
