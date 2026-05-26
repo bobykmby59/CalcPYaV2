@@ -25,10 +25,13 @@
 
 <header>
   <div class="header-top">
-    <div class="logo">
-      <!-- Integración oficial de tu logotipo de casco de neón -->
+    <!-- Cabecera de alta fidelidad con tu logotipo y firma premium v3.8.0 -->
+    <div class="logo" style="display: flex; align-items: center; gap: 10px;">
       <img src="icon-192.png" alt="Rider Calc Pro Logo" class="header-logo-img">
-      <span class="logo-text">CALC PYA PRO</span>
+      <div style="display: flex; flex-direction: column;">
+        <span class="logo-text" style="line-height: 1;">CALC PYA PRO</span>
+        <span style="font-size: 9px; background: rgba(0, 255, 102, 0.15); padding: 2px 6px; border-radius: 8px; color: var(--green); font-weight: 800; letter-spacing: 0.5px; width: fit-content; margin-top: 2px;" id="appVersionBranding">v3.8.0 PREMIUM by KMBY</span>
+      </div>
     </div>
     <div class="header-actions">
       <div class="weather-chip" id="weatherChip" onclick="fetchWeather()">
@@ -42,54 +45,6 @@
 
 <!-- CALCULADORA DE VIAJE ACTIVO -->
 <main class="tab-view active" id="view-calc">
-
-  <!-- Fila Financiera Premium (Boceto): Acumulado, Ojo de Privacidad y Botón Restablecer -->
-  <section class="financial-hero-card">
-    <div class="accumulated-container" onclick="toggleEarningsPrivacy()">
-      <span class="accumulated-label">ACUMULADO HOY</span>
-      <h1 class="accumulated-amount" id="headerTotalDay">Q 0.00</h1>
-    </div>
-    <div class="financial-controls">
-      <button class="action-icon-btn" id="privacyToggleBtn" onclick="toggleEarningsPrivacy()" aria-label="Ocultar Ganancias">
-        <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="icon-svg">
-          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-          <circle cx="12" cy="12" r="3"/>
-        </svg>
-      </button>
-      <button class="action-icon-btn reset-danger-btn" onclick="confirmResetAllData()" aria-label="Restablecer Consola">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="icon-svg">
-          <polyline points="3 6 5 6 21 6"/>
-          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-          <line x1="10" y1="11" x2="10" y2="17"/>
-          <line x1="14" y1="11" x2="14" y2="17"/>
-        </svg>
-      </button>
-    </div>
-  </section>
-
-  <!-- Fila Meta Diaria Interactiva y Modo Moto -->
-  <section class="meta-moto-row">
-    <div class="thermometer-goal-card" id="goalProgressCard">
-      <div class="thermometer-header">
-        <div class="thermometer-title">🎯 Meta del Día</div>
-        <div class="thermometer-meta-text" id="goalCardSub">Q 0.00 de Q 500</div>
-      </div>
-      <div class="thermometer-gauge-wrapper">
-        <div class="thermometer-stem">
-          <div class="thermometer-stem-fill" id="goalArcFill"></div>
-        </div>
-        <div class="thermometer-pct-badge" id="goalProgressPct">0%</div>
-      </div>
-      <div class="goal-motivational-text" id="goalMotivationalText">¡Buen inicio, Rider! El camino apenas comienza. 🏍️</div>
-    </div>
-    
-    <button class="moto-mode-trigger-btn" onclick="enterMotoMode()">
-      <span class="btn-icon">🏍️</span>
-      <span class="btn-text">MODO MOTO</span>
-    </button>
-  </section>
-
-  <!-- Métricas Generales en Rejilla 2x2 -->
   <section class="dash-card">
     <div class="stat-item"><span class="val" id="statOrders">0</span><span class="lbl">Pedidos</span></div>
     <div class="stat-item"><span class="val blue" id="statKm">0.0</span><span class="lbl">KM Totales</span></div>
@@ -97,13 +52,28 @@
     <div class="stat-item"><span class="val" id="statNeta">Q 0.00</span><span class="lbl">Ganancia Neta</span></div>
   </section>
 
-  <!-- Tarjeta de Ganancia Estimada del Pedido Activo -->
+  <!-- Termómetro de Meta Diaria (Ubicación Superior Exclusiva) -->
+  <section class="thermometer-goal-card" id="goalProgressCard" style="display: none; margin: 0 0 16px 0;">
+    <div class="thermometer-header">
+      <div class="thermometer-title">🎯 Meta del Día</div>
+      <div class="thermometer-meta-text" id="goalCardSub">Q 0.00 de Q 500</div>
+    </div>
+    <div class="thermometer-gauge-wrapper">
+      <div class="thermometer-bulb"></div>
+      <div class="thermometer-stem"><div class="thermometer-stem-fill" id="goalArcFill"></div></div>
+      <div class="thermometer-pct-badge" id="goalProgressPct">0%</div>
+    </div>
+    <div class="goal-motivational-text" id="goalMotivationalText">¡Buen inicio, Rider! El camino apenas comienza. 🏍️</div>
+  </section>
+
+  <!-- Botón de Restablecimiento Accesible de Consola Diaria -->
+  <button class="h-btn" onclick="confirmResetAllData()" style="background: rgba(255, 45, 85, 0.1); border-color: var(--accent); color: var(--accent); font-weight: 800; width: 100%; margin-bottom: 16px; border-radius: 12px; min-height: 48px;">🗑️ RESTABLECER CONSOLA DIARIA</button>
+
   <div class="live-calc-card">
     <div class="live-calc-title">Ganancia Estimada Pedido Activo</div>
     <div class="live-calc-amount" id="liveCalcAmount">Q 0.00</div>
   </div>
 
-  <!-- Seguimiento de GPS -->
   <div class="tracking-segment">
     <div class="input-label" style="margin-bottom: 12px;">Seguimiento en Ruta GPS</div>
     <div class="track-btns">
@@ -472,23 +442,24 @@
   </div>
 </div>
 
-<!-- POP-UP DE MEJORAS DE LA VERSIÓN v3.7.0 -->
+<!-- POP-UP DE MEJORAS DE LA VERSIÓN v3.8.0 PREMIUM -->
 <div class="modal-overlay" id="versionModalOverlay">
   <div class="modal-sheet" style="max-width: 450px; text-align: center;">
     <div style="font-size: 50px; margin-bottom: 10px;">🚀</div>
-    <h2 style="font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--green); line-height: 1.1; margin-bottom: 8px;">¡VERSIÓN 3.7.0 INSTALADA!</h2>
-    <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">Las últimas mejoras tácticas para el Rider han sido aplicadas con éxito.</p>
+    <h2 style="font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--green); line-height: 1.1; margin-bottom: 8px;">¡VERSIÓN 3.8.0 INSTALADA!</h2>
+    <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">Las últimas mejoras nativas y de diseño premium han sido aplicadas con éxito.</p>
     
     <div style="text-align: left; background: var(--card2); padding: 14px; border-radius: 12px; font-size: 13px; display: flex; flex-direction: column; gap: 10px; border: 1.5px solid var(--border); margin-bottom: 16px; max-height: 220px; overflow-y: auto;">
-      <div style="font-weight: 800; color: var(--accent);">🛠️ Cambios clave en esta versión:</div>
-      <div>• <b>Diseño Despejado en Mapa y Stats:</b> Se eliminaron las tarjetas redundantes (Meta y Pedidos/Kilómetros) de estas secciones para optimizar el espacio visual de la pantalla.</div>
-      <div>• <b>Meta Diaria Reubicada:</b> Ahora se muestra de forma prioritaria al inicio de la pestaña CALC.</div>
-      <div>• <b>Botón de Restablecimiento Completo:</b> Nueva herramienta de limpieza unificada para volver la consola diaria a cero de manera inmediata.</div>
-      <div>• <b>Colores de Ruta Inteligentes:</b> Trazo naranja para el retiro hacia el restaurante y colores diferenciales para las entregas sucesivas de pedidos múltiples.</div>
-      <div>• <b>Lógica de Retiros Agrupados:</b> Corrección en la fórmula; el pago de recolección se cobra una sola vez en pedidos agrupados, sumando de forma consecutiva la distancia a cada cliente.</div>
+      <div style="font-weight: 800; color: var(--accent);">🛠️ Novedades clave de la v3.8.0:</div>
+      <div>• <b>Tu Casco de Neón como Icono:</b> Integración automatizada para que el casco de neón sea el logotipo oficial de la app en tu celular.</div>
+      <div>• <b>Firma PREMIUM en Cabecera:</b> Sello oficial "v3.8.0 PREMIUM by KMBY" integrado bajo el título principal.</div>
+      <div>• <b>Ubicación Precisa y de Fondo:</b> Se corrigieron y declararon los permisos nativos de GPS en segundo plano en la APK.</div>
+      <div>• <b>Exclusión de Ahorro de Batería:</b> Soporte para evitar que el sistema de Android ponga el GPS a dormir en plena ruta.</div>
+      <div>• <b>Privacidad por Desenfoque:</b> El ojo táctil ahora difumina tus ganancias del acumulado diario al instante.</div>
+      <div>• <b>Motómetro Interactivo:</b> La meta diaria ahora se ilumina al registrar un pedido y muestra frases de motivación en tiempo real.</div>
     </div>
     
-    <button class="main-action-btn" onclick="closeVersionModal()" style="margin-top: 0; min-height: 48px;">¡ENTENDIDO, A TRABAJAR!</button>
+    <button class="main-action-btn" onclick="closeVersionModal()" style="margin-top: 0; min-height: 48px;">¡ENTENDIDO, A RUTEAR!</button>
   </div>
 </div>
 

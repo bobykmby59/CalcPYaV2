@@ -1,5 +1,5 @@
 // ==========================================
-// BUSINESS & STATE ENGINE - RIDER CALC PRO v3.7.0 (CONSOLIDADO & HARDENED)
+// BUSINESS & STATE ENGINE - RIDER CALC PRO v3.8.0 (PREMIUM CONSOLIDADO)
 // ==========================================
 const COMPONENTE_FIJO = 2.50; 
 const PAGO_RETIRO = 1.00;     
@@ -36,7 +36,7 @@ const riderTips = [
   "Si el cliente se tarda en salir, respira hondo. Paciencia trae recompensa."
 ];
 
-// Colores diferenciales de entregas consecutivas en mapas (v3.7.0)
+// Colores diferenciales de entregas consecutivas en mapas (v3.8.0)
 const deliveryColors = ['#00ff66', '#bf5fff', '#ff2d55', '#00bfff'];
 
 let db = {
@@ -176,8 +176,9 @@ function confirmResetAllData() {
   }
 }
 
+// Control interactivo del pop-up de novedades según versión (v3.8.0)
 function checkVersionModalOnLoad() {
-  const currentVer = "v3.7.0";
+  const currentVer = "v3.8.0";
   const key = `rider_version_shown_${currentVer}`;
   if (!localStorage.getItem(key)) {
     const targetModal = document.getElementById('versionModalOverlay');
@@ -186,14 +187,14 @@ function checkVersionModalOnLoad() {
 }
 
 function closeVersionModal() {
-  const currentVer = "v3.7.0";
+  const currentVer = "v3.8.0";
   const key = `rider_version_shown_${currentVer}`;
   localStorage.setItem(key, "true");
   const targetModal = document.getElementById('versionModalOverlay');
   if (targetModal) targetModal.classList.remove('open');
 }
 
-// Lógica Interactiva del Ojo de Privacidad
+// Lógica del Ojo de Privacidad
 function initPrivacyState() {
   if (localStorage.getItem('earnings_hidden') === 'true') {
     earningsHidden = false; // Se niega para que el disparador ejecute la acción correcta
@@ -472,7 +473,7 @@ function saveTripToHistory() {
   commitDataStorage();
   
   const randomTip = riderTips[Math.floor(Math.random() * riderTips.length)];
-  triggerBannerNotification(`Pedido Guardado · Q ${finalVal.toFixed(2)}`, `💡 Tip: ${randomTip}`);
+  triggerBannerNotification("Pedido Guardado · Q " + finalVal.toFixed(2), "💡 Tip: " + randomTip);
   
   document.getElementById('kmRetiro').value = ''; 
   document.getElementById('propinaValue').value = '';
@@ -560,7 +561,7 @@ function trackStep(phase) {
     
     if (currentSeg) { 
       const inputEl = document.getElementById(currentSeg.elementId); 
-      if (inputEl) { inputEl.value = capturedDelivery.toFixed(3); } 
+      if (inputEl) { inputEl.value = Math.max(0, capturedDelivery).toFixed(3); } 
     }
     calculateRealtimeEarnings();
     
@@ -820,7 +821,7 @@ function drawLiveTrackingPathOnMap() {
   
   if (motoMapInstance && !document.getElementById('motoMapWrapper').classList.contains('hidden')) {
     if (trackState.phase === 'retiro' && trackState.routeRetiro.length > 0) {
-      motoPolylineRetiro.setLatLngs(motoPolylineRetiro);
+      motoPolylineRetiro.setLatLngs(trackState.routeRetiro); // CORREGIDO: Trazado dinámico en Android
       if (!motoStartMarker) { 
         motoStartMarker = L.circleMarker(trackState.routeRetiro[0], { radius: 8, color: '#ff9500', fillColor: '#ff9500', fillOpacity: 0.8 }).addTo(motoMapInstance); 
       }
@@ -962,6 +963,7 @@ function drawRoundedRect(ctx, x, y, width, height, radius) {
   ctx.fill();
 }
 
+// Control central de pestañas
 function switchMainTab(tab) {
   currentTab = tab; 
   document.querySelectorAll('.tab-view').forEach(view => {
@@ -1558,4 +1560,30 @@ function exportHistoryToCSV() {
     const regime = db.config.satRegime || 'pequeno';
     const tax = o.earnings * (regime === 'pequeno' ? 0.05 : regime === 'general' ? 0.12 : 0.0);
     const platformFee = 18.50 / db.orders.length; 
-    const net = o.earnings - tax - platfor
+    const net = o.earnings - tax - platformFee;
+    
+    const row = [
+      o.id,
+      `"${dateStr}"`,
+      `"${o.restaurant.replace(/"/g, '""')}"`,
+      o.kmR.toFixed(3),
+      o.kmE.toFixed(3),
+      o.multiplier.toFixed(2),
+      o.propina.toFixed(2),
+      o.earnings.toFixed(2),
+      tax.toFixed(2),
+      platformFee.toFixed(2),
+      net.toFixed(2)
+    ].join(",");
+    
+    csvContent += row + "\n";
+  });
+  
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `Libro_IVA_SAT_Rider_${Date.now()}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
