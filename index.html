@@ -26,7 +26,7 @@
 <header>
   <div class="header-top">
     <div class="logo">
-      <!-- Integración de tu casco de neón en la cabecera -->
+      <!-- Integración oficial de tu logotipo de casco de neón -->
       <img src="icon-192.png" alt="Rider Calc Pro Logo" class="header-logo-img">
       <span class="logo-text">CALC PYA PRO</span>
     </div>
@@ -42,6 +42,54 @@
 
 <!-- CALCULADORA DE VIAJE ACTIVO -->
 <main class="tab-view active" id="view-calc">
+
+  <!-- Fila Financiera Premium (Boceto): Acumulado, Ojo de Privacidad y Botón Restablecer -->
+  <section class="financial-hero-card">
+    <div class="accumulated-container" onclick="toggleEarningsPrivacy()">
+      <span class="accumulated-label">ACUMULADO HOY</span>
+      <h1 class="accumulated-amount" id="headerTotalDay">Q 0.00</h1>
+    </div>
+    <div class="financial-controls">
+      <button class="action-icon-btn" id="privacyToggleBtn" onclick="toggleEarningsPrivacy()" aria-label="Ocultar Ganancias">
+        <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="icon-svg">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </button>
+      <button class="action-icon-btn reset-danger-btn" onclick="confirmResetAllData()" aria-label="Restablecer Consola">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="icon-svg">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          <line x1="10" y1="11" x2="10" y2="17"/>
+          <line x1="14" y1="11" x2="14" y2="17"/>
+        </svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- Fila Meta Diaria Interactiva y Modo Moto -->
+  <section class="meta-moto-row">
+    <div class="thermometer-goal-card" id="goalProgressCard">
+      <div class="thermometer-header">
+        <div class="thermometer-title">🎯 Meta del Día</div>
+        <div class="thermometer-meta-text" id="goalCardSub">Q 0.00 de Q 500</div>
+      </div>
+      <div class="thermometer-gauge-wrapper">
+        <div class="thermometer-stem">
+          <div class="thermometer-stem-fill" id="goalArcFill"></div>
+        </div>
+        <div class="thermometer-pct-badge" id="goalProgressPct">0%</div>
+      </div>
+      <div class="goal-motivational-text" id="goalMotivationalText">¡Buen inicio, Rider! El camino apenas comienza. 🏍️</div>
+    </div>
+    
+    <button class="moto-mode-trigger-btn" onclick="enterMotoMode()">
+      <span class="btn-icon">🏍️</span>
+      <span class="btn-text">MODO MOTO</span>
+    </button>
+  </section>
+
+  <!-- Métricas Generales en Rejilla 2x2 -->
   <section class="dash-card">
     <div class="stat-item"><span class="val" id="statOrders">0</span><span class="lbl">Pedidos</span></div>
     <div class="stat-item"><span class="val blue" id="statKm">0.0</span><span class="lbl">KM Totales</span></div>
@@ -49,28 +97,13 @@
     <div class="stat-item"><span class="val" id="statNeta">Q 0.00</span><span class="lbl">Ganancia Neta</span></div>
   </section>
 
-  <!-- Termómetro de Meta Diaria (Ubicación Superior Exclusiva) -->
-  <section class="thermometer-goal-card" id="goalProgressCard" style="display: none; margin: 0 0 16px 0;">
-    <div class="thermometer-header">
-      <div class="thermometer-title">🎯 Meta del Día</div>
-      <div class="thermometer-meta-text" id="goalCardSub">Q 0.00 de Q 500</div>
-    </div>
-    <div class="thermometer-gauge-wrapper">
-      <div class="thermometer-bulb"></div>
-      <div class="thermometer-stem"><div class="thermometer-stem-fill" id="goalArcFill"></div></div>
-      <div class="thermometer-pct-badge" id="goalProgressPct">0%</div>
-    </div>
-    <div class="goal-motivational-text" id="goalMotivationalText">¡Buen inicio, Rider! El camino apenas comienza. 🏍️</div>
-  </section>
-
-  <!-- Botón de Restablecimiento Accesible de Consola Diaria -->
-  <button class="h-btn" onclick="confirmResetAllData()" style="background: rgba(255, 45, 85, 0.1); border-color: var(--accent); color: var(--accent); font-weight: 800; width: 100%; margin-bottom: 16px; border-radius: 12px; min-height: 48px;">🗑️ RESTABLECER CONSOLA DIARIA</button>
-
+  <!-- Tarjeta de Ganancia Estimada del Pedido Activo -->
   <div class="live-calc-card">
     <div class="live-calc-title">Ganancia Estimada Pedido Activo</div>
     <div class="live-calc-amount" id="liveCalcAmount">Q 0.00</div>
   </div>
 
+  <!-- Seguimiento de GPS -->
   <div class="tracking-segment">
     <div class="input-label" style="margin-bottom: 12px;">Seguimiento en Ruta GPS</div>
     <div class="track-btns">

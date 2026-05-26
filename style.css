@@ -87,7 +87,7 @@ body.light-mode header {
   gap: 10px;
 }
 
-/* Efecto de brillo de neón sobre tu logotipo de casco */
+/* Brillo de neón en la cabecera sobre tu logotipo de casco */
 .header-logo-img {
   width: 34px;
   height: 34px;
@@ -138,7 +138,7 @@ body.light-mode header {
   cursor: pointer;
 }
 
-/* NUEVA FILA FINANCIERA PREMIUM (BOCETO) */
+/* FILA FINANCIERA PREMIUM (BOCETO): Acumulado, Ojo de Privacidad y Botón Restablecer */
 .financial-hero-card {
   background: linear-gradient(135deg, var(--card) 0%, rgba(20,20,22,0.6) 100%);
   border: 1.5px solid var(--border);
@@ -174,7 +174,7 @@ body.light-mode header {
   transition: filter 0.25s ease, opacity 0.25s ease;
 }
 
-/* Efecto de privacidad difuminado (Ojo) */
+/* Privacidad por desenfoque táctico */
 .accumulated-amount.masked {
   filter: blur(10px);
   opacity: 0.3;
@@ -970,4 +970,54 @@ input:checked + .slider:before { transform: translateX(20px); }
   color: var(--text);
   font-size: 20px;
   cursor: pointer;
+}
+
+/* ==========================================
+   ESTILOS DE NAVEGACIÓN INFERIOR (RESTAURADOS)
+   ========================================== */
+.nav-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--nav-bg);
+  border-top: 1px solid var(--border);
+  padding-bottom: var(--safe-bottom);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: calc(64px + var(--safe-bottom));
+  z-index: 1000;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 64px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.nav-item.active {
+  color: var(--accent);
+}
+
+.nav-item svg {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 4px;
+  transition: transform 0.15s;
+}
+
+.nav-item:active svg {
+  transform: scale(0.9);
+}
+
+.nav-item span {
+  font-size: 10px;
+  font-weight: 700;
 }

@@ -820,7 +820,7 @@ function drawLiveTrackingPathOnMap() {
   
   if (motoMapInstance && !document.getElementById('motoMapWrapper').classList.contains('hidden')) {
     if (trackState.phase === 'retiro' && trackState.routeRetiro.length > 0) {
-      motoPolylineRetiro.setLatLngs(trackState.routeRetiro);
+      motoPolylineRetiro.setLatLngs(motoPolylineRetiro);
       if (!motoStartMarker) { 
         motoStartMarker = L.circleMarker(trackState.routeRetiro[0], { radius: 8, color: '#ff9500', fillColor: '#ff9500', fillOpacity: 0.8 }).addTo(motoMapInstance); 
       }
@@ -1342,7 +1342,6 @@ function addScheduleSlotRow(startHour = "12:00", endHour = "14:00", multiplier =
   renderScheduleSlots();
 }
 
-// Lógica de eliminación de franja horaria
 function removeScheduleSlotRow(id) {
   db.config.multiplierSchedule = db.config.multiplierSchedule.filter(s => s.id !== id);
   commitDataStorage();
@@ -1353,4 +1352,210 @@ function removeScheduleSlotRow(id) {
 function updateScheduleSlotValue(id, key, val) {
   const idx = db.config.multiplierSchedule.findIndex(s => s.id === id);
   if (idx !== -1) {
-    db.config.multiplierSchedule[idx][key] = ke
+    db.config.multiplierSchedule[idx][key] = key === 'multiplier' ? parseFloat(val) : val;
+    commitDataStorage();
+    updateScheduledMultiplierOnCalcTab();
+  }
+}
+
+function renderScheduleSlots() {
+  const container = document.getElementById('scheduleSlotsList');
+  if (!container) return;
+  container.innerHTML = '';
+  
+  if (db.config.multiplierSchedule.length === 0) {
+    addScheduleSlotRow("12:00", "14:00", 1.30);
+    return;
+  }
+  
+  db.config.multiplierSchedule.forEach(slot => {
+    const div = document.createElement('div');
+    div.style.display = 'flex';
+    div.style.gap = '8px';
+    div.style.alignItems = 'center';
+    div.innerHTML = `
+      <input type="time" value="${slot.startHour}" onchange="updateScheduleSlotValue(${slot.id}, 'startHour', this.value)" style="background:var(--card2); border:1px solid var(--border); color:var(--text); padding:8px; border-radius:8px; flex:1;">
+      <span style="font-size:12px; color:var(--muted);">a</span>
+      <input type="time" value="${slot.endHour}" onchange="updateScheduleSlotValue(${slot.id}, 'endHour', this.value)" style="background:var(--card2); border:1px solid var(--border); color:var(--text); padding:8px; border-radius:8px; flex:1;">
+      <input type="number" step="0.05" value="${slot.multiplier.toFixed(2)}" onchange="updateScheduleSlotValue(${slot.id}, 'multiplier', this.value)" style="background:var(--card2); border:1px solid var(--border); color:var(--text); padding:8px; border-radius:8px; width:65px; text-align:center;">
+      <button onclick="removeScheduleSlotRow(${slot.id})" style="background:none; border:none; color:var(--accent); font-size:18px; cursor:pointer; padding:4px;">✕</button>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function updateScheduledMultiplierOnCalcTab() {
+  const input = document.getElementById('multValue');
+  if (!input) return;
+
+  if (!db.config.autoMultiplierEnabled) {
+    input.disabled = false;
+    return;
+  }
+  
+  const now = new Date();
+  const currentHourStr = now.toTimeString().substring(0, 5); 
+  let targetMultiplier = 1.00;
+  let scheduleMatched = false;
+  
+  db.config.multiplierSchedule.forEach(slot => {
+    if (currentHourStr >= slot.startHour && currentHourStr <= slot.endHour) {
+      targetMultiplier = slot.multiplier;
+      scheduleMatched = true;
+    }
+  });
+  
+  if (scheduleMatched) {
+    input.value = targetMultiplier.toFixed(2);
+    input.disabled = true; 
+  } else {
+    input.disabled = false;
+  }
+  renderPresetsChips();
+  calculateRealtimeEarnings();
+}
+
+function renderHistoryTrips() {
+  const container = document.getElementById('historyEntries');
+  if (!container) return;
+  container.innerHTML = '';
+  
+  if (db.orders.length === 0) {
+    container.innerHTML = `<div style="text-align: center; color: var(--muted); padding: 40px 0; font-size: 14px;">No hay pedidos registrados hoy.</div>`;
+    return;
+  }
+  
+  const sorted = [...db.orders].reverse();
+  
+  sorted.forEach(order => {
+    const timeStr = new Date(order.timestamp).toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit' });
+    const dateStr = new Date(order.timestamp).toLocaleDateString('es-GT', { day: 'numeric', month: 'short' });
+    
+    const card = document.createElement('div');
+    card.className = 'hist-card';
+    card.innerHTML = `
+      <div class="hist-card-header">
+        <div>
+          <div class="hist-card-title">🏪 ${order.restaurant}</div>
+          <div class="hist-card-time">📅 ${dateStr} · 🕒 ${timeStr}</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--green);">Q ${order.earnings.toFixed(2)}</div>
+          ${order.rain ? `<span style="font-size: 10px; background: rgba(0, 191, 255, 0.15); color: var(--blue); padding: 2px 6px; border-radius: 8px;">🌧️ Lluvia (+${order.rainVal})</span>` : ''}
+        </div>
+      </div>
+      
+      <div class="hist-card-stats">
+        <div class="h-stat"><span class="lbl">Retiro</span><span class="val">${order.kmR.toFixed(2)} km</span></div>
+        <div class="h-stat"><span class="lbl">Entrega</span><span class="val">${order.kmE.toFixed(2)} km</span></div>
+        <div class="h-stat"><span class="lbl">Multipl.</span><span class="val">${order.multiplier.toFixed(2)}x</span></div>
+        <div class="h-stat"><span class="lbl">Propina</span><span class="val">Q ${order.propina.toFixed(1)}</span></div>
+      </div>
+      
+      <div class="hist-card-actions">
+        <button class="h-btn" onclick="openOrderEditSheet(${order.id})">✏️ Editar</button>
+        <button class="h-btn" onclick="toggleHistoryMap(${order.id})" id="mapBtn-${order.id}">🗺️ Ver Ruta</button>
+        <button class="h-btn" onclick="deleteSingleHistoryItem(${order.id})" style="border-color: var(--accent); color: var(--accent); background: none; max-width: 44px;">🗑️</button>
+      </div>
+      <div class="hist-map-wrap" id="mapWrap-${order.id}">
+        <div class="hist-map-div" id="mapDiv-${order.id}"></div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+  
+  renderTimelineRoutes();
+}
+
+function toggleHistoryMap(id) {
+  const wrap = document.getElementById(`mapWrap-${id}`);
+  const btn = document.getElementById(`mapBtn-${id}`);
+  if (!wrap) return;
+  
+  if (wrap.style.display === 'block') {
+    wrap.style.display = 'none';
+    btn.textContent = '🗺️ Ver Ruta';
+    if (historyMapInstances[id]) {
+      historyMapInstances[id].remove();
+      delete historyMapInstances[id];
+    }
+  } else {
+    wrap.style.display = 'block';
+    btn.textContent = '🙈 Ocultar Ruta';
+    
+    setTimeout(() => {
+      const order = db.orders.find(o => o.id === id);
+      if (!order || typeof L === 'undefined') return;
+      
+      const map = L.map(`mapDiv-${id}`, { zoomControl: false, attributionControl: false }).setView([14.6349, -90.5069], 14);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+      historyMapInstances[id] = map;
+      
+      let allPoints = [];
+      
+      if (order.routeRetiro && order.routeRetiro.length > 0) {
+        L.polyline(order.routeRetiro, { color: '#ff9500', weight: 4, opacity: 0.8 }).addTo(map);
+        L.circleMarker(order.routeRetiro[0], { radius: 6, color: '#ff9500', fillColor: '#ff9500', fillOpacity: 0.9 }).addTo(map);
+        allPoints.push(...order.routeRetiro);
+      }
+      
+      if (order.routeEntrega && order.routeEntrega.length > 0) {
+        order.routeEntrega.forEach((segment, idx) => {
+          if (segment && segment.length > 0) {
+            const pathColor = deliveryColors[idx % deliveryColors.length];
+            L.polyline(segment, { color: pathColor, weight: 4, opacity: 0.8 }).addTo(map);
+            L.circleMarker(segment[segment.length - 1], { radius: 6, color: pathColor, fillColor: pathColor, fillOpacity: 0.9 }).addTo(map);
+            allPoints.push(...segment);
+          }
+        });
+      }
+      
+      if (allPoints.length > 0) {
+        const bounds = L.latLngBounds(allPoints);
+        map.fitBounds(bounds, { padding: [10, 10] });
+      } else if (latestCoords) {
+        map.setView(latestCoords, 14);
+      }
+    }, 200);
+  }
+}
+
+function renderTimelineRoutes() {
+  const container = document.getElementById('timelineEntries');
+  if (!container) return;
+  container.innerHTML = '';
+  
+  if (db.orders.length === 0) {
+    container.innerHTML = `<div style="text-align: center; font-size: 12px; color: var(--muted); padding: 12px;">No se han registrado rutas de reparto hoy.</div>`;
+    return;
+  }
+  
+  db.orders.forEach(order => {
+    const timeStr = new Date(order.timestamp).toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit' });
+    
+    const node = document.createElement('div');
+    node.className = 'timeline-node';
+    node.innerHTML = `
+      <span class="timeline-time">${timeStr}</span>
+      <span class="timeline-desc">Reparto de ${order.restaurant}</span>
+      <span class="timeline-meta">Ruta: ${(order.kmR + order.kmE).toFixed(2)} km totales | Q ${order.earnings.toFixed(2)} acumulados</span>
+    `;
+    container.appendChild(node);
+  });
+}
+
+function exportHistoryToCSV() {
+  if (db.orders.length === 0) {
+    triggerAlert('Sin Datos', 'No hay registros de reparto para exportar.');
+    return;
+  }
+  
+  let csvContent = "data:text/csv;charset=utf-8,";
+  csvContent += "ID,Fecha,Restaurante,KM Retiro,KM Entrega,Multiplicador,Propina(Q),Ganancia Bruta(Q),SAT IVA,Uso Plataforma,Ganancia Neta\n";
+  
+  db.orders.forEach(o => {
+    const dateStr = new Date(o.timestamp).toLocaleDateString('es-GT');
+    const regime = db.config.satRegime || 'pequeno';
+    const tax = o.earnings * (regime === 'pequeno' ? 0.05 : regime === 'general' ? 0.12 : 0.0);
+    const platformFee = 18.50 / db.orders.length; 
+    const net = o.earnings - tax - platfor
