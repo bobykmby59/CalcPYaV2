@@ -49,6 +49,36 @@ jobs:
             npx cap add android
           fi
 
+      - name: Configurar AndroidManifest.xml con permisos de GPS y bateria
+        run: |
+          MANIFEST_PATH="android/app/src/main/AndroidManifest.xml"
+          if [ -f "$MANIFEST_PATH" ]; then
+            node -e "
+              const fs = require('fs');
+              let content = fs.readFileSync('$MANIFEST_PATH', 'utf8');
+              
+              // Declaración de permisos nativos para GPS de alta precisión en segundo plano y exclusión de batería
+              const permissions = '\n' +
+                '    <uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\" />\n' +
+                '    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n' +
+                '    <uses-permission android:name=\"android.permission.ACCESS_BACKGROUND_LOCATION\" />\n' +
+                '    <uses-permission android:name=\"android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS\" />\n';
+              
+              content = content.replace('</manifest>', permissions + '</manifest>');
+              
+              // Habilitar tráfico Cleartext para conexiones seguras WebView
+              if (!content.includes('android:usesCleartextTraffic')) {
+                content = content.replace('<application', '<application android:usesCleartextTraffic=\"true\"');
+              }
+              
+              fs.writeFileSync('$MANIFEST_PATH', content, 'utf8');
+            ";
+            echo "AndroidManifest.xml configurado correctamente con permisos de GPS de alta precisión."
+          else
+            echo "Error: No se encontró el archivo AndroidManifest.xml nativo."
+            exit 1
+          fi
+
       - name: Compilar APK con Gradle (Android)
         run: |
           cd android
