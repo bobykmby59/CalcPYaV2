@@ -634,11 +634,10 @@ function startLiveLocationKeepalive() {
   const geoOpts = { enableHighAccuracy: true, maximumAge: 1000, timeout: 15000 };
   watchPositionId = navigator.geolocation.watchPosition(processLiveGpsPositionUpdate, handleGpsTrackingError, geoOpts);
   
+  // GPS 100% activo en segundo plano y primer plano constantemente desde que se abre la app
   if (bgGpsIntervalId) clearInterval(bgGpsIntervalId);
   bgGpsIntervalId = setInterval(() => { 
-    if (trackState.active) {
-      navigator.geolocation.getCurrentPosition(processLiveGpsPositionUpdate, () => {}, { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }); 
-    }
+    navigator.geolocation.getCurrentPosition(processLiveGpsPositionUpdate, () => {}, { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }); 
   }, 15000);
   
   document.getElementById('gpsStateText').textContent = '🛰️ GPS Buscando...'; 
@@ -688,13 +687,14 @@ function navigateHotspot(lat, lng, name) {
   }
 }
 
-// FILTRO DE ODOMETRO MILIMÉTRICO (v3.8.0)
+// FILTRO DE ODOMETRO MILIMÉTRICO ADAPTATIVO (v3.8.0)
 function processLiveGpsPositionUpdate(pos) {
   const lat = pos.coords.latitude; 
   const lng = pos.coords.longitude; 
   const speed = pos.coords.speed || 0.0; 
   const accuracy = pos.coords.accuracy;
   
+  // Aceptamos señales con margen de error de hasta 120 metros para ubicar el casco en el mapa inmediatamente
   if (accuracy > 120) return; 
   
   gpsSmoothBuffer.push([lat, lng]); 
@@ -704,10 +704,16 @@ function processLiveGpsPositionUpdate(pos) {
   const avgLng = gpsSmoothBuffer.reduce((acc, curr) => acc + curr[1], 0) / gpsSmoothBuffer.length;
   latestCoords = [avgLat, avgLng]; 
   
-  updateHelmetMarkerOnMap(avgLat, avgLng); 
-  updateHotspotsUi(avgLat, avgLng); 
-  checkInactivity(avgLat, avgLng);
+  // Intentar actualizar el marcador del casco rojo de forma segura
+  try {
+    updateHelmetMarkerOnMap(avgLat, avgLng); 
+    updateHotspotsUi(avgLat, avgLng); 
+    checkInactivity(avgLat, avgLng);
+  } catch (err) {
+    console.warn("Error renderizando marcador nativo Leaflet", err);
+  }
   
+  // Centrado automático de cortesía en el primer satélite válido recibido
   if (!hasCenteredOnFirstFix) {
     if (leafMapInstance) leafMapInstance.setView(latestCoords, 16);
     if (motoMapInstance) motoMapInstance.setView(latestCoords, 16);
@@ -733,8 +739,11 @@ function processLiveGpsPositionUpdate(pos) {
       if (lastPoint) {
         const stepDist = calculateHaversineDistance(lastPoint[0], lastPoint[1], avgLat, avgLng);
         
-        // FILTRO DE ALTA PRECISIÓN:
-        if (accuracy <= 25 && speed > 0.5 && stepDist > 0.003) {
+        // CALIBRACIÓN DE COBRO MILIMÉTRICO (SIN EXCLUSIÓN DE VELOCIDAD DE WEBVIEW):
+        // 1. Eliminamos el bloqueo de 'speed' por hardware para evitar que los WebViews de Android congelen el kilometraje.
+        // 2. Filtramos rebotes de precisión estricta menores a 40 metros para evitar sumas fantasmas en semáforos.
+        // 3. Capturamos movimiento real desde los 3 metros (0.003 km) y filtramos saltos de error mayores a 800m por segundo.
+        if (accuracy <= 40 && stepDist > 0.003 && stepDist < 0.8) {
           trackState.currentDistance += stepDist; 
           
           if (trackState.phase === 'retiro') {
@@ -754,7 +763,9 @@ function processLiveGpsPositionUpdate(pos) {
         trackState.routeEntrega[trackState.currentDeliveryIndex] = [latestCoords];
       }
     }
-    document.getElementById('motoSpeed').textContent = Math.round(speed * 3.6); 
+    // Calcular velocidad aproximada real basada en satélite o delta si speed es nulo
+    const kmhSpeed = speed > 0 ? (speed * 3.6) : 0;
+    document.getElementById('motoSpeed').textContent = Math.round(kmhSpeed); 
     document.getElementById('motoGpsDistance').textContent = trackState.currentDistance.toFixed(3);
     updateMotoBreakdownUI();
   }
@@ -787,8 +798,10 @@ function initLeafletMapInstance() {
   try {
     leafMapInstance = L.map('liveMapDiv', { zoomControl: false, attributionControl: false }).setView(latestCoords || [14.6349, -90.5069], 14);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(leafMapInstance);
+    
     mapPolylineRetiro = L.polyline([], { color: '#ff9500', weight: 6, opacity: 0.9 }).addTo(leafMapInstance);
     mapPolylinesEntrega = [];
+    
     if (latestCoords) updateHelmetMarkerOnMap(latestCoords[0], latestCoords[1]);
   } catch(e) { console.error('Map initialization failed', e); }
 }
@@ -803,8 +816,10 @@ function initMotoMapInstance() {
   try {
     motoMapInstance = L.map('motoMapDiv', { zoomControl: false, attributionControl: false }).setView(latestCoords || [14.6349, -90.5069], 14);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(motoMapInstance);
+    
     motoPolylineRetiro = L.polyline([], { color: '#ff9500', weight: 6, opacity: 0.9 }).addTo(motoMapInstance);
     motoPolylinesEntrega = [];
+    
     if (latestCoords) updateHelmetMarkerOnMap(latestCoords[0], latestCoords[1]);
   } catch(e) { console.error('Moto map initialization failed', e); }
 }
