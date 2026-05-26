@@ -1,5 +1,5 @@
 /* ==========================================
-   STYLE SHEET - RIDER CALC PRO v3.6.1 (CORREGIDO)
+   STYLE SHEET - RIDER CALC PRO v3.6.1 (CONSOLIDADO)
    ========================================== */
 :root {
   --bg: #000000;
@@ -22,19 +22,19 @@
 }
 
 body.light-mode {
-  --bg: #f2f2f7;
-  --card: #ffffff;
-  --card2: #f2f2f7;
-  --border: #e5e5ea;
-  --accent: #e0002a;
-  --accent-rgb: 224, 0, 42;
-  --accent2: #cc4400;
-  --green: #008f39;
-  --green-rgb: 0, 143, 57;
-  --blue: #0066cc;
-  --yellow: #b36b00;
-  --text: #1c1c1e;
-  --muted: #6e6e73;
+  --bg: #ffffff;
+  --card: #f5f5f7;
+  --card2: #e5e5ea;
+  --border: #bcbcc2;
+  --accent: #d00020;
+  --accent-rgb: 208, 0, 32;
+  --accent2: #b83d00;
+  --green: #00802b;
+  --green-rgb: 0, 128, 43;
+  --blue: #0055b3;
+  --yellow: #995c00;
+  --text: #000000;
+  --muted: #4a4a4f;
   --nav-bg: #ffffff;
 }
 
@@ -45,6 +45,7 @@ body.light-mode {
   -webkit-tap-highlight-color: transparent;
   font-family: 'Plus Jakarta Sans', sans-serif;
   user-select: none;
+  touch-action: manipulation;
 }
 
 body {
@@ -79,7 +80,7 @@ header {
 }
 
 body.light-mode header {
-  background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.06) 0%, rgba(255,255,255,0) 100%);
+  background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.08) 0%, rgba(255,255,255,0) 100%);
 }
 
 .header-top {
@@ -115,7 +116,7 @@ body.light-mode header {
   font-weight: 700;
   background: var(--card2);
   border: 1px solid var(--border);
-  padding: 6px 12px;
+  padding: 8px 14px;
   border-radius: 20px;
   cursor: pointer;
   transition: transform 0.1s;
@@ -126,8 +127,8 @@ body.light-mode header {
 }
 
 .theme-btn {
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   border: 1px solid var(--border);
   background: var(--card2);
@@ -138,7 +139,6 @@ body.light-mode header {
   cursor: pointer;
 }
 
-/* Modificadores de la tarjeta de estadísticas (Foto 1) */
 .dash-card {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -157,7 +157,7 @@ body.light-mode header {
 
 .stat-item .val {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 36px;
+  font-size: 38px;
   line-height: 1;
   color: var(--green);
   margin-bottom: 4px;
@@ -171,6 +171,7 @@ body.light-mode header {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  font-weight: 700;
 }
 
 .thermometer-goal-card {
@@ -329,6 +330,7 @@ body.light-mode header {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 6px;
+  font-weight: 800;
 }
 
 .control-box {
@@ -363,8 +365,8 @@ body.light-mode header {
 }
 
 .m-btn {
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
   border-radius: 12px;
   background: var(--card2);
   border: 1px solid var(--border);
@@ -453,7 +455,7 @@ body.light-mode header {
 }
 
 .step-btn {
-  padding: 10px;
+  padding: 12px;
   background: var(--card2);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -461,6 +463,7 @@ body.light-mode header {
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
+  min-height: 48px;
 }
 
 .step-btn:active { transform: scale(0.98); }
@@ -489,11 +492,12 @@ body.light-mode header {
   align-items: center;
   gap: 4px;
   cursor: pointer;
+  min-height: 52px;
 }
 
 .track-btn.active {
   border-color: var(--accent);
-  background: rgba(var(--accent-rgb), 0.1);
+  background: rgba(var(--accent-rgb), 0.12);
 }
 
 .track-btn span.icon { font-size: 24px; }
@@ -537,6 +541,7 @@ body.light-mode .live-calc-card {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 1px;
+  font-weight: 800;
 }
 
 .live-calc-amount {
@@ -584,7 +589,7 @@ body.light-mode .live-calc-card {
   flex-direction: column;
 }
 
-.h-stat span.lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; }
+.h-stat span.lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; font-weight: 700; }
 .h-stat span.val { font-family: 'Bebas Neue', sans-serif; font-size: 20px; }
 
 .hist-card-actions {
@@ -596,7 +601,7 @@ body.light-mode .live-calc-card {
 
 .h-btn {
   flex: 1;
-  padding: 10px;
+  padding: 12px;
   border-radius: 10px;
   border: 1px solid var(--border);
   background: var(--card2);
@@ -608,6 +613,7 @@ body.light-mode .live-calc-card {
   align-items: center;
   justify-content: center;
   gap: 4px;
+  min-height: 48px;
 }
 
 .h-btn:active { transform: scale(0.97); }
@@ -925,7 +931,6 @@ input:checked + .slider:before { transform: translateX(20px); }
 .notif-title { font-size: 14px; font-weight: 800; }
 .notif-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
-/* Timeline Estilo Google Maps para pantalla de mapas (Foto 5) */
 .timeline-container {
   background: var(--card);
   border: 1px solid var(--border);
