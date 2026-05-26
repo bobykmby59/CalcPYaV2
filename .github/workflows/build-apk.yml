@@ -57,11 +57,10 @@ jobs:
               const fs = require('fs');
               let content = fs.readFileSync('$MANIFEST_PATH', 'utf8');
               
-              // Declaración de permisos nativos para GPS en segundo plano y exclusión de optimización de batería
+              // Declaración de permisos nativos optimizados para evitar bloqueos del sistema Android
               const permissions = '\n' +
                 '    <uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\" />\n' +
                 '    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n' +
-                '    <uses-permission android:name=\"android.permission.ACCESS_BACKGROUND_LOCATION\" />\n' +
                 '    <uses-permission android:name=\"android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS\" />\n';
               
               content = content.replace('</manifest>', permissions + '</manifest>');
