@@ -26,7 +26,7 @@
 <header>
   <div class="header-top">
     <div class="logo">
-      <span>🛵</span> CALC PYA PRO <span style="font-size: 11px; background: rgba(255, 45, 85, 0.15); padding: 2px 8px; border-radius: 10px; color: var(--accent);" id="appVersionBranding">v3.6.1 by KMBY</span>
+      <span>🛵</span> CALC PYA PRO <span style="font-size: 11px; background: rgba(255, 45, 85, 0.15); padding: 2px 8px; border-radius: 10px; color: var(--accent);" id="appVersionBranding">v3.7.0 by KMBY</span>
     </div>
     <div class="header-actions">
       <div class="weather-chip" id="weatherChip" onclick="fetchWeather()">
@@ -58,6 +58,22 @@
     <div class="stat-item"><span class="val accent" id="statDeliveries">0</span><span class="lbl">Entregas</span></div>
     <div class="stat-item"><span class="val" id="statNeta">Q 0.00</span><span class="lbl">Ganancia Neta</span></div>
   </section>
+
+  <!-- Termómetro de Meta Diaria (Ubicación Superior Exclusiva) -->
+  <section class="thermometer-goal-card" id="goalProgressCard" style="display: none; margin: 0 0 16px 0;">
+    <div class="thermometer-header">
+      <div class="thermometer-title">🎯 Meta del Día</div>
+      <div class="thermometer-meta-text" id="goalCardSub">Q 0.00 de Q 500</div>
+    </div>
+    <div class="thermometer-gauge-wrapper">
+      <div class="thermometer-bulb"></div>
+      <div class="thermometer-stem"><div class="thermometer-stem-fill" id="goalArcFill"></div></div>
+      <div class="thermometer-pct-badge" id="goalProgressPct">0%</div>
+    </div>
+  </section>
+
+  <!-- Botón de Restablecimiento Accesible de Consola Diaria -->
+  <button class="h-btn" onclick="confirmResetAllData()" style="background: rgba(255, 45, 85, 0.1); border-color: var(--accent); color: var(--accent); font-weight: 800; width: 100%; margin-bottom: 16px; border-radius: 12px; min-height: 48px;">🗑️ RESTABLECER CONSOLA DIARIA</button>
 
   <div class="live-calc-card">
     <div class="live-calc-title">Ganancia Estimada Pedido</div>
@@ -170,18 +186,6 @@
       <input type="number" id="propinaValue" placeholder="0.00" style="background: none; border: none; outline: none; color: var(--text); font-size: 20px; font-family: 'Bebas Neue', sans-serif;" oninput="calculateRealtimeEarnings()">
     </div>
   </div>
-
-  <section class="thermometer-goal-card" id="goalProgressCard" style="display: none; margin: 16px 0;">
-    <div class="thermometer-header">
-      <div class="thermometer-title">🎯 Meta del Día</div>
-      <div class="thermometer-meta-text" id="goalCardSub">Q 0.00 de Q 500</div>
-    </div>
-    <div class="thermometer-gauge-wrapper">
-      <div class="thermometer-bulb"></div>
-      <div class="thermometer-stem"><div class="thermometer-stem-fill" id="goalArcFill"></div></div>
-      <div class="thermometer-pct-badge" id="goalProgressPct">0%</div>
-    </div>
-  </section>
   
   <div style="display: flex; gap: 12px; margin-top: 16px; margin-bottom: 24px;">
     <button class="h-btn" onclick="clearCalculatorInputs()" style="flex: 1; padding: 18px; border-radius: 18px; border: 1.5px solid var(--accent); color: var(--accent); background: none; font-weight: 800; font-size: 15px;">✕ LIMPIAR</button>
@@ -201,7 +205,7 @@
   <div id="historyEntries"></div>
 </main>
 
-<!-- ESTADÍSTICAS Y RENDIMIENTO -->
+<!-- ESTADÍSTICAS Y RENDIMIENTO (SIN CARDS REDUNDANTES) -->
 <main class="tab-view" id="view-stats">
   <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 16px;">Análisis de Desempeño</h3>
   <div class="chart-container">
@@ -241,7 +245,7 @@
   </div>
 </main>
 
-<!-- MAPAS INTERACTIVOS -->
+<!-- MAPAS INTERACTIVOS (SIN CARDS REDUNDANTES) -->
 <main class="tab-view" id="view-mapa">
   <div class="map-view-container">
     <div id="liveMapDiv"></div>
@@ -443,6 +447,26 @@
       </div>
     </div>
     <button class="main-action-btn" onclick="saveEditedOrderData()">💾 Guardar Cambios</button>
+  </div>
+</div>
+
+<!-- POP-UP DE MEJORAS DE LA VERSIÓN v3.7.0 -->
+<div class="modal-overlay" id="versionModalOverlay">
+  <div class="modal-sheet" style="max-width: 450px; text-align: center;">
+    <div style="font-size: 50px; margin-bottom: 10px;">🚀</div>
+    <h2 style="font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--green); line-height: 1.1; margin-bottom: 8px;">¡VERSIÓN 3.7.0 INSTALADA!</h2>
+    <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">Las últimas mejoras tácticas para el Rider han sido aplicadas con éxito.</p>
+    
+    <div style="text-align: left; background: var(--card2); padding: 14px; border-radius: 12px; font-size: 13px; display: flex; flex-direction: column; gap: 10px; border: 1.5px solid var(--border); margin-bottom: 16px; max-height: 220px; overflow-y: auto;">
+      <div style="font-weight: 800; color: var(--accent);">🛠️ Cambios clave en esta versión:</div>
+      <div>• <b>Diseño Despejado en Mapa y Stats:</b> Se eliminaron las tarjetas redundantes (Meta y Pedidos/Kilómetros) de estas secciones para optimizar el espacio visual de la pantalla.</div>
+      <div>• <b>Meta Diaria Reubicada:</b> Ahora se muestra de forma prioritaria al inicio de la pestaña CALC.</div>
+      <div>• <b>Botón de Restablecimiento Completo:</b> Nueva herramienta de limpieza unificada para volver la consola diaria a cero de manera inmediata.</div>
+      <div>• <b>Colores de Ruta Inteligentes:</b> Trazo naranja para el retiro hacia el restaurante y colores diferenciales para las entregas sucesivas de pedidos múltiples.</div>
+      <div>• <b>Lógica de Retiros Agrupados:</b> Corrección en la fórmula; el pago de recolección se cobra una sola vez en pedidos agrupados, sumando de forma consecutiva la distancia a cada cliente.</div>
+    </div>
+    
+    <button class="main-action-btn" onclick="closeVersionModal()" style="margin-top: 0; min-height: 48px;">¡ENTENDIDO, A TRABAJAR!</button>
   </div>
 </div>
 
