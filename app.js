@@ -1,5 +1,5 @@
 // ==========================================
-// BUSINESS & STATE ENGINE - RIDER CALC PRO v3.6.1 (CONSOLIDADO)
+// BUSINESS & STATE ENGINE - RIDER CALC PRO v3.6.1 (CONSOLIDADO & HARDENED)
 // ==========================================
 const COMPONENTE_FIJO = 2.50; 
 const PAGO_RETIRO = 1.00;     
@@ -19,7 +19,6 @@ const gtHotspots = [
   { name: "CC Pradera (Zona 10)", lat: 14.5921, lng: -90.5015 }
 ];
 
-// Base de datos de consejos útiles para Riders en Guatemala
 const riderTips = [
   "¡Buen viaje! Revisa siempre la dirección en el mapa antes de arrancar.",
   "Guarda tu distancia. En asfalto mojado frena suavemente.",
@@ -37,10 +36,8 @@ const riderTips = [
   "Si el cliente se tarda en salir, respira hondo. Paciencia trae recompensa."
 ];
 
-// Colores para el trazado diferencial de los mapas (Foto 2)
 const deliveryColors = ['#00ff66', '#bf5fff', '#ffaa00', '#ff2d55'];
 
-// Almacenamiento local del Rider
 let db = {
   orders: [],
   restaurants: ["McDonald's", "Burger King", "Pollo Campero", "Pizza Hut", "Taco Bell", "Subway", "Little Caesars", "Wendy's"],
@@ -55,17 +52,15 @@ let activeMultipliers = [1.00, 1.10, 1.20, 1.25, 1.30, 1.50, 2.00];
 let isRainActive = false; 
 let isDobleOrder = false;
 
-// Seguimiento mejorado del GPS (Ruta segmentada por fases)
 let trackState = {
   active: false, phase: null,
   times: { aceptar: null, llegue: null, recogi: null, entregu: null, aceptarRaw: null, llegueRaw: null, recogiRaw: null, entreguRaw: null },
   distances: { alRestaurante: 0, alCliente: 0 }, 
-  routeRetiro: [],      // Coordenadas Yo -> Restaurante
-  routeEntrega: [],     // Coordenadas Restaurante -> Cliente(s) (Arreglo multidimensional)
+  routeRetiro: [],      
+  routeEntrega: [],     
   currentDistance: 0, currentDeliveryIndex: 0
 };
 
-// Control de persistencia GPS, WakeLock y Antirreproducción suspendida
 let wakeLockInstance = null; 
 let watchPositionId = null; 
 let gpsSmoothBuffer = []; 
@@ -76,7 +71,6 @@ let audioContextInstance = null;
 let bgGpsIntervalId = null;
 let glovesModeActive = false;
 
-// Instancias de Mapas Interactivos Leaflet
 let redHelmetIcon = null;
 let leafMapInstance = null; 
 let mapPolylineRetiro = null; 
@@ -93,10 +87,9 @@ let globalUserMarkerMoto = null;
 const historyMapInstances = {}; 
 let deliverySegments = [];
 
-// Inicialización de la aplicación
 document.addEventListener("DOMContentLoaded", () => {
   hydrateDataStorage(); 
-  checkMidnightReset(); // Verificación automática de cambio de día a las 00:00 (Foto 1)
+  checkMidnightReset(); 
   initializeCoreEvents(); 
   renderPresetsChips(); 
   initDateDisplay(); 
@@ -129,32 +122,33 @@ function commitDataStorage() {
   try { 
     localStorage.setItem('rider_db', JSON.stringify(db)); 
     syncDashboardValues(); 
-    renderTimelineRoutes(); // Actualiza el timeline del mapa en tiempo real
+    renderTimelineRoutes(); 
   } catch(e) { console.error('Failed writing states', e); }
 }
 
-// Control automático de Cierre de Día a las 00:00 (Foto 1)
 function checkMidnightReset() {
   const todayStr = new Date().toLocaleDateString('es-GT', { day: 'numeric', month: 'numeric', year: 'numeric' });
   const lastResetDate = localStorage.getItem('last_midnight_reset_date');
   
   if (lastResetDate && lastResetDate !== todayStr) {
+    if (trackState.active) {
+      return; 
+    }
     if (db.orders.length > 0) {
-      // Guardar respaldo permanente en la memoria interna (histórico acumulado)
       let globalArchive = JSON.parse(localStorage.getItem('rider_global_archive') || '[]');
       globalArchive.push(...db.orders);
       localStorage.setItem('rider_global_archive', JSON.stringify(globalArchive));
       
-      // Limpiar datos del día anterior de forma automática
       db.orders = [];
       commitDataStorage();
       triggerAlert('🌅 Nuevo Día Iniciado', 'Los repartos del día anterior se han archivado automáticamente.');
     }
+    localStorage.setItem('last_midnight_reset_date', todayStr);
+  } else if (!lastResetDate) {
+    localStorage.setItem('last_midnight_reset_date', todayStr);
   }
-  localStorage.setItem('last_midnight_reset_date', todayStr);
 }
 
-// Botón de Cierre de Día manual en la pestaña de historial (Foto 1)
 function manualMidnightReset() {
   if (confirm('¿Seguro que deseas realizar el Cierre de Día? Los datos de hoy se guardarán en tu archivo histórico general y la consola diaria comenzará en cero.')) {
     let globalArchive = JSON.parse(localStorage.getItem('rider_global_archive') || '[]');
@@ -169,14 +163,6 @@ function manualMidnightReset() {
 }
 
 function initializeCoreEvents() {
-  document.querySelectorAll('.nav-item').forEach(el => {
-    el.addEventListener('click', (e) => {
-      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-      e.currentTarget.classList.add('active');
-    });
-  });
-  
-  // Carga correcta y persistente de valores de configuración (Foto 6)
   document.getElementById('cfgRiderName').value = db.config.riderName || '';
   document.getElementById('cfgDailyGoal').value = db.config.dailyGoal || 500;
   document.getElementById('cfgGasPrice').value = db.config.gasPrice || 32;
@@ -190,8 +176,13 @@ function initializeCoreEvents() {
   }
   renderScheduleSlots();
   updateScheduledMultiplierOnCalcTab();
-  
   syncDashboardValues();
+
+  setInterval(() => {
+    if (db.config.autoMultiplierEnabled) {
+      updateScheduledMultiplierOnCalcTab();
+    }
+  }, 60000);
 }
 
 function initDateDisplay() {
@@ -212,7 +203,27 @@ function initAutoTheme() {
 function toggleTheme() {
   document.body.classList.toggle('light-mode');
   document.getElementById('themeToggleBtn').textContent = document.body.classList.contains('light-mode') ? '🌙' : '☀️';
-  drawAnalyticsChart();
+  if (currentTab === 'stats') {
+    drawAnalyticsChart();
+  }
+}
+
+function initKeepAliveAudio() {
+  if (audioContextInstance) return;
+  try {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextClass) {
+      audioContextInstance = new AudioContextClass();
+      const osc = audioContextInstance.createOscillator();
+      const gain = audioContextInstance.createGain();
+      gain.gain.value = 0.0001; 
+      osc.connect(gain);
+      gain.connect(audioContextInstance.destination);
+      osc.start();
+    }
+  } catch(e) {
+    console.warn("AudioContext keepalive not allowed or supported by OS configuration.", e);
+  }
 }
 
 function adjustMult(amount) {
@@ -240,7 +251,7 @@ function renderPresetsChips() {
   container.innerHTML = '';
   activeMultipliers.forEach(m => {
     const chip = document.createElement('div'); 
-    chip.className = `preset-chip ${m === currentVal ? 'active' : ''}`;
+    chip.className = `preset-chip ${Math.abs(m - currentVal) < 0.01 ? 'active' : ''}`;
     chip.textContent = `${m.toFixed(2)}x`; 
     chip.onclick = () => selectMultPreset(m); 
     container.appendChild(chip);
@@ -257,7 +268,7 @@ function stepSegment(targetId, step) {
 }
 
 function addDeliverySegment(isInitial = false) {
-  if (deliverySegments.length >= 4) return; // Máximo 4 entregas del mismo restaurante
+  if (deliverySegments.length >= 4) return; 
   const id = Date.now() + Math.random(); 
   const index = deliverySegments.length + 1;
   const container = document.getElementById('deliveryPointsList'); 
@@ -267,7 +278,7 @@ function addDeliverySegment(isInitial = false) {
   div.innerHTML = `
     <div class="segment-header"><span class="segment-title">🏠 Entrega ${index}</span><div class="km-input-wrap"><input type="number" class="km-input" id="kmE_${id}" placeholder="0.000" step="0.1" oninput="calculateRealtimeEarnings()"><span class="km-unit">km</span></div></div>
     <div class="segment-stepper"><button class="step-btn" onclick="stepSegment('kmE_${id}', -0.1)">− 0.1</button><button class="step-btn" onclick="stepSegment('kmE_${id}', 0.1)">+ 0.1</button></div>
-    ${!isInitial ? `<button class="h-btn" onclick="removeDeliverySegment('${id}')" style="margin-top:12px; border-color: var(--accent); color: var(--accent); background:none; padding:6px;">✕ Eliminar Entrega</button>` : ''}
+    ${!isInitial ? `<button class="h-btn" onclick="removeDeliverySegment('${id}')" style="margin-top:12px; border-color: var(--accent); color: var(--accent); background:none; padding:6px; min-height:36px;">✕ Eliminar Entrega</button>` : ''}
   `;
   container.appendChild(div); 
   deliverySegments.push({ id, elementId: `kmE_${id}` });
@@ -327,6 +338,15 @@ function resetClockTracking() {
   
   const dBtn = document.getElementById('tDelivered'); if (dBtn) { const s = dBtn.querySelector('.title'); if (s) s.textContent = "Entregué"; }
   const mdBtn = document.getElementById('m_tDelivered'); if (mdBtn) { const s = mdBtn.querySelector('.title'); if (s) s.textContent = "Entregué"; }
+  
+  if (mapPolylineRetiro) mapPolylineRetiro.setLatLngs([]);
+  mapPolylinesEntrega.forEach(p => { if (p) p.setLatLngs([]); });
+  if (mapStartMarker) { mapStartMarker.remove(); mapStartMarker = null; }
+  
+  if (motoPolylineRetiro) motoPolylineRetiro.setLatLngs([]);
+  motoPolylinesEntrega.forEach(p => { if (p) p.setLatLngs([]); });
+  if (motoStartMarker) { motoStartMarker.remove(); motoStartMarker = null; }
+  
   updateMotoBreakdownUI();
   updateScheduledMultiplierOnCalcTab();
 }
@@ -387,6 +407,7 @@ function trackStep(phase) {
   if (glovesModeActive) {
     if (!confirm(`¿Confirmar acción: ${phase.toUpperCase()}?`)) return;
   }
+  initKeepAliveAudio();
   const now = new Date(); 
   const timeStr = now.toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit' }); 
   const rawNow = now.getTime();
@@ -473,7 +494,12 @@ function trackStep(phase) {
       
       stopTripTracking(); 
       triggerAlert('Ruta Completada', 'Todas las entregas registradas.');
-      setTimeout(() => { saveTripToHistory(); if (document.getElementById('motoModeOverlay').classList.contains('active')) { exitMotoMode(); } }, 1200);
+      setTimeout(() => { 
+        saveTripToHistory(); 
+        if (document.getElementById('motoModeOverlay').classList.contains('active')) { 
+          exitMotoMode(); 
+        } 
+      }, 1200);
     }
   }
   updateMotoBreakdownUI();
@@ -516,24 +542,15 @@ function startLiveLocationKeepalive() {
     navigator.geolocation.clearWatch(watchPositionId);
   }
   
-  const geoOpts = { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 };
+  const geoOpts = { enableHighAccuracy: true, maximumAge: 1000, timeout: 15000 };
   watchPositionId = navigator.geolocation.watchPosition(processLiveGpsPositionUpdate, handleGpsTrackingError, geoOpts);
   
-  try {
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (AudioContextClass) {
-      audioContextInstance = new AudioContextClass(); 
-      const osc = audioContextInstance.createOscillator(); 
-      const gain = audioContextInstance.createGain();
-      gain.gain.value = 0.0001; 
-      osc.connect(gain); 
-      gain.connect(audioContextInstance.destination); 
-      osc.start();
-    }
-  } catch(e) {}
-  
   if (bgGpsIntervalId) clearInterval(bgGpsIntervalId);
-  bgGpsIntervalId = setInterval(() => { navigator.geolocation.getCurrentPosition(processLiveGpsPositionUpdate, () => {}, { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }); }, 4000);
+  bgGpsIntervalId = setInterval(() => { 
+    if (trackState.active) {
+      navigator.geolocation.getCurrentPosition(processLiveGpsPositionUpdate, () => {}, { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }); 
+    }
+  }, 15000);
   
   document.getElementById('gpsStateText').textContent = '🛰️ GPS Buscando...'; 
   document.getElementById('gpsStateText').style.color = 'var(--accent2)';
@@ -560,8 +577,15 @@ function updateHotspotsUi(lat, lng) {
   const calculated = gtHotspots.map(h => { const dist = calculateHaversineDistance(lat, lng, h.lat, h.lng); return { ...h, dist }; });
   calculated.sort((a, b) => a.dist - b.dist); container.innerHTML = '';
   calculated.forEach(h => {
-    const item = document.createElement('div'); item.style.display = 'flex'; item.style.justifyContent = 'space-between'; item.style.alignItems = 'center'; item.style.padding = '10px 12px'; item.style.background = 'var(--card2)'; item.style.borderRadius = '12px'; item.style.border = '1.5px solid var(--border)';
-    item.innerHTML = `<div><div style="font-size: 13px; font-weight: 700;">${h.name}</div><div style="font-size: 11px; color: var(--muted);">Distancia: <span style="color: var(--blue); font-weight: 700;">${h.dist.toFixed(2)} km</span></div></div><div style="display: flex; gap: 6px;"><button class="step-btn" onclick="navigateHotspot(${h.lat}, ${h.lng}, '${h.name}')" style="font-size: 11px; padding: 6px 10px; background: var(--card); border-color: var(--accent);">Navegar</button></div>`;
+    const item = document.createElement('div'); 
+    item.style.display = 'flex'; 
+    item.style.justifyContent = 'space-between'; 
+    item.style.alignItems = 'center'; 
+    item.style.padding = '10px 12px'; 
+    item.style.background = 'var(--card2)'; 
+    item.style.borderRadius = '12px'; 
+    item.style.border = '1.5px solid var(--border)';
+    item.innerHTML = `<div><div style="font-size: 13px; font-weight: 700;">${h.name}</div><div style="font-size: 11px; color: var(--muted);">Distancia: <span style="color: var(--blue); font-weight: 700;">${h.dist.toFixed(2)} km</span></div></div><div style="display: flex; gap: 6px;"><button class="step-btn" onclick="navigateHotspot(${h.lat}, ${h.lng}, '${h.name}')" style="font-size: 11px; padding: 6px 10px; background: var(--card); border-color: var(--accent); min-height: 36px;">Navegar</button></div>`;
     container.appendChild(item);
   });
 }
@@ -577,7 +601,7 @@ function navigateHotspot(lat, lng, name) {
 
 function processLiveGpsPositionUpdate(pos) {
   const lat = pos.coords.latitude; const lng = pos.coords.longitude; const speed = pos.coords.speed || 0.0; const accuracy = pos.coords.accuracy;
-  if (accuracy > 25) return; gpsSmoothBuffer.push([lat, lng]); if (gpsSmoothBuffer.length > 3) gpsSmoothBuffer.shift();
+  if (accuracy > 30) return; gpsSmoothBuffer.push([lat, lng]); if (gpsSmoothBuffer.length > 3) gpsSmoothBuffer.shift();
   const avgLat = gpsSmoothBuffer.reduce((acc, curr) => acc + curr[0], 0) / gpsSmoothBuffer.length;
   const avgLng = gpsSmoothBuffer.reduce((acc, curr) => acc + curr[1], 0) / gpsSmoothBuffer.length;
   latestCoords = [avgLat, avgLng]; updateHelmetMarkerOnMap(avgLat, avgLng); updateHotspotsUi(avgLat, avgLng); checkInactivity(avgLat, avgLng);
@@ -649,6 +673,8 @@ function initLeafletAssets() {
 
 function initLeafletMapInstance() {
   if (typeof L === 'undefined' || leafMapInstance) return;
+  const mapContainer = document.getElementById('liveMapDiv');
+  if (!mapContainer) return;
   try {
     leafMapInstance = L.map('liveMapDiv', { zoomControl: false, attributionControl: false }).setView(latestCoords || [14.6349, -90.5069], 14);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(leafMapInstance);
@@ -657,11 +683,16 @@ function initLeafletMapInstance() {
     mapPolylinesEntrega = [];
     
     if (latestCoords) updateHelmetMarkerOnMap(latestCoords[0], latestCoords[1]);
-  } catch(e) { console.error('Map failed', e); }
+  } catch(e) { console.error('Map initialization failed', e); }
 }
 
 function initMotoMapInstance() {
-  if (typeof L === 'undefined') return; if (motoMapInstance) { setTimeout(() => { motoMapInstance.invalidateSize(); }, 300); return; }
+  if (typeof L === 'undefined' || motoMapInstance) { 
+    if (motoMapInstance) setTimeout(() => { motoMapInstance.invalidateSize(); }, 300);
+    return; 
+  }
+  const mapContainer = document.getElementById('motoMapDiv');
+  if (!mapContainer) return;
   try {
     motoMapInstance = L.map('motoMapDiv', { zoomControl: false, attributionControl: false }).setView(latestCoords || [14.6349, -90.5069], 14);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(motoMapInstance);
@@ -670,7 +701,7 @@ function initMotoMapInstance() {
     motoPolylinesEntrega = [];
     
     if (latestCoords) updateHelmetMarkerOnMap(latestCoords[0], latestCoords[1]);
-  } catch(e) { console.error('Moto map failed', e); }
+  } catch(e) { console.error('Moto map initialization failed', e); }
 }
 
 function toggleMotoMapVisibility() {
@@ -755,13 +786,11 @@ async function fetchWeather() {
   });
 }
 
-// Pintado Premium de Estadísticas Gráficas Reales (Foto 3 y 4)
 function drawAnalyticsChart() {
   const canvas = document.getElementById('chartGains'); if (!canvas) return; const ctx = canvas.getContext('2d');
   const width = canvas.offsetWidth || 300; const height = canvas.offsetHeight || 160; canvas.width = width; canvas.height = height;
-  const isLight = document.body.classList.contains('light-mode'); const gridColor = isLight ? '#e5e5ea' : '#26262b'; const labelColor = isLight ? '#6e6e73' : '#8e8e93';
+  const isLight = document.body.classList.contains('light-mode'); const gridColor = isLight ? '#e5e5ea' : '#26262b'; const labelColor = isLight ? '#4a4a4f' : '#8e8e93';
   
-  // Nombres de los últimos 7 días terminando en el día de hoy
   const daysArray = ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'];
   const todayIndex = new Date().getDay();
   let daysLabels = [];
@@ -770,7 +799,6 @@ function drawAnalyticsChart() {
     daysLabels.push(daysArray[idx]);
   }
 
-  // Distribución de cálculos financieros reales basados en la base local
   let realBrutoGains = [0, 0, 0, 0, 0, 0, 0];
   let realNetoGains = [0, 0, 0, 0, 0, 0, 0];
   
@@ -802,7 +830,6 @@ function drawAnalyticsChart() {
 
   ctx.clearRect(0,0,width,height); ctx.strokeStyle = gridColor; ctx.lineWidth = 1.5; const spacing = width / 7;
   
-  // Dibujar cuadrícula de fondo premium
   ctx.beginPath();
   for(let j = 1; j <= 3; j++) {
     const yGrid = ((height - 30) / 4) * j;
@@ -816,14 +843,12 @@ function drawAnalyticsChart() {
     const hBruto = (realBrutoGains[idx] / maxVal) * (height - 40); 
     const hNeto = (realNetoGains[idx] / maxVal) * (height - 40);
     
-    // Barra de ganancias Brutas (Rojo Coral con gradiente)
     const bGrad = ctx.createLinearGradient(x - 8, height - 20 - hBruto, x - 2, height - 20);
     bGrad.addColorStop(0, '#ff2d55');
     bGrad.addColorStop(1, '#ff6b35');
     ctx.fillStyle = bGrad;
     drawRoundedRect(ctx, x - 8, height - 20 - hBruto, 6, hBruto, 3);
     
-    // Barra de ganancias Netas (Verde Eléctrico con gradiente)
     const nGrad = ctx.createLinearGradient(x, height - 20 - hNeto, x + 6, height - 20);
     nGrad.addColorStop(0, '#00ff66');
     nGrad.addColorStop(1, '#008f39');
@@ -849,11 +874,27 @@ function drawRoundedRect(ctx, x, y, width, height, radius) {
 }
 
 function switchMainTab(tab) {
-  currentTab = tab; document.querySelectorAll('.tab-view').forEach(view => view.classList.remove('active')); document.getElementById(`view-${tab}`).classList.add('active');
+  currentTab = tab; 
+  document.querySelectorAll('.tab-view').forEach(view => {
+    view.classList.remove('active');
+  });
+  const currentView = document.getElementById(`view-${tab}`);
+  if (currentView) currentView.classList.add('active');
+
+  document.querySelectorAll('.nav-bar .nav-item').forEach(item => {
+    item.classList.remove('active');
+  });
+  const currentNav = document.getElementById(`nav-${tab}`);
+  if (currentNav) currentNav.classList.add('active');
+
   if (tab === 'mapa') {
     initLeafletMapInstance();
     setTimeout(() => { if (leafMapInstance) { leafMapInstance.invalidateSize(); if (latestCoords) { leafMapInstance.setView(latestCoords, 14); updateHelmetMarkerOnMap(latestCoords[0], latestCoords[1]); } } }, 300);
-  } else if (tab === 'stats') { drawAnalyticsChart(); } else if (tab === 'historial') { renderHistoryTrips(); }
+  } else if (tab === 'stats') { 
+    drawAnalyticsChart(); 
+  } else if (tab === 'historial') { 
+    renderHistoryTrips(); 
+  }
 }
 
 function saveConfigData() {
@@ -947,6 +988,22 @@ function updateSystemStatsMetrics(bruto, km, neto) {
   
   const depositNet = bruto - ivaValue - 18.50;
   document.getElementById('taxNetTotal').textContent = `Q ${Math.max(0, depositNet).toFixed(2)}`;
+
+  // Predicción estimativa hacia la meta
+  const dailyGoal = parseFloat(db.config.dailyGoal) || 500;
+  const remainingToGoal = Math.max(0, dailyGoal - bruto);
+  let predictionStr = "Meta alcanzada";
+  if (remainingToGoal > 0) {
+    if (bruto > 0 && hoursCount > 0) {
+      const avgEarnPerHour = bruto / hoursCount;
+      const hoursNeeded = remainingToGoal / avgEarnPerHour;
+      predictionStr = `${hoursNeeded.toFixed(1)} h estimadas (a Q ${avgEarnPerHour.toFixed(1)}/h)`;
+    } else {
+      predictionStr = "Inicia repartos para calcular";
+    }
+  }
+  const predEl = document.getElementById('statsPredictionGoal');
+  if (predEl) predEl.textContent = predictionStr;
 }
 
 function calculateComplexAdvancedStats() {
@@ -981,14 +1038,13 @@ function calculateComplexAdvancedStats() {
       const tripMs = o.timings.entreguRaw - o.timings.aceptarRaw; const tripHours = tripMs / 3.6e6;
       if (tripHours > 0.01) {
         const rate = o.earnings / tripHours;
-        if (rate > bestHourlyRate) { bestHourlyRate = rate; bestHourlyRateStr = `Q${rate.toFixed(1)}/h (${o.restaurant} · Q${o.earnings.toFixed(0)} en ${Math.round(tripMs/60000)}m)`; }
+        if (rate > bestHourlyRate) { bestHourlyRate = rate; bestHourlyRateStr = `Q ${rate.toFixed(1)}/h (${o.restaurant})`; }
       }
     }
   });
   document.getElementById('statsBestHourlyRate').textContent = bestHourlyRate !== -1 ? bestHourlyRateStr : '--';
 }
 
-// Corrección Matemática del Cálculo Multi-Pedido (Foto 1)
 function calculateOrderPriceWithParams(kmR, kmE, nEnt, mult, rain, rainVal, prop) {
   let baseMult = mult; if (rain) baseMult += rainVal;
   
@@ -1057,6 +1113,7 @@ function searchRestaurantMoto() {
 function syncRestaurantInput(origin) { if (origin === 'moto') { const val = document.getElementById('restaurantInputMoto').value; document.getElementById('restaurantInput').value = val; searchRestaurantMoto(); } else { const val = document.getElementById('restaurantInput').value; document.getElementById('restaurantInputMoto').value = val; searchRestaurant(); } }
 
 function enterMotoMode() {
+  initKeepAliveAudio();
   const semScreen = document.getElementById('semaforoScreen'); const semText = document.getElementById('semaforoStatusText'); const overlay = document.getElementById('motoModeOverlay');
   semScreen.classList.add('active'); const lights = [document.getElementById('light1'), document.getElementById('light2'), document.getElementById('light3')];
   setTimeout(() => { lights[0].classList.add('red'); semText.textContent = 'ROJO... ¡PREPARA MOTOR!'; triggerHapticFeedback([100, 100]); }, 1000);
@@ -1064,10 +1121,6 @@ function enterMotoMode() {
   setTimeout(() => { lights[2].classList.add('green'); semText.textContent = '¡VERDE! ¡A CONDUCIR RIDER!'; triggerHapticFeedback([400, 100, 100, 100]); }, 3400);
   setTimeout(() => { semScreen.classList.remove('active'); lights.forEach(l => l.className = 'light-bulb'); overlay.classList.add('active'); updateMotoBreakdownUI(); initMotoMapInstance(); }, 4500);
 }
-
-// ========================================================
-// NUEVAS FUNCIONES COMPLETADAS Y CONSOLIDADAS (DESDE AQUÍ)
-// ========================================================
 
 function exitMotoMode() { 
   document.getElementById('motoModeOverlay').classList.remove('active');
@@ -1108,7 +1161,7 @@ function calculateRealtimeEarnings() {
 }
 
 function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371; // Radio de la Tierra en kilómetros
+  const R = 6371; 
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
   const a = 
@@ -1221,22 +1274,31 @@ function renderScheduleSlots() {
 }
 
 function updateScheduledMultiplierOnCalcTab() {
-  if (!db.config.autoMultiplierEnabled) return;
+  const input = document.getElementById('multValue');
+  if (!input) return;
+
+  if (!db.config.autoMultiplierEnabled) {
+    input.disabled = false;
+    return;
+  }
   
   const now = new Date();
   const currentHourStr = now.toTimeString().substring(0, 5); 
   let targetMultiplier = 1.00;
+  let scheduleMatched = false;
   
   db.config.multiplierSchedule.forEach(slot => {
     if (currentHourStr >= slot.startHour && currentHourStr <= slot.endHour) {
       targetMultiplier = slot.multiplier;
+      scheduleMatched = true;
     }
   });
   
-  const input = document.getElementById('multValue');
-  if (input) {
+  if (scheduleMatched) {
     input.value = targetMultiplier.toFixed(2);
     input.disabled = true; 
+  } else {
+    input.disabled = false;
   }
   renderPresetsChips();
   calculateRealtimeEarnings();
@@ -1282,7 +1344,7 @@ function renderHistoryTrips() {
       <div class="hist-card-actions">
         <button class="h-btn" onclick="openOrderEditSheet(${order.id})">✏️ Editar</button>
         <button class="h-btn" onclick="toggleHistoryMap(${order.id})" id="mapBtn-${order.id}">🗺️ Ver Ruta</button>
-        <button class="h-btn" onclick="deleteSingleHistoryItem(${order.id})" style="border-color: var(--accent); color: var(--accent); background: none;">🗑️</button>
+        <button class="h-btn" onclick="deleteSingleHistoryItem(${order.id})" style="border-color: var(--accent); color: var(--accent); background: none; max-width: 44px;">🗑️</button>
       </div>
       <div class="hist-map-wrap" id="mapWrap-${order.id}">
         <div class="hist-map-div" id="mapDiv-${order.id}"></div>
