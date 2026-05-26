@@ -1606,7 +1606,7 @@ function exportHistoryToCSV() {
   db.orders.forEach(o => {
     const dateStr = new Date(o.timestamp).toLocaleDateString('es-GT');
     const regime = db.config.satRegime || 'pequeno';
-    const tax = o.earnings * (regime === 'pequeno' * 0.05 : regime === 'general' ? 0.12 : 0.0);
+    const tax = o.earnings * (regime === 'pequeno' ? 0.05 : regime === 'general' ? 0.12 : 0.0);
     const platformFee = 18.50 / db.orders.length; 
     const net = o.earnings - tax - platformFee;
     
