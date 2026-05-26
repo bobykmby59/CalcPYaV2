@@ -3,27 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  
+  <!-- Apple & PWA Standalone Meta Optimization -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Rider Calc Pro">
   <meta name="theme-color" content="#000000">
   <title>Rider Calc Pro · PedidosYa GT</title>
   
-  <!-- Importación de Fuentes de Google (Plus Jakarta Sans y Bebas Neue) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
 
-  <!-- Estilos de Mapas Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-  
-  <!-- Archivo de estilos local -->
   <link rel="stylesheet" href="style.css"/>
   
-  <!-- Librería de Mapas Leaflet -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  
-  <!-- Archivo de lógica local -->
   <script src="app.js" defer></script>
 </head>
 <body>
@@ -31,7 +26,7 @@
 <header>
   <div class="header-top">
     <div class="logo">
-      <span>🛵</span> CALC PYA PRO <span style="font-size: 11px; background: rgba(var(--accent-rgb),0.15); padding: 2px 8px; border-radius: 10px; color: var(--accent);" id="appVersionBranding">v3.6 by KMBY</span>
+      <span>🛵</span> CALC PYA PRO <span style="font-size: 11px; background: rgba(255, 45, 85, 0.15); padding: 2px 8px; border-radius: 10px; color: var(--accent);" id="appVersionBranding">v3.6.1 by KMBY</span>
     </div>
     <div class="header-actions">
       <div class="weather-chip" id="weatherChip" onclick="fetchWeather()">
@@ -55,24 +50,20 @@
   </div>
 </header>
 
-<!-- PESTAÑA CALCULADORA (CONTIENE EL CONTROL DIARIO COMPLETO) -->
+<!-- CALCULADORA DE VIAJE ACTIVO -->
 <main class="tab-view active" id="view-calc">
-  
-  <!-- Cuadrícula de Estadísticas del día -->
   <section class="dash-card">
     <div class="stat-item"><span class="val" id="statOrders">0</span><span class="lbl">Pedidos</span></div>
     <div class="stat-item"><span class="val blue" id="statKm">0.0</span><span class="lbl">KM Totales</span></div>
     <div class="stat-item"><span class="val accent" id="statDeliveries">0</span><span class="lbl">Entregas</span></div>
-    <div class="stat-item"><span class="val" id="statNeta">Q0.00</span><span class="lbl">Ganancia Neta</span></div>
+    <div class="stat-item"><span class="val" id="statNeta">Q 0.00</span><span class="lbl">Ganancia Neta</span></div>
   </section>
 
-  <!-- Tarjeta de Ganancia Estimada del Pedido Activo -->
   <div class="live-calc-card">
     <div class="live-calc-title">Ganancia Estimada Pedido</div>
     <div class="live-calc-amount" id="liveCalcAmount">Q 0.00</div>
   </div>
 
-  <!-- Seguimiento en Ruta por GPS -->
   <div class="tracking-segment">
     <div class="input-label" style="margin-bottom: 12px;">Seguimiento en Ruta GPS</div>
     <div class="track-btns">
@@ -82,7 +73,7 @@
       <button class="track-btn" id="tDelivered" onclick="trackStep('entregu')"><span class="icon">🏠</span><span class="title">Entregué</span><span class="time" id="trackTimeDelivered">--:--</span></button>
     </div>
     
-    <button onclick="triggerEmergencySOS()" style="background:#ff2d55; border:1px solid #ff2d55; border-radius:12px; color:white; width:100%; padding:10px; margin-top:10px; font-weight:800; font-size:12px; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">
+    <button onclick="triggerEmergencySOS()" style="background:#ff2d55; border:1px solid #ff2d55; border-radius:12px; color:white; width:100%; padding:14px; margin-top:10px; font-weight:800; font-size:12px; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">
       <span>🚨</span> ENVIAR ALERTA DE AUXILIO SOS GPS
     </button>
     
@@ -94,7 +85,6 @@
 
   <button class="h-btn" onclick="enterMotoMode()" style="background: var(--card); border: 1.5px solid var(--accent); padding: 16px; margin-bottom: 16px; border-radius: 18px; width: 100%;">🏍️ ACTIVAR MODO MOTO</button>
 
-  <!-- Control de Modo Guantes y Lluvia -->
   <div class="control-box" onclick="toggleGlovesMode()" style="cursor: pointer; margin-bottom:16px;">
     <div style="display: flex; align-items: center; gap: 12px;">
       <span style="font-size: 24px;">🧤</span>
@@ -106,7 +96,6 @@
     <span style="font-size: 16px; font-weight: 800; color: var(--accent);" id="glovesBadge">OFF</span>
   </div>
 
-  <!-- Sección de Multiplicadores y Parámetros de Cálculo -->
   <div class="input-group">
     <div class="input-label">Multiplicador</div>
     <div class="control-box">
@@ -182,11 +171,10 @@
     </div>
   </div>
 
-  <!-- Meta Diaria (Reubicada al final del flujo de cálculo) -->
   <section class="thermometer-goal-card" id="goalProgressCard" style="display: none; margin: 16px 0;">
     <div class="thermometer-header">
       <div class="thermometer-title">🎯 Meta del Día</div>
-      <div class="thermometer-meta-text" id="goalCardSub">Q0.00 de Q500</div>
+      <div class="thermometer-meta-text" id="goalCardSub">Q 0.00 de Q 500</div>
     </div>
     <div class="thermometer-gauge-wrapper">
       <div class="thermometer-bulb"></div>
@@ -201,19 +189,19 @@
   </div>
 </main>
 
-<!-- PESTAÑA HISTORIAL -->
+<!-- HISTORIAL DE TRABAJO -->
 <main class="tab-view" id="view-historial">
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
     <h3 style="font-size: 16px; font-weight: 800;">Historial de Ruta</h3>
     <div style="display: flex; gap: 8px;">
-      <button class="h-btn" onclick="manualMidnightReset()" style="color: var(--yellow); border-color: var(--yellow); background: none; font-weight: 700;">🌅 Cierre de Día</button>
-      <button class="h-btn" onclick="confirmClearHistory()" style="color: var(--accent); border-color: var(--accent); background: none; font-weight: 700;">Borrar Todo</button>
+      <button class="h-btn" onclick="manualMidnightReset()" style="color: var(--yellow); border-color: var(--yellow); background: none; font-weight: 700; min-height: 38px;">🌅 Cierre de Día</button>
+      <button class="h-btn" onclick="confirmClearHistory()" style="color: var(--accent); border-color: var(--accent); background: none; font-weight: 700; min-height: 38px;">Borrar Todo</button>
     </div>
   </div>
   <div id="historyEntries"></div>
 </main>
 
-<!-- PESTAÑA ESTADÍSTICAS -->
+<!-- ESTADÍSTICAS Y RENDIMIENTO -->
 <main class="tab-view" id="view-stats">
   <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 16px;">Análisis de Desempeño</h3>
   <div class="chart-container">
@@ -226,9 +214,10 @@
   <div class="cfg-card">
     <div class="cfg-card-title">🚀 Indicadores de Eficiencia</div>
     <div style="display: flex; flex-direction: column; gap: 12px;">
-      <div style="display: flex; justify-content: space-between; font-size: 13px;"><span style="color: var(--muted);">Q / Hora Promedio</span><span style="font-weight: 700;" id="effQHour">Q0.00</span></div>
-      <div style="display: flex; justify-content: space-between; font-size: 13px;"><span style="color: var(--muted);">Q / KM Recorrido</span><span style="font-weight: 700;" id="effQKm">Q0.00</span></div>
-      <div style="display: flex; justify-content: space-between; font-size: 13px;"><span style="color: var(--muted);">Rendimiento Neto Financiero (Q/KM)</span><span style="font-weight: 700; color: var(--green);" id="effNetQKm">Q0.00</span></div>
+      <div style="display: flex; justify-content: space-between; font-size: 13px;"><span style="color: var(--muted);">Q / Hora Promedio</span><span style="font-weight: 700;" id="effQHour">Q 0.00</span></div>
+      <div style="display: flex; justify-content: space-between; font-size: 13px;"><span style="color: var(--muted);">Q / KM Recorrido</span><span style="font-weight: 700;" id="effQKm">Q 0.00</span></div>
+      <div style="display: flex; justify-content: space-between; font-size: 13px;"><span style="color: var(--muted);">Rendimiento Neto Financiero (Q/KM)</span><span style="font-weight: 700; color: var(--green);" id="effNetQKm">Q 0.00</span></div>
+      <div style="display: flex; justify-content: space-between; font-size: 13px;"><span style="color: var(--muted);">Tiempo para Meta</span><span style="font-weight: 700; color: var(--green);" id="statsPredictionGoal">--</span></div>
       <div style="display: flex; justify-content: space-between; font-size: 13px;"><span style="color: var(--muted);">Tiempo Promedio Pedido</span><span style="font-weight: 700;" id="effAvgTime">-- mins</span></div>
       <div style="display: flex; justify-content: space-between; font-size: 13px;"><span style="color: var(--muted);">Gasolina Consumida Hoy</span><span style="font-weight: 700; color: var(--yellow);" id="statsGallonsBurned">0.00 Gal</span></div>
     </div>
@@ -245,21 +234,21 @@
   <div class="cfg-card" style="border-color: var(--yellow);">
     <div class="cfg-card-title" style="color: var(--yellow);" id="statsTaxCardTitle">🧾 Estimación SAT (Peq. Contribuyente)</div>
     <div style="display: flex; flex-direction: column; gap: 12px;">
-      <div style="display: flex; justify-content: space-between; font-size: 13px;"><span style="color: var(--muted);" id="statsIvaLabel">Impuesto IVA Facturado (5%)</span><span style="font-weight: 700; color: var(--accent);" id="taxIva">- Q0.00</span></div>
-      <div style="display: flex; justify-content: space-between; font-size: 13px;"><span style="color: var(--muted);">Uso de Plataforma (App)</span><span style="font-weight: 700; color: var(--accent);">- Q18.50</span></div>
-      <div style="display: flex; justify-content: space-between; font-size: 14px; border-top: 1px dashed var(--border); padding-top: 12px;"><span style="font-weight: 700;">Depósito Neto Estimado</span><span style="font-weight: 800; color: var(--green);" id="taxNetTotal">Q0.00</span></div>
+      <div style="display: flex; justify-content: space-between; font-size: 13px;"><span style="color: var(--muted);" id="statsIvaLabel">Impuesto IVA Facturado (5%)</span><span style="font-weight: 700; color: var(--accent);" id="taxIva">- Q 0.00</span></div>
+      <div style="display: flex; justify-content: space-between; font-size: 13px;"><span style="color: var(--muted);">Uso de Plataforma (App)</span><span style="font-weight: 700; color: var(--accent);">- Q 18.50</span></div>
+      <div style="display: flex; justify-content: space-between; font-size: 14px; border-top: 1px dashed var(--border); padding-top: 12px;"><span style="font-weight: 700;">Depósito Neto Estimado</span><span style="font-weight: 800; color: var(--green);" id="taxNetTotal">Q 0.00</span></div>
     </div>
   </div>
 </main>
 
-<!-- PESTAÑA MAPAS -->
+<!-- MAPAS INTERACTIVOS -->
 <main class="tab-view" id="view-mapa">
   <div class="map-view-container">
     <div id="liveMapDiv"></div>
     <div class="map-control-overlay">
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <div>
-          <div style="font-size: 11px; color: var(--muted); text-transform: uppercase;">Rastreador GPS</div>
+          <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; font-weight: 700;">Rastreador GPS</div>
           <div style="font-size: 15px; font-weight: 800;" id="mapOverlayState">En Línea</div>
         </div>
       </div>
@@ -271,7 +260,6 @@
     </button>
   </div>
 
-  <!-- Consolidado de Rutas (Timeline al estilo Google Maps) -->
   <div class="timeline-container">
     <div class="timeline-title">📍 Timeline de Rutas de Hoy</div>
     <div class="timeline-flow" id="timelineEntries">
@@ -288,17 +276,17 @@
   </div>
 </main>
 
-<!-- PESTAÑA AJUSTES -->
+<!-- AJUSTES Y PARÁMETROS -->
 <main class="tab-view" id="view-config">
   <div class="cfg-card">
     <div class="cfg-card-title">👤 Perfil del Rider</div>
     <div class="input-group">
       <div class="input-label">Nombre del Rider</div>
-      <input type="text" id="cfgRiderName" placeholder="Luis Fernando" style="background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: var(--text); width: 100%; font-size: 14px;">
+      <input type="text" id="cfgRiderName" placeholder="Luis Fernando" style="background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: var(--text); width: 100%; font-size: 14px; outline: none;">
     </div>
     <div class="input-group">
       <div class="input-label">Meta de Ganancias Diaria (Q)</div>
-      <input type="number" id="cfgDailyGoal" placeholder="Q500" style="background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: var(--text); width: 100%; font-size: 14px;">
+      <input type="number" id="cfgDailyGoal" placeholder="Q 500" style="background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: var(--text); width: 100%; font-size: 14px; outline: none;">
     </div>
     <div class="input-group">
       <div class="input-label">Régimen Fiscal SAT Guatemala</div>
@@ -312,7 +300,7 @@
   <div class="cfg-card">
     <div class="cfg-card-title">🕒 Programación de Multiplicadores del Día</div>
     <div class="toggle-row" style="margin-bottom:12px;">
-      <span style="font-size:13px; color:var(--muted);">Habilitar multiplicador automático</span>
+      <span style="font-size:13px; color:var(--muted); font-weight: 700;">Habilitar multiplicador automático</span>
       <label class="switch">
         <input type="checkbox" id="cfgAutoMultSwitch" onchange="toggleAutoMultiplier()">
         <span class="slider"></span>
@@ -320,32 +308,31 @@
     </div>
     <div id="cfgScheduleContainer" style="display:none; flex-direction:column; gap:10px;">
       <div id="scheduleSlotsList" style="display:flex; flex-direction:column; gap:8px;"></div>
-      <button class="h-btn" onclick="addScheduleSlotRow()" style="border-style:dashed; margin-top:8px;">+ Agregar Franja Horaria</button>
+      <button class="h-btn" onclick="addScheduleSlotRow()" style="border-style:dashed; margin-top:8px; min-height: 48px;">+ Agregar Franja Horaria</button>
     </div>
   </div>
   <div class="cfg-card">
     <div class="cfg-card-title">⛽ Costos Operativos de Moto</div>
     <div class="input-group">
       <div class="input-label">Precio de Gasolina por Galón (Q)</div>
-      <input type="number" id="cfgGasPrice" value="32" style="background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: var(--text); width: 100%; font-size: 14px;">
+      <input type="number" id="cfgGasPrice" value="32" style="background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: var(--text); width: 100%; font-size: 14px; outline: none;">
     </div>
     <div class="input-group">
       <div class="input-label">Rendimiento por Galón (km)</div>
-      <input type="number" id="cfgGasRend" value="120" style="background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: var(--text); width: 100%; font-size: 14px;">
+      <input type="number" id="cfgGasRend" value="120" style="background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: var(--text); width: 100%; font-size: 14px; outline: none;">
     </div>
     <div class="input-group">
       <div class="input-label">Mantenimiento Diario Fijo (Q)</div>
-      <input type="number" id="cfgDailyMaint" value="15" style="background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: var(--text); width: 100%; font-size: 14px;">
+      <input type="number" id="cfgDailyMaint" value="15" style="background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: var(--text); width: 100%; font-size: 14px; outline: none;">
     </div>
     
-    <!-- Botón explícito de Guardado -->
     <button class="main-action-btn" onclick="saveConfigData()" style="margin-top: 12px; padding: 14px; font-size: 14px;">💾 GUARDAR CONFIGURACIÓN</button>
   </div>
   <div class="cfg-card">
     <div class="cfg-card-title">📤 Copias de Seguridad y Datos</div>
     <div style="display: flex; flex-direction: column; gap: 8px;">
-      <button class="h-btn" onclick="exportBackupJSON()">💾 Descargar Respaldo JSON</button>
-      <button class="h-btn" onclick="triggerImportBackup()">📂 Importar Copia Respaldo</button>
+      <button class="h-btn" onclick="exportBackupJSON()" style="min-height: 48px;">💾 Descargar Respaldo JSON</button>
+      <button class="h-btn" onclick="triggerImportBackup()" style="min-height: 48px;">📂 Importar Copia Respaldo</button>
       <input type="file" id="importFileInput" style="display: none;" onchange="importBackupJSON(event)">
     </div>
   </div>
@@ -374,11 +361,12 @@
   </div>
 </nav>
 
+<!-- MODAL EN RUTA (MODO MOTO) -->
 <section class="moto-mode-overlay" id="motoModeOverlay">
   <div class="moto-header">
     <div class="m-title">🏍️ MODO MOTO</div>
     <div style="display:flex; gap:8px;">
-      <button class="h-btn" onclick="clearCalculatorInputs()" style="padding: 4px 12px; background: rgba(var(--accent-rgb),0.2); border-color: var(--accent); color: var(--accent); font-weight:800; font-size:11px;">✕ LIMPIAR</button>
+      <button class="h-btn" onclick="clearCalculatorInputs()" style="padding: 4px 12px; background: rgba(255, 45, 85, 0.2); border-color: var(--accent); color: var(--accent); font-weight:800; font-size:11px; min-height: 38px;">✕ LIMPIAR</button>
       <button class="m-btn" onclick="exitMotoMode()" style="background: none; border-color: transparent;">✕</button>
     </div>
   </div>
@@ -425,6 +413,7 @@
   </div>
 </section>
 
+<!-- MODAL EDICIÓN RÁPIDA -->
 <div class="modal-overlay" id="editModalOverlay">
   <div class="modal-sheet">
     <div class="modal-header"><span class="modal-title">✏️ Editar Registro Pedido</span><button class="modal-close" onclick="closeEditModal()">✕</button></div>
