@@ -26,7 +26,9 @@
 <header>
   <div class="header-top">
     <div class="logo">
-      <span>🛵</span> CALC PYA PRO <span style="font-size: 11px; background: rgba(255, 45, 85, 0.15); padding: 2px 8px; border-radius: 10px; color: var(--accent);" id="appVersionBranding">v3.7.0 by KMBY</span>
+      <!-- Integración de tu casco de neón en la cabecera -->
+      <img src="icon-192.png" alt="Rider Calc Pro Logo" class="header-logo-img">
+      <span class="logo-text">CALC PYA PRO</span>
     </div>
     <div class="header-actions">
       <div class="weather-chip" id="weatherChip" onclick="fetchWeather()">
@@ -34,18 +36,6 @@
         <span id="weatherTemp">--°C</span>
       </div>
       <button class="theme-btn" onclick="toggleTheme()" id="themeToggleBtn">🌙</button>
-    </div>
-  </div>
-  <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-    <div>
-      <span style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;" id="headerWelcomeName">Acumulado Hoy</span>
-      <h1 style="font-family: 'Bebas Neue', sans-serif; font-size: 40px; color: var(--green); line-height: 1;" id="headerTotalDay">Q 0.00</h1>
-    </div>
-    <div style="text-align: right;">
-      <div class="wake-lock-status" id="wakeLockStatus" style="display: none;">
-        <span style="width: 6px; height: 6px; background: var(--green); border-radius: 50%; display: inline-block;"></span> Activa
-      </div>
-      <span style="font-size: 11px; color: var(--muted);" id="headerDateStr">-- GT</span>
     </div>
   </div>
 </header>
@@ -70,13 +60,14 @@
       <div class="thermometer-stem"><div class="thermometer-stem-fill" id="goalArcFill"></div></div>
       <div class="thermometer-pct-badge" id="goalProgressPct">0%</div>
     </div>
+    <div class="goal-motivational-text" id="goalMotivationalText">¡Buen inicio, Rider! El camino apenas comienza. 🏍️</div>
   </section>
 
   <!-- Botón de Restablecimiento Accesible de Consola Diaria -->
   <button class="h-btn" onclick="confirmResetAllData()" style="background: rgba(255, 45, 85, 0.1); border-color: var(--accent); color: var(--accent); font-weight: 800; width: 100%; margin-bottom: 16px; border-radius: 12px; min-height: 48px;">🗑️ RESTABLECER CONSOLA DIARIA</button>
 
   <div class="live-calc-card">
-    <div class="live-calc-title">Ganancia Estimada Pedido</div>
+    <div class="live-calc-title">Ganancia Estimada Pedido Activo</div>
     <div class="live-calc-amount" id="liveCalcAmount">Q 0.00</div>
   </div>
 
@@ -98,8 +89,6 @@
       <span id="gpsDistanceLive">0.000 km</span>
     </div>
   </div>
-
-  <button class="h-btn" onclick="enterMotoMode()" style="background: var(--card); border: 1.5px solid var(--accent); padding: 16px; margin-bottom: 16px; border-radius: 18px; width: 100%;">🏍️ ACTIVAR MODO MOTO</button>
 
   <div class="control-box" onclick="toggleGlovesMode()" style="cursor: pointer; margin-bottom:16px;">
     <div style="display: flex; align-items: center; gap: 12px;">

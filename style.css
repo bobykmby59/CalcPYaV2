@@ -1,5 +1,5 @@
 /* ==========================================
-   STYLE SHEET - RIDER CALC PRO v3.7.0 (CONSOLIDADO)
+   STYLE SHEET - RIDER CALC PRO v3.7.0 (PREMIUM HIGH-CONTRAST)
    ========================================== */
 :root {
   --bg: #000000;
@@ -19,6 +19,7 @@
   --nav-bg: #050507;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
+  --neon-glow: 0 0 10px rgba(0, 255, 102, 0.4);
 }
 
 body.light-mode {
@@ -36,6 +37,7 @@ body.light-mode {
   --text: #000000;
   --muted: #4a4a4f;
   --nav-bg: #ffffff;
+  --neon-glow: 0 0 10px rgba(0, 128, 43, 0.3);
 }
 
 * {
@@ -55,17 +57,6 @@ body {
   padding-bottom: calc(84px + var(--safe-bottom));
   overscroll-behavior-y: contain;
   overflow-x: hidden;
-}
-
-::-webkit-scrollbar {
-  width: 4px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 10px;
 }
 
 header {
@@ -91,21 +82,29 @@ body.light-mode header {
 }
 
 .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Efecto de brillo de neón sobre tu logotipo de casco */
+.header-logo-img {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 5px rgba(0, 191, 255, 0.6));
+}
+
+.logo-text {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 28px;
   letter-spacing: 1px;
   background: linear-gradient(90deg, var(--accent), var(--accent2));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  display: inline-block;
+  line-height: 1;
 }
 
 .weather-chip {
@@ -139,11 +138,227 @@ body.light-mode header {
   cursor: pointer;
 }
 
+/* NUEVA FILA FINANCIERA PREMIUM (BOCETO) */
+.financial-hero-card {
+  background: linear-gradient(135deg, var(--card) 0%, rgba(20,20,22,0.6) 100%);
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 16px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.accumulated-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+  flex: 1;
+}
+
+.accumulated-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+
+.accumulated-amount {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 42px;
+  line-height: 1;
+  color: var(--green);
+  transition: filter 0.25s ease, opacity 0.25s ease;
+}
+
+/* Efecto de privacidad difuminado (Ojo) */
+.accumulated-amount.masked {
+  filter: blur(10px);
+  opacity: 0.3;
+}
+
+.financial-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.action-icon-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: var(--card2);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.1s, background-color 0.1s;
+}
+
+.action-icon-btn:active {
+  transform: scale(0.92);
+  background: var(--border);
+}
+
+.action-icon-btn.reset-danger-btn {
+  border-color: rgba(255, 45, 85, 0.3);
+  color: var(--accent);
+}
+
+.action-icon-btn.reset-danger-btn:active {
+  background: rgba(255, 45, 85, 0.15);
+}
+
+.icon-svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* FILA INTERACTIVA: META Y MOTO MODE (BOCETO) */
+.meta-moto-row {
+  display: flex;
+  gap: 12px;
+  margin: 0 16px 16px 16px;
+  align-items: stretch;
+}
+
+.thermometer-goal-card {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 18px;
+  padding: 14px 16px;
+  flex: 1.3;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/* Efecto de celebración cuando la meta se cumple */
+.thermometer-goal-card.completed {
+  border-color: var(--green);
+  box-shadow: 0 0 20px rgba(0, 255, 102, 0.25);
+}
+
+.thermometer-goal-card.completed .thermometer-title {
+  color: var(--green);
+}
+
+.thermometer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.thermometer-title {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text);
+}
+
+.thermometer-meta-text {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.thermometer-gauge-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.thermometer-stem {
+  flex: 1;
+  height: 8px;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.thermometer-stem-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--green) 100%);
+  border-radius: 4px;
+  transition: width 1s cubic-bezier(0.25, 1, 0.5, 1);
+  box-shadow: var(--neon-glow);
+}
+
+/* Destello de carga interactivo en la meta */
+.thermometer-stem-fill.boost-pulse {
+  animation: barPulse 0.4s ease-out;
+}
+
+@keyframes barPulse {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(2); box-shadow: 0 0 15px var(--green); }
+  100% { filter: brightness(1); }
+}
+
+.thermometer-pct-badge {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.goal-motivational-text {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  line-height: 1.2;
+}
+
+/* BOTÓN PREMIUM MODO MOTO */
+.moto-mode-trigger-btn {
+  flex: 0.8;
+  background: linear-gradient(135deg, var(--accent) 0%, #cc183b 100%);
+  border: none;
+  border-radius: 18px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(255, 45, 85, 0.25);
+  transition: transform 0.1s, box-shadow 0.2s;
+  padding: 12px;
+}
+
+.moto-mode-trigger-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 5px rgba(255, 45, 85, 0.15);
+}
+
+.moto-mode-trigger-btn .btn-icon {
+  font-size: 26px;
+}
+
+.moto-mode-trigger-btn .btn-text {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+/* REJILLA DE ESTADÍSTICAS 2X2 */
 .dash-card {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  margin-bottom: 16px;
+  margin: 0 16px 16px 16px;
 }
 
 .stat-item {
@@ -153,6 +368,7 @@ body.light-mode header {
   padding: 16px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
 
 .stat-item .val {
@@ -174,306 +390,44 @@ body.light-mode header {
   font-weight: 700;
 }
 
-.thermometer-goal-card {
-  background: var(--card);
-  border: 1px solid var(--border);
+/* VIAJE ACTIVO ESTIMADO */
+.live-calc-card {
+  background: linear-gradient(135deg, #091a10 0%, #030805 100%);
+  border: 1px solid #143d22;
   border-radius: 20px;
-  padding: 18px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  position: relative;
-  overflow: hidden;
+  padding: 24px 20px;
+  margin: 0 16px 16px 16px;
+  text-align: center;
 }
 
-.thermometer-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+body.light-mode .live-calc-card {
+  background: linear-gradient(135deg, #eafff3 0%, #d5ffd8 100%);
+  border: 1px solid #99ddbb;
 }
 
-.thermometer-title {
-  font-size: 13px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.thermometer-meta-text {
+.live-calc-title {
   font-size: 12px;
-  font-weight: 700;
-  color: var(--green);
-}
-
-.thermometer-gauge-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-}
-
-.thermometer-bulb {
-  width: 22px;
-  height: 22px;
-  background: var(--accent);
-  border-radius: 50%;
-  position: relative;
-  box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.8);
-  flex-shrink: 0;
-}
-
-.thermometer-bulb::after {
-  content: '';
-  position: absolute;
-  top: 5px; left: 5px;
-  width: 6px; height: 6px;
-  background: rgba(255, 255, 255, 0.4);
-  border-radius: 50%;
-}
-
-.thermometer-stem {
-  flex: 1;
-  height: 12px;
-  background: var(--card2);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  position: relative;
-  overflow: hidden;
-}
-
-.thermometer-stem-fill {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, var(--accent) 0%, var(--accent2) 50%, var(--green) 100%);
-  border-radius: 6px;
-  transition: width 1.2s cubic-bezier(0.25, 1, 0.5, 1);
-  box-shadow: 0 0 8px rgba(var(--green-rgb), 0.5);
-}
-
-.thermometer-pct-badge {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 18px;
-  color: var(--text);
-  flex-shrink: 0;
-  width: 40px;
-  text-align: right;
-}
-
-.tab-view {
-  display: none;
-  padding: 0 16px;
-  animation: viewFade 0.2s cubic-bezier(0.1, 0.8, 0.2, 1);
-}
-
-.tab-view.active { display: block; }
-
-@keyframes viewFade {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.nav-bar {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  background: var(--nav-bg);
-  border-top: 1px solid var(--border);
-  padding-bottom: var(--safe-bottom);
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  height: calc(64px + var(--safe-bottom));
-  z-index: 1000;
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  height: 64px;
-  color: var(--muted);
-  cursor: pointer;
-  transition: color 0.15s;
-}
-
-.nav-item.active {
-  color: var(--accent);
-}
-
-.nav-item svg {
-  width: 24px;
-  height: 24px;
-  margin-bottom: 4px;
-  transition: transform 0.15s;
-}
-
-.nav-item:active svg { transform: scale(0.9); }
-
-.nav-item span {
-  font-size: 10px;
-  font-weight: 700;
-}
-
-.input-group {
-  margin-bottom: 16px;
-}
-
-.input-label {
-  font-size: 11px;
   color: var(--muted);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 6px;
+  letter-spacing: 1px;
   font-weight: 800;
 }
 
-.control-box {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 14px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.multiplier-widget {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.mult-val-input {
+.live-calc-amount {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 48px;
-  color: var(--accent);
-  background: none;
-  border: none;
-  width: 120px;
-  outline: none;
+  font-size: 64px;
+  color: var(--green);
+  line-height: 1;
+  margin-top: 6px;
 }
 
-.mult-btn-group {
-  display: flex;
-  gap: 8px;
-}
-
-.m-btn {
-  width: 46px;
-  height: 46px;
-  border-radius: 12px;
-  background: var(--card2);
-  border: 1px solid var(--border);
-  color: var(--text);
-  font-size: 20px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.m-btn:active { transform: scale(0.9); }
-
-.preset-list {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 8px;
-  margin-bottom: 16px;
-}
-
-.preset-chip {
-  padding: 8px 16px;
-  border-radius: 20px;
-  border: 1px solid var(--border);
-  background: var(--card);
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 700;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.preset-chip.active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: white;
-}
-
-.segment-box {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 16px;
-  margin-bottom: 12px;
-}
-
-.segment-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.segment-title {
-  font-size: 14px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.km-input-wrap {
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-}
-
-.km-input {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 40px;
-  color: var(--blue);
-  background: none;
-  border: none;
-  width: 110px;
-  outline: none;
-}
-
-.km-unit { font-size: 14px; font-weight: 700; color: var(--muted); }
-
-.segment-stepper {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.step-btn {
-  padding: 12px;
-  background: var(--card2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  color: var(--text);
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  min-height: 48px;
-}
-
-.step-btn:active { transform: scale(0.98); }
-
+/* SEGUIMIENTO EN RUTA */
 .tracking-segment {
   background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.1) 0%, rgba(0,0,0,0) 100%);
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 16px;
-  margin-bottom: 16px;
+  margin: 0 16px 16px 16px;
 }
 
 .track-btns {
@@ -493,6 +447,11 @@ body.light-mode header {
   gap: 4px;
   cursor: pointer;
   min-height: 52px;
+  transition: transform 0.1s, border-color 0.1s;
+}
+
+.track-btn:active {
+  transform: scale(0.96);
 }
 
 .track-btn.active {
@@ -522,36 +481,7 @@ body.light-mode header {
 
 .main-action-btn:active { transform: scale(0.98); }
 
-.live-calc-card {
-  background: linear-gradient(135deg, #091a10 0%, #030805 100%);
-  border: 1px solid #143d22;
-  border-radius: 20px;
-  padding: 24px 20px;
-  margin-bottom: 16px;
-  text-align: center;
-}
-
-body.light-mode .live-calc-card {
-  background: linear-gradient(135deg, #eafff3 0%, #d5ffd8 100%);
-  border: 1px solid #99ddbb;
-}
-
-.live-calc-title {
-  font-size: 12px;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: 800;
-}
-
-.live-calc-amount {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 64px;
-  color: var(--green);
-  line-height: 1;
-  margin-top: 6px;
-}
-
+/* LISTA DE HISTORIAL Y AJUSTES */
 .hist-card {
   background: var(--card);
   border: 1px solid var(--border);
@@ -910,26 +840,6 @@ input:checked + .slider:before { transform: translateX(20px); }
 .search-item:last-child { border-bottom: none; }
 .search-item:active { background: var(--border); }
 .deliv-points-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
-
-.notif-banner {
-  position: fixed;
-  top: 24px; left: 24px; right: 24px;
-  background: var(--card);
-  border: 1.5px solid var(--accent);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-  border-radius: 16px;
-  padding: 16px;
-  z-index: 2500;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  transform: translateY(-200px);
-  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.notif-banner.active { transform: translateY(0); }
-.notif-title { font-size: 14px; font-weight: 800; }
-.notif-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
 .timeline-container {
   background: var(--card);
