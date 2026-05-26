@@ -57,7 +57,7 @@ jobs:
               const fs = require('fs');
               let content = fs.readFileSync('$MANIFEST_PATH', 'utf8');
               
-              // Declaración de permisos nativos para GPS de alta precisión en segundo plano y exclusión de batería
+              // Declaración de permisos nativos para GPS en segundo plano y exclusión de optimización de batería
               const permissions = '\n' +
                 '    <uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\" />\n' +
                 '    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n' +
@@ -77,6 +77,36 @@ jobs:
           else
             echo "Error: No se encontró el archivo AndroidManifest.xml nativo."
             exit 1
+          fi
+
+      - name: Generar iconos de aplicacion personalizados (Casco de Neon)
+        run: |
+          SRC_ICON="icon-512.png"
+          if [ -f "$SRC_ICON" ]; then
+            echo "Generando iconos nativos de Android mediante ImageMagick..."
+            
+            # Eliminar la carpeta de iconos adaptativos XML para forzar el fallback a los PNGs generados
+            rm -rf android/app/src/main/res/mipmap-anydpi-v26
+            
+            # Generar los iconos en todos los formatos de densidad (redondos y cuadrados)
+            convert "$SRC_ICON" -resize 48x48 android/app/src/main/res/mipmap-mdpi/ic_launcher.png
+            convert "$SRC_ICON" -resize 48x48 android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
+            
+            convert "$SRC_ICON" -resize 72x72 android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+            convert "$SRC_ICON" -resize 72x72 android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
+            
+            convert "$SRC_ICON" -resize 96x96 android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+            convert "$SRC_ICON" -resize 96x96 android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
+            
+            convert "$SRC_ICON" -resize 144x144 android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+            convert "$SRC_ICON" -resize 144x144 android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
+            
+            convert "$SRC_ICON" -resize 192x192 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+            convert "$SRC_ICON" -resize 192x192 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
+            
+            echo "Iconos nativos del casco de neón inyectados con éxito."
+          else
+            echo "Advertencia: No se encontró el archivo base icon-512.png en la raíz."
           fi
 
       - name: Compilar APK con Gradle (Android)
