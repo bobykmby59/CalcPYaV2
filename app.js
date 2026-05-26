@@ -963,7 +963,6 @@ function drawRoundedRect(ctx, x, y, width, height, radius) {
   ctx.fill();
 }
 
-// Control central de pestañas
 function switchMainTab(tab) {
   currentTab = tab; 
   document.querySelectorAll('.tab-view').forEach(view => {
@@ -1007,6 +1006,7 @@ function exportBackupJSON() {
   const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", `rider_backup_${Date.now()}.json`); dlAnchorElem.click();
 }
 
+// Inicialización de importación de copia de seguridad
 function triggerImportBackup() { document.getElementById('importFileInput').click(); }
 
 function importBackupJSON(event) {
