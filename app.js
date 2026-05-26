@@ -54,6 +54,7 @@ let isRainActive = false;
 let isDobleOrder = false;
 let earningsHidden = false; // Estado del ojo de privacidad
 let hasCenteredOnFirstFix = false; // Bandera de centrado automático
+let sensorsUnlocked = false; // Estado de los sensores desbloqueados
 
 let trackState = {
   active: false, phase: null,
@@ -99,10 +100,26 @@ document.addEventListener("DOMContentLoaded", () => {
   calculateRealtimeEarnings(); 
   initAutoTheme(); 
   fetchWeather();
-  startLiveLocationKeepalive();
   checkVersionModalOnLoad(); 
   initPrivacyState(); // Inicializar estado del ojo de privacidad
+  
+  // Agregar escuchadores globales para desbloquear sensores táctilmente
+  document.addEventListener('touchstart', unlockDeviceSensorsOnce);
+  document.addEventListener('click', unlockDeviceSensorsOnce);
 });
+
+// Desbloqueo inteligente de sensores al primer toque en pantalla
+function unlockDeviceSensorsOnce() {
+  if (sensorsUnlocked) return;
+  sensorsUnlocked = true;
+  
+  initKeepAliveAudio();
+  startLiveLocationKeepalive(); // Inicia el rastreo ininterrumpido en el primer toque
+  
+  // Remover escuchadores para ahorrar batería
+  document.removeEventListener('touchstart', unlockDeviceSensorsOnce);
+  document.removeEventListener('click', unlockDeviceSensorsOnce);
+}
 
 function hydrateDataStorage() {
   try {
@@ -713,7 +730,7 @@ function processLiveGpsPositionUpdate(pos) {
     console.warn("Error renderizando marcador nativo Leaflet", err);
   }
   
-  // Centrado automático de cortesía en el primer satélite válido recibido
+  // Centrado de cortesía en el primer satélite válido recibido
   if (!hasCenteredOnFirstFix) {
     if (leafMapInstance) leafMapInstance.setView(latestCoords, 16);
     if (motoMapInstance) motoMapInstance.setView(latestCoords, 16);
@@ -799,6 +816,7 @@ function initLeafletMapInstance() {
     leafMapInstance = L.map('liveMapDiv', { zoomControl: false, attributionControl: false }).setView(latestCoords || [14.6349, -90.5069], 14);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(leafMapInstance);
     
+    // Naranja Eléctrico (#ff9500) para el trayecto al restaurante
     mapPolylineRetiro = L.polyline([], { color: '#ff9500', weight: 6, opacity: 0.9 }).addTo(leafMapInstance);
     mapPolylinesEntrega = [];
     
@@ -817,6 +835,7 @@ function initMotoMapInstance() {
     motoMapInstance = L.map('motoMapDiv', { zoomControl: false, attributionControl: false }).setView(latestCoords || [14.6349, -90.5069], 14);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(motoMapInstance);
     
+    // Naranja Eléctrico (#ff9500) para el trayecto al restaurante en el modo moto
     motoPolylineRetiro = L.polyline([], { color: '#ff9500', weight: 6, opacity: 0.9 }).addTo(motoMapInstance);
     motoPolylinesEntrega = [];
     
@@ -1587,7 +1606,7 @@ function exportHistoryToCSV() {
   db.orders.forEach(o => {
     const dateStr = new Date(o.timestamp).toLocaleDateString('es-GT');
     const regime = db.config.satRegime || 'pequeno';
-    const tax = o.earnings * (regime === 'pequeno' ? 0.05 : regime === 'general' ? 0.12 : 0.0);
+    const tax = o.earnings * (regime === 'pequeno' * 0.05 : regime === 'general' ? 0.12 : 0.0);
     const platformFee = 18.50 / db.orders.length; 
     const net = o.earnings - tax - platformFee;
     
