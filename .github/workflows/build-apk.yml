@@ -1,0 +1,63 @@
+name: Compilar APK Rider Calc Pro
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+jobs:
+  build:
+    name: Compilar Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar Código del Repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Configurar Java JDK (Android)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Instalar Dependencias del Proyecto
+        run: npm install
+
+      - name: Empaquetar automáticamente para la carpeta www
+        run: |
+          mkdir -p www
+          cp index.html www/
+          cp style.css www/
+          cp app.js www/
+          cp manifest.json www/ || true
+          cp sw.js www/ || true
+          cp icon-*.png www/ 2>/dev/null || true
+
+      - name: Inicializar y Sincronizar Plataforma Android
+        run: |
+          npx cap sync
+          if [ ! -d "android" ]; then
+            npx cap add android
+          fi
+
+      - name: Compilar APK con Gradle (Android)
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Subir APK Generada como Artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: Rider-Calc-Pro-Debug-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 7
