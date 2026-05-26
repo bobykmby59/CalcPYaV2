@@ -2,7 +2,6 @@
   "appId": "com.motocalc.delivery",
   "appName": "Moto Calculadora",
   "webDir": "www",
-  "bundledWebRuntime": false,
   "plugins": {
     "Keyboard": {
       "resize": "body",
