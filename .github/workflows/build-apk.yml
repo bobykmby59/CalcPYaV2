@@ -79,11 +79,16 @@ jobs:
             exit 1
           fi
 
+      - name: Instalar ImageMagick (Procesador de imagenes)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick
+
       - name: Generar iconos de aplicacion personalizados (Casco de Neon)
         run: |
           SRC_ICON="icon-512.png"
           if [ -f "$SRC_ICON" ]; then
-            echo "Generando iconos nativos de Android mediante ImageMagick..."
+            echo "Generando iconos nativos de Android..."
             
             # Eliminar la carpeta de iconos adaptativos XML para forzar el fallback a los PNGs generados
             rm -rf android/app/src/main/res/mipmap-anydpi-v26
