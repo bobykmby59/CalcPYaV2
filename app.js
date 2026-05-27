@@ -620,7 +620,7 @@ function updateMotoBreakdownUI() {
   } else { rowEntrega.textContent = '--:-- | 0.00 km'; }
 }
 
-// ARRANQUE CONTINUO DEL GPS (v3.8.0)
+// ARRANQUE CONTINUO AUTOMÁTICO DEL GPS (BOCETO DE AYER RESTAURADO)
 function startLiveLocationKeepalive() {
   if (!navigator.geolocation) return; 
   requestScreenWakeLock(); 
@@ -634,14 +634,15 @@ function startLiveLocationKeepalive() {
     navigator.geolocation.clearWatch(watchPositionId);
   }
   
-  const geoOpts = { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 };
+  // watchPosition idéntico a tu versión de ayer
+  const geoOpts = { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 };
   watchPositionId = navigator.geolocation.watchPosition(processLiveGpsPositionUpdate, handleGpsTrackingError, geoOpts);
   
-  // GPS 100% activo en segundo plano y primer plano constantemente desde que se abre la app (Calibración rápida cada 5 segundos)
+  // Intervalo de resguardo de alta frecuencia sincronizado a 4 segundos (idéntico a tu versión funcional de ayer)
   if (bgGpsIntervalId) clearInterval(bgGpsIntervalId);
   bgGpsIntervalId = setInterval(() => { 
     navigator.geolocation.getCurrentPosition(processLiveGpsPositionUpdate, () => {}, { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }); 
-  }, 5000); // Sincronizado a 5 segundos (idéntico a tu versión funcional de ayer)
+  }, 4000); 
   
   document.getElementById('gpsStateText').textContent = '🛰️ GPS Buscando...'; 
   document.getElementById('gpsStateText').style.color = 'var(--accent2)';
@@ -676,7 +677,7 @@ function updateHotspotsUi(lat, lng) {
     item.style.background = 'var(--card2)'; 
     item.style.borderRadius = '12px'; 
     item.style.border = '1.5px solid var(--border)';
-    item.innerHTML = `<div><div style="font-size: 13px; font-weight: 700;">${h.name}</div><div style="font-size: 11px; color: var(--muted);">Distancia: <span style="color: var(--blue); font-weight: 700;">${h.dist.toFixed(2)} km</span></div></div><div style="display: flex; gap: 6px;"><button class="step-btn" onclick="navigateHotspot(${h.lat}, ${h.lng}, '${h.name}')" style="font-size: 11px; padding: 6px 10px; background: var(--card); border-color: var(--accent); min-height: 36px;">Navegar</button></div>`;
+    item.innerHTML = `<div><div style="font-size: 13px; font-weight: 700;">${h.name}</div><div style="font-size: 11px; color: var(--muted); font-weight: 700;">Distancia: <span style="color: var(--blue);">${h.dist.toFixed(2)} km</span></div></div><div style="display: flex; gap: 6px;"><button class="step-btn" onclick="navigateHotspot(${h.lat}, ${h.lng}, '${h.name}')" style="font-size: 11px; padding: 6px 10px; background: var(--card); border-color: var(--accent); min-height: 36px;">Navegar</button></div>`;
     container.appendChild(item);
   });
 }
@@ -690,7 +691,7 @@ function navigateHotspot(lat, lng, name) {
   }
 }
 
-// FILTRO DE ODOMETRO MILIMÉTRICO ADAPTATIVO (v3.8.0)
+// FILTRO DE ODOMETRO ADAPTATIVO CON RECONOCIMIENTO DE HARDWARE (MÉTRICA EXACTA)
 function processLiveGpsPositionUpdate(pos) {
   const lat = pos.coords.latitude; 
   const lng = pos.coords.longitude; 
@@ -716,7 +717,7 @@ function processLiveGpsPositionUpdate(pos) {
     console.warn("Error renderizando marcador nativo Leaflet", err);
   }
   
-  // Centrado de cortesía en el primer satélite válido recibido
+  // Centrado automático en tu posición real en el primer satélite válido recibido
   if (!hasCenteredOnFirstFix) {
     if (leafMapInstance) leafMapInstance.setView(latestCoords, 16);
     if (motoMapInstance) motoMapInstance.setView(latestCoords, 16);
@@ -742,7 +743,7 @@ function processLiveGpsPositionUpdate(pos) {
       if (lastPoint) {
         const stepDist = calculateHaversineDistance(lastPoint[0], lastPoint[1], avgLat, avgLng);
         
-        // CALIBRACIÓN DE COBRO MILIMÉTRICO (SIN EXCLUSIÓN DE VELOCIDAD DE WEBVIEW):
+        // CALIBRACIÓN DE COBRO MILIMÉTRICO (SIN FILTROS CONGELANTES DE VELOCIDAD DE WEBVIEW):
         // 1. Eliminamos el bloqueo de 'speed' por hardware para evitar que los WebViews de Android congelen el kilometraje.
         // 2. Filtramos rebotes de precisión estricta menores a 45 metros para evitar sumas fantasmas en semáforos.
         // 3. Capturamos movimiento real desde los 3 metros (0.003 km) y filtramos saltos de error mayores a 800m por segundo.
@@ -1411,7 +1412,7 @@ function renderScheduleSlots() {
     div.style.alignItems = 'center';
     div.innerHTML = `
       <input type="time" value="${slot.startHour}" onchange="updateScheduleSlotValue(${slot.id}, 'startHour', this.value)" style="background:var(--card2); border:1px solid var(--border); color:var(--text); padding:8px; border-radius:8px; flex:1;">
-      <span style="font-size:12px; color:var(--muted);">a</span>
+      <span style="font-size:12px; color:var(--muted); font-weight: 700;">a</span>
       <input type="time" value="${slot.endHour}" onchange="updateScheduleSlotValue(${slot.id}, 'endHour', this.value)" style="background:var(--card2); border:1px solid var(--border); color:var(--text); padding:8px; border-radius:8px; flex:1;">
       <input type="number" step="0.05" value="${slot.multiplier.toFixed(2)}" onchange="updateScheduleSlotValue(${slot.id}, 'multiplier', this.value)" style="background:var(--card2); border:1px solid var(--border); color:var(--text); padding:8px; border-radius:8px; width:65px; text-align:center;">
       <button onclick="removeScheduleSlotRow(${slot.id})" style="background:none; border:none; color:var(--accent); font-size:18px; cursor:pointer; padding:4px;">✕</button>
