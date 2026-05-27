@@ -138,9 +138,7 @@ body.light-mode header {
   cursor: pointer;
 }
 
-/* ==========================================
-   ESTILOS DE CONTROL DE PESTAÑAS (CORREGIDO)
-   ========================================== */
+/* ESTILOS DE CONTROL DE PESTAÑAS */
 .tab-view {
   display: none; /* Oculta todas las pestañas inactivas por defecto */
   padding: 0 16px;
@@ -495,7 +493,7 @@ body.light-mode .live-calc-card {
 
 .main-action-btn:active { transform: scale(0.98); }
 
-/* CONTROLES TÁCTILES: MULTIPLICADORES, INPUTS Y CAJAS (RESTAURADOS) */
+/* CONTROLES TÁCTILES: MULTIPLICADORES, INPUTS Y CAJAS */
 .control-box {
   background: var(--card);
   border: 1.5px solid var(--border);
@@ -1114,4 +1112,29 @@ canvas {
   color: var(--text);
   font-size: 20px;
   cursor: pointer;
+}
+
+/* BOTÓN DE CENTRAR MAPA PREMIUM (ESTILO GOOGLE MAPS) */
+.map-recenter-btn {
+  position: absolute;
+  bottom: 24px;
+  right: 16px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #ffffff !important; /* Fondo blanco puro idéntico al de Google Maps */
+  border: 1.5px solid #d1d1d6;
+  color: #007aff !important; /* Icono de mira telescópica azul brillante */
+  display: flex !important; /* Fuerza su visibilidad */
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  cursor: pointer;
+  z-index: 9999 !important; /* Fuerza a flotar por encima de cualquier mapa de Leaflet */
+  transition: transform 0.1s, background-color 0.1s;
+}
+
+.map-recenter-btn:active {
+  transform: scale(0.9);
+  background-color: #e5e5ea !important;
 }
