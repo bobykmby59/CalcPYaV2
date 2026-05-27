@@ -620,7 +620,7 @@ function updateMotoBreakdownUI() {
   } else { rowEntrega.textContent = '--:-- | 0.00 km'; }
 }
 
-// ARRANQUE CONTINUO AUTOMÁTICO DEL GPS (BOCETO DE AYER RESTAURADO)
+// ARRANQUE CONTINUO DEL GPS DESDE EL SEGUNDO CERO EN EL DOM (v3.8.0 RESTAURADO)
 function startLiveLocationKeepalive() {
   if (!navigator.geolocation) return; 
   requestScreenWakeLock(); 
@@ -691,7 +691,7 @@ function navigateHotspot(lat, lng, name) {
   }
 }
 
-// FILTRO DE ODOMETRO ADAPTATIVO CON RECONOCIMIENTO DE HARDWARE (MÉTRICA EXACTA)
+// FILTRO DE ODOMETRO ADAPTATIVO CON RECONOCIMIENTO DE HARDWARE (MÉTRICA EXACTA DE AYER RESTAURADA)
 function processLiveGpsPositionUpdate(pos) {
   const lat = pos.coords.latitude; 
   const lng = pos.coords.longitude; 
@@ -717,7 +717,7 @@ function processLiveGpsPositionUpdate(pos) {
     console.warn("Error renderizando marcador nativo Leaflet", err);
   }
   
-  // Centrado automático en tu posición real en el primer satélite válido recibido
+  // Centrado de cortesía en el primer satélite válido recibido
   if (!hasCenteredOnFirstFix) {
     if (leafMapInstance) leafMapInstance.setView(latestCoords, 16);
     if (motoMapInstance) motoMapInstance.setView(latestCoords, 16);
@@ -743,11 +743,8 @@ function processLiveGpsPositionUpdate(pos) {
       if (lastPoint) {
         const stepDist = calculateHaversineDistance(lastPoint[0], lastPoint[1], avgLat, avgLng);
         
-        // CALIBRACIÓN DE COBRO MILIMÉTRICO (SIN FILTROS CONGELANTES DE VELOCIDAD DE WEBVIEW):
-        // 1. Eliminamos el bloqueo de 'speed' por hardware para evitar que los WebViews de Android congelen el kilometraje.
-        // 2. Filtramos rebotes de precisión estricta menores a 45 metros para evitar sumas fantasmas en semáforos.
-        // 3. Capturamos movimiento real desde los 3 metros (0.003 km) y filtramos saltos de error mayores a 800m por segundo.
-        if (accuracy <= 45 && stepDist > 0.003 && stepDist < 0.8) {
+        // CALIBRACIÓN DE COBRO MILIMÉTRICO DE AYER:
+        if (stepDist > 0.008) {
           trackState.currentDistance += stepDist; 
           
           if (trackState.phase === 'retiro') {
