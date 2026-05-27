@@ -54,7 +54,6 @@ let isRainActive = false;
 let isDobleOrder = false;
 let earningsHidden = false; // Estado del ojo de privacidad
 let hasCenteredOnFirstFix = false; // Bandera de centrado automático
-let sensorsUnlocked = false; // Estado de los sensores desbloqueados
 
 let trackState = {
   active: false, phase: null,
@@ -91,6 +90,7 @@ let globalUserMarkerMoto = null;
 const historyMapInstances = {}; 
 let deliverySegments = [];
 
+// ARRANQUE AUTOMÁTICO DE DISPOSITIVOS AL CARGAR LA APP (BOCETO DE AYER RESTAURADO)
 document.addEventListener("DOMContentLoaded", () => {
   hydrateDataStorage(); 
   checkMidnightReset(); 
@@ -100,26 +100,10 @@ document.addEventListener("DOMContentLoaded", () => {
   calculateRealtimeEarnings(); 
   initAutoTheme(); 
   fetchWeather();
+  startLiveLocationKeepalive(); // El GPS arranca e inicia su calibración de inmediato al abrir la app
   checkVersionModalOnLoad(); 
   initPrivacyState(); // Inicializar estado del ojo de privacidad
-  
-  // Agregar escuchadores globales para desbloquear sensores táctilmente
-  document.addEventListener('touchstart', unlockDeviceSensorsOnce);
-  document.addEventListener('click', unlockDeviceSensorsOnce);
 });
-
-// Desbloqueo inteligente de sensores al primer toque en pantalla
-function unlockDeviceSensorsOnce() {
-  if (sensorsUnlocked) return;
-  sensorsUnlocked = true;
-  
-  initKeepAliveAudio();
-  startLiveLocationKeepalive(); // Inicia el rastreo ininterrumpido en el primer toque
-  
-  // Remover escuchadores para ahorrar batería
-  document.removeEventListener('touchstart', unlockDeviceSensorsOnce);
-  document.removeEventListener('click', unlockDeviceSensorsOnce);
-}
 
 function hydrateDataStorage() {
   try {
@@ -636,6 +620,7 @@ function updateMotoBreakdownUI() {
   } else { rowEntrega.textContent = '--:-- | 0.00 km'; }
 }
 
+// ARRANQUE CONTINUO DEL GPS (v3.8.0)
 function startLiveLocationKeepalive() {
   if (!navigator.geolocation) return; 
   requestScreenWakeLock(); 
@@ -643,19 +628,20 @@ function startLiveLocationKeepalive() {
   gpsSmoothBuffer = []; 
   lastMovedTime = Date.now(); 
   lastMovedCoords = null;
+  latestCoords = null; 
   
   if (watchPositionId) {
     navigator.geolocation.clearWatch(watchPositionId);
   }
   
-  const geoOpts = { enableHighAccuracy: true, maximumAge: 1000, timeout: 15000 };
+  const geoOpts = { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 };
   watchPositionId = navigator.geolocation.watchPosition(processLiveGpsPositionUpdate, handleGpsTrackingError, geoOpts);
   
-  // GPS 100% activo en segundo plano y primer plano constantemente desde que se abre la app
+  // GPS 100% activo en segundo plano y primer plano constantemente desde que se abre la app (Calibración rápida cada 5 segundos)
   if (bgGpsIntervalId) clearInterval(bgGpsIntervalId);
   bgGpsIntervalId = setInterval(() => { 
-    navigator.geolocation.getCurrentPosition(processLiveGpsPositionUpdate, () => {}, { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }); 
-  }, 15000);
+    navigator.geolocation.getCurrentPosition(processLiveGpsPositionUpdate, () => {}, { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }); 
+  }, 5000); // Sincronizado a 5 segundos (idéntico a tu versión funcional de ayer)
   
   document.getElementById('gpsStateText').textContent = '🛰️ GPS Buscando...'; 
   document.getElementById('gpsStateText').style.color = 'var(--accent2)';
@@ -758,9 +744,9 @@ function processLiveGpsPositionUpdate(pos) {
         
         // CALIBRACIÓN DE COBRO MILIMÉTRICO (SIN EXCLUSIÓN DE VELOCIDAD DE WEBVIEW):
         // 1. Eliminamos el bloqueo de 'speed' por hardware para evitar que los WebViews de Android congelen el kilometraje.
-        // 2. Filtramos rebotes de precisión estricta menores a 40 metros para evitar sumas fantasmas en semáforos.
+        // 2. Filtramos rebotes de precisión estricta menores a 45 metros para evitar sumas fantasmas en semáforos.
         // 3. Capturamos movimiento real desde los 3 metros (0.003 km) y filtramos saltos de error mayores a 800m por segundo.
-        if (accuracy <= 40 && stepDist > 0.003 && stepDist < 0.8) {
+        if (accuracy <= 45 && stepDist > 0.003 && stepDist < 0.8) {
           trackState.currentDistance += stepDist; 
           
           if (trackState.phase === 'retiro') {
